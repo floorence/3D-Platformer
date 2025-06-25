@@ -170,8 +170,12 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 
-	Texture bunBun("bun_bun_tree.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE, false);
-	bunBun.texUnit(shaderProgram, "tex0", 0);
+	//Texture bunBun("bun_bun_tree.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE, false);
+	//bunBun.texUnit(shaderProgram, "tex0", 0);
+	Texture plank("planks.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE, false);
+	plank.texUnit(shaderProgram, "tex0", 0);
+	Texture plankSpec("planks.png", GL_TEXTURE_2D, 1, GL_UNSIGNED_BYTE, true);
+	plankSpec.texUnit(shaderProgram, "tex1", 1);
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
@@ -189,9 +193,7 @@ int main()
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		// Clean the back buffer and assign the new color to it
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// Tell OpenGL which Shader Program we want to use
-		shaderProgram.Activate();
-
+		
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -200,12 +202,16 @@ int main()
 		camera.Inputs(window, deltaTime);
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
 
+		// Tell OpenGL which Shader Program we want to use
+		shaderProgram.Activate();
+
 		// Exports the camera Position to the Fragment Shader for specular lighting
 		glUniform3f(glGetUniformLocation(shaderProgram.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 
 		camera.Matrix(shaderProgram, "camMatrix");
 
-		bunBun.Bind();
+		plank.Bind();
+		plankSpec.Bind();
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
@@ -230,7 +236,8 @@ int main()
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
-	bunBun.Delete();
+	plank.Delete();
+	plankSpec.Delete();
 	shaderProgram.Delete();
 	lightVAO.Delete();
 	lightVBO.Delete();

@@ -1,4 +1,3 @@
-
 #include"Texture.h"
 
 Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum pixelType, bool specular) {
@@ -19,7 +18,16 @@ Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum pixelTyp
 			unsigned char r = bytes[i * numColCh + 0];
 			unsigned char g = bytes[i * numColCh + 1];
 			unsigned char b = bytes[i * numColCh + 2];
-			redChannel[i] = static_cast<unsigned char>(0.2126f * r + 0.7152f * g + 0.0722f * b);
+			float gray = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+
+			// Apply gamma correction (optional)
+			gray = pow(gray / 255.0f, 1.0 / 2.2f) * 255.0f;
+
+			// Apply boost to compensate for dark textures
+			gray = std::min(gray * 1.5f, 255.0f);
+
+			// Save as byte
+			redChannel[i] = static_cast<unsigned char>(gray);
 		}
 
 		initTexture(redChannel, texType, slot, GL_RED, pixelType, widthImg, heightImg);
@@ -27,7 +35,8 @@ Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum pixelTyp
 	} else {
 		initTexture(bytes, texType, slot, GL_RGBA, pixelType, widthImg, heightImg);
 	}
-
+	// Deletes the image data as it is already in the OpenGL Texture object
+	stbi_image_free(bytes);
 }
 
 void Texture::initTexture(unsigned char* bytes, GLenum texType, GLuint slot, GLenum format, GLenum pixelType, int width, int height) {
@@ -50,9 +59,7 @@ void Texture::initTexture(unsigned char* bytes, GLenum texType, GLuint slot, GLe
 	glTexImage2D(texType, 0, format, width, height, 0, format, pixelType, bytes);
 	// Generates MipMaps
 	glGenerateMipmap(texType);
-	// Deletes the image data as it is already in the OpenGL Texture object
-	stbi_image_free(bytes);
-
+	
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
 	glBindTexture(texType, 0);
 }
