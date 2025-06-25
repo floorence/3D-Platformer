@@ -170,7 +170,7 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 
-	Texture bunBun("bun_bun_tree.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	Texture bunBun("bun_bun_tree.png", GL_TEXTURE_2D, 0, GL_UNSIGNED_BYTE, false);
 	bunBun.texUnit(shaderProgram, "tex0", 0);
 
 	// Enables the Depth Buffer

@@ -1,8 +1,7 @@
 
 #include"Texture.h"
 
-Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
-{
+Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum pixelType, bool specular) {
 	// Assigns the type of the texture ot the texture object
 	type = texType;
 
@@ -13,10 +12,30 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	// Reads the image from a file and stores it in bytes
 	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
 
+	if (specular && numColCh >= 3) {
+		// Create 1-channel red-only array
+		unsigned char* redChannel = new unsigned char[widthImg * heightImg];
+		for (int i = 0; i < widthImg * heightImg; i++) {
+			unsigned char r = bytes[i * numColCh + 0];
+			unsigned char g = bytes[i * numColCh + 1];
+			unsigned char b = bytes[i * numColCh + 2];
+			redChannel[i] = static_cast<unsigned char>(0.2126f * r + 0.7152f * g + 0.0722f * b);
+		}
+
+		initTexture(redChannel, texType, slot, GL_RED, pixelType, widthImg, heightImg);
+		delete[] redChannel;
+	} else {
+		initTexture(bytes, texType, slot, GL_RGBA, pixelType, widthImg, heightImg);
+	}
+
+}
+
+void Texture::initTexture(unsigned char* bytes, GLenum texType, GLuint slot, GLenum format, GLenum pixelType, int width, int height) {
 	// Generates an OpenGL texture object
 	glGenTextures(1, &ID);
 	// Assigns the texture to a Texture Unit
-	glActiveTexture(slot);
+	glActiveTexture(GL_TEXTURE0 + slot);
+	unit = slot;
 	glBindTexture(texType, ID);
 
 	// Configures the type of algorithm that is used to make the image smaller or bigger
@@ -27,15 +46,10 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	glTexParameteri(texType, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(texType, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	// Extra lines in case you choose to use GL_CLAMP_TO_BORDER
-	// float flatColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	// glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, flatColor);
-
 	// Assigns the image to the OpenGL Texture object
-	glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, format, pixelType, bytes);
+	glTexImage2D(texType, 0, format, width, height, 0, format, pixelType, bytes);
 	// Generates MipMaps
 	glGenerateMipmap(texType);
-
 	// Deletes the image data as it is already in the OpenGL Texture object
 	stbi_image_free(bytes);
 
@@ -55,6 +69,7 @@ void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
 
 void Texture::Bind()
 {
+	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(type, ID);
 }
 
