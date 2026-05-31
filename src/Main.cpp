@@ -110,13 +110,13 @@ int main()
 	std::cout << "opengl initialized" << std::endl;
 
 	Texture textures[]{
-		Texture("planks.png", "diffuse", 0, GL_UNSIGNED_BYTE, false),
-		Texture("planks.png", "specular", 1, GL_UNSIGNED_BYTE, true)
+		Texture("assets/planks.png", "diffuse", 0, GL_UNSIGNED_BYTE, false),
+		Texture("assets/planks.png", "specular", 1, GL_UNSIGNED_BYTE, true)
 	};
 	std::cout << "TEXTURES INITIALISED" << std::endl;
 
 	// Generates Shader object using shaders defualt.vert and default.frag
-	Shader shaderProgram("default.vert", "default.frag");
+	Shader shaderProgram("shader/default.vert", "shader/default.frag");
 	// Store mesh data in vectors for the mesh
 	std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
 	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
@@ -125,7 +125,7 @@ int main()
 	Mesh floor(verts, ind, tex);
 
 	// Shader for light cube
-	Shader lightShader("light.vert", "light.frag");
+	Shader lightShader("shader/light.vert", "shader/light.frag");
 	// Store mesh data in vectors for the mesh
 	std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
 	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));

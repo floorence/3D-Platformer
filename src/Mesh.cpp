@@ -6,20 +6,20 @@ Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::v
 	Mesh::indices = indices;
 	Mesh::textures = textures;
 
-	VAO.Bind();
+	vao.Bind();
 	// Generates Vertex Buffer Object and links it to vertices
-	VBO VBO(vertices);
+	VBO vbo(vertices);
 	// Generates Element Buffer Object and links it to indices
-	EBO EBO(indices);
+	EBO ebo(indices);
 	// Links VBO attributes such as coordinates and colors to VAO
-	VAO.LinkAttrib(VBO, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
-	VAO.LinkAttrib(VBO, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
-	VAO.LinkAttrib(VBO, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
-	VAO.LinkAttrib(VBO, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
+	vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
+	vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
+	vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
+	vao.LinkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
 	// Unbind all to prevent accidentally modifying them
-	VAO.Unbind();
-	VBO.Unbind();
-	EBO.Unbind();
+	vao.Unbind();
+	vbo.Unbind();
+	ebo.Unbind();
 }
 
 
@@ -27,7 +27,7 @@ void Mesh::Draw(Shader& shader, Camera& camera)
 {
 	// Bind shader to be able to access uniforms
 	shader.Activate();
-	VAO.Bind();
+	vao.Bind();
 
 	// Keep track of how many of each type of textures we have
 	unsigned int numDiffuse = 0;

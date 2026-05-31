@@ -1,4 +1,5 @@
 #include"Texture.h"
+#include <cmath>
 
 Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum pixelType, bool specular) {
 	// Assigns the type of the texture ot the texture object
