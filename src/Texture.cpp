@@ -41,7 +41,6 @@ Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum pix
 			initTexture(bytes, slot, GL_RGBA, pixelType, widthImg, heightImg);
 		}
 	}
-	std::cout << "initialized textures" << std::endl;
 	// Deletes the image data as it is already in the OpenGL Texture object
 	stbi_image_free(bytes);
 }
@@ -54,8 +53,6 @@ void Texture::initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLen
 	unit = slot;
 	glBindTexture(GL_TEXTURE_2D, ID);
 
-	std::cout << "1" << std::endl;
-
 	// Configures the type of algorithm that is used to make the image smaller or bigger
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -64,43 +61,33 @@ void Texture::initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLen
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
-	std::cout << "2" << std::endl;
-
 	// Assigns the image to the OpenGL Texture object
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, pixelType, bytes);
 	// Generates MipMaps
-	std::cout << "3" << std::endl;
-
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	std::cout << "4" << std::endl;
-	
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
-{
+void Texture::setTexUnit(Shader& shader, const char* uniform, GLuint unit) {
 	// Gets the location of the uniform
 	GLuint texUni = glGetUniformLocation(shader.ID, uniform);
 	// Shader needs to be activated before changing the value of a uniform
-	shader.Activate();
+	shader.activate();
 	// Sets the value of the uniform
 	glUniform1i(texUni, unit);
 }
 
-void Texture::Bind()
-{
+void Texture::bind() {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, ID);
 }
 
-void Texture::Unbind()
-{
+void Texture::unbind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::Delete()
-{
+void Texture::_delete() {
 	glDeleteTextures(1, &ID);
 }

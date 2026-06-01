@@ -1,28 +1,10 @@
-#include"shaderClass.h"
-
-// Reads a text file and outputs a string with everything in the text file
-std::string get_file_contents(const char* filename)
-{
-	std::ifstream in(filename, std::ios::binary);
-	if (in)
-	{
-		std::string contents;
-		in.seekg(0, std::ios::end);
-		contents.resize(in.tellg());
-		in.seekg(0, std::ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
-	}
-	throw(errno);
-}
+#include"Shader.h"
 
 // Constructor that build the Shader Program from 2 different shaders
-Shader::Shader(const char* vertexFile, const char* fragmentFile)
-{
+Shader::Shader(const char* vertexFile, const char* fragmentFile) {
 	// Read vertexFile and fragmentFile and store the strings
-	std::string vertexCode = get_file_contents(vertexFile);
-	std::string fragmentCode = get_file_contents(fragmentFile);
+	std::string vertexCode = getFileContents(vertexFile);
+	std::string fragmentCode = getFileContents(fragmentFile);
 
 	// Convert the shader source strings into character arrays
 	const char* vertexSource = vertexCode.c_str();
@@ -63,40 +45,48 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 }
 
 // Activates the Shader Program
-void Shader::Activate()
-{
+void Shader::activate() {
 	glUseProgram(ID);
 }
 
 // Deletes the Shader Program
-void Shader::Delete()
-{
+void Shader::_delete() {
 	glDeleteProgram(ID);
 }
 
 // Checks if the different Shaders have compiled properly
-void Shader::compileErrors(unsigned int shader, const char* type)
-{
+void Shader::compileErrors(unsigned int shader, const char* type) {
 	// Stores status of compilation
 	GLint hasCompiled;
 	// Character array to store error message in
 	char infoLog[1024];
-	if (type != "PROGRAM")
-	{
+	if (type != "PROGRAM") {
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
-		if (hasCompiled == GL_FALSE)
-		{
+		if (hasCompiled == GL_FALSE) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
 			std::cout << "SHADER_COMPILATION_ERROR for:" << type << "\n" << infoLog << std::endl;
 		}
-	}
-	else
-	{
+	} else {
 		glGetProgramiv(shader, GL_LINK_STATUS, &hasCompiled);
-		if (hasCompiled == GL_FALSE)
-		{
+		if (hasCompiled == GL_FALSE) {
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
 			std::cout << "SHADER_LINKING_ERROR for:" << type << "\n" << infoLog << std::endl;
 		}
 	}
+}
+
+// Reads a text file and outputs a string with everything in the text file
+std::string Shader::getFileContents(const char* filename) {
+	std::ifstream in(filename, std::ios::binary);
+	if (in) {
+		std::string contents;
+		in.seekg(0, std::ios::end);
+		contents.resize(in.tellg());
+		in.seekg(0, std::ios::beg);
+		in.read(&contents[0], contents.size());
+		in.close();
+		return(contents);
+	}
+	std::cout << "failed to read shader file: " << filename << std::endl;
+	throw(errno);
 }

@@ -1,40 +1,37 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures)
-{
+Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures) {
 	Mesh::vertices = vertices;
 	Mesh::indices = indices;
 	Mesh::textures = textures;
 
-	vao.Bind();
+	vao.bind();
 	// Generates Vertex Buffer Object and links it to vertices
 	VBO vbo(vertices);
 	// Generates Element Buffer Object and links it to indices
 	EBO ebo(indices);
 	// Links VBO attributes such as coordinates and colors to VAO
-	vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
-	vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
-	vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
-	vao.LinkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
+	vao.linkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
+	vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
+	vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
+	vao.linkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
 	// Unbind all to prevent accidentally modifying them
-	vao.Unbind();
-	vbo.Unbind();
-	ebo.Unbind();
+	vao.unbind();
+	vbo.unbind();
+	ebo.unbind();
 }
 
 
-void Mesh::Draw(Shader& shader, Camera& camera)
-{
+void Mesh::draw(Shader& shader, Camera& camera) {
 	// Bind shader to be able to access uniforms
-	shader.Activate();
-	vao.Bind();
+	shader.activate();
+	vao.bind();
 
 	// Keep track of how many of each type of textures we have
 	unsigned int numDiffuse = 0;
 	unsigned int numSpecular = 0;
 
-	for (unsigned int i = 0; i < textures.size(); i++)
-	{
+	for (unsigned int i = 0; i < textures.size(); i++) {
 		std::string num;
 		std::string type = textures[i].type;
 		if (type == "diffuse")
@@ -45,12 +42,12 @@ void Mesh::Draw(Shader& shader, Camera& camera)
 		{
 			num = std::to_string(numSpecular++);
 		}
-		textures[i].texUnit(shader, (type + num).c_str(), i);
-		textures[i].Bind();
+		textures[i].setTexUnit(shader, (type + num).c_str(), i);
+		textures[i].bind();
 	}
 	// Take care of the camera Matrix
-	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
-	camera.Matrix(shader, "camMatrix");
+	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
+	camera.exportMatrix(shader, "camMatrix");
 
 	// Draw the actual mesh
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

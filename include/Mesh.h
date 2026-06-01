@@ -8,19 +8,15 @@
 #include"Camera.h"
 #include"Texture.h"
 
-class Mesh
-{
+class Mesh {
 public:
+	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures);
+
+	void draw(Shader& shader, Camera& camera);
+private:
+	VAO vao;
 	std::vector <Vertex> vertices;
 	std::vector <GLuint> indices;
 	std::vector <Texture> textures;
-	// Store VAO in public so it can be used in the Draw function
-	VAO vao;
-
-	// Initializes the mesh
-	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures);
-
-	// Draws the mesh
-	void Draw(Shader& shader, Camera& camera);
 };
 #endif

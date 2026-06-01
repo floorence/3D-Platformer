@@ -5,6 +5,8 @@ project(Platformer)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 add_executable(Platformer
     src/Main.cpp
     src/Camera.cpp
@@ -13,7 +15,7 @@ add_executable(Platformer
     src/VAO.cpp
     src/VBO.cpp
     src/EBO.cpp
-    src/shaderClass.cpp
+    src/Shader.cpp
     src/stb.cpp
     src/glad.c
 )
