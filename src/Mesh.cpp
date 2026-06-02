@@ -33,16 +33,17 @@ void Mesh::draw(Shader& shader, Camera& camera) {
 
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		std::string num;
-		std::string type = textures[i].type;
-		if (type == "diffuse")
+		TextureType type = textures[i].type;
+		if (type == TextureType::Diffuse)
 		{
 			num = std::to_string(numDiffuse++);
 		}
-		else if (type == "specular")
+		else if (type == TextureType::Specular)
 		{
 			num = std::to_string(numSpecular++);
 		}
-		textures[i].setTexUnit(shader, (type + num).c_str(), i);
+		std::string typeString = textures[i].getTypeAsString();
+		textures[i].setTexUnit(shader, (typeString + num).c_str(), i);
 		textures[i].bind();
 	}
 	// Take care of the camera Matrix

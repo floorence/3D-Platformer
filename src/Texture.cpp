@@ -1,7 +1,7 @@
 #include"Texture.h"
 #include <cmath>
 
-Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum pixelType, bool specular) {
+Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType, bool specular) {
 	// Assigns the type of the texture ot the texture object
 	type = texType;
 
@@ -35,7 +35,7 @@ Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum pix
 		initTexture(redChannel, slot, GL_RED, pixelType, widthImg, heightImg);
 		delete[] redChannel;
 	} else {
-		if (type == "specular") {
+		if (type == TextureType::Specular) {
 			initTexture(bytes, slot, GL_RED, pixelType, widthImg, heightImg);
 		} else {
 			initTexture(bytes, slot, GL_RGBA, pixelType, widthImg, heightImg);
@@ -77,6 +77,14 @@ void Texture::setTexUnit(Shader& shader, const char* uniform, GLuint unit) {
 	shader.activate();
 	// Sets the value of the uniform
 	glUniform1i(texUni, unit);
+}
+
+std::string Texture::getTypeAsString() {
+	switch (type) {
+		case TextureType::Diffuse: return "diffuse";
+		case TextureType::Specular: return "specular";
+	}
+	return "";
 }
 
 void Texture::bind() {

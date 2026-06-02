@@ -8,6 +8,10 @@
 #include<iostream>
 #include<cerrno>
 
+enum class ShaderType {
+	Vertex, Fragment, Program
+};
+
 class Shader {
 public:
 	// Reference ID of the Shader Program
@@ -19,7 +23,8 @@ public:
 	void _delete();
 private:
 	// Checks if the different Shaders have compiled properly
-	void compileErrors(unsigned int shader, const char* type);
+	void compileErrors(unsigned int shader, ShaderType type);
+	std::string typeToString(ShaderType type);
 	// Reads a text file and outputs a string with everything in the text file
 	std::string getFileContents(const char* filename);
 };

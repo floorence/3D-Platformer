@@ -29,3 +29,26 @@ target_link_libraries(Platformer PRIVATE
     OpenGL::GL
     glfw
 )
+
+target_compile_options(Platformer PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+    -fsanitize=address
+    -fsanitize=undefined
+    -g
+
+)
+
+target_link_options(Platformer PRIVATE
+    -fsanitize=address
+    -fsanitize=undefined
+)
+
+set(PEDANTIC_EXCEPTIONS
+    src/glad.c
+)
+
+set_source_files_properties(${PEDANTIC_EXCEPTIONS} 
+    PROPERTIES COMPILE_OPTIONS "-Wno-pedantic"
+)

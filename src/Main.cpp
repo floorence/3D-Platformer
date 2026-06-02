@@ -48,15 +48,15 @@ GLuint indices[] =
 };
 
 Vertex lightVertices[] =
-{ //               COORDINATES                //
-	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f)},
-	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f)},
-	Vertex{glm::vec3( 0.1f, -0.1f, -0.1f)},
-	Vertex{glm::vec3( 0.1f, -0.1f,  0.1f)},
-	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f)},
-	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f)},
-	Vertex{glm::vec3( 0.1f,  0.1f, -0.1f)},
-	Vertex{glm::vec3( 0.1f,  0.1f,  0.1f)}
+{ //               COORDINATES            // normal        // color        // texture       //
+	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)}
 };
 
 GLuint lightIndices[] =
@@ -110,8 +110,8 @@ int main() {
 	std::cout << "opengl initialized" << std::endl;
 
 	Texture textures[] {
-		Texture("assets/planks.png", "diffuse", 0, GL_UNSIGNED_BYTE, false),
-		Texture("assets/planks.png", "specular", 1, GL_UNSIGNED_BYTE, true)
+		Texture("assets/planks.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false),
+		Texture("assets/planks.png", TextureType::Specular, 1, GL_UNSIGNED_BYTE, true)
 	};
 	std::cout << "TEXTURES INITIALISED" << std::endl;
 

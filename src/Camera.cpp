@@ -3,7 +3,7 @@
 Camera::Camera(int width, int height, glm::vec3 position) {
 	Camera::width = width;
 	Camera::height = height;
-	position = position;
+	Camera::position = position;
 }
 
 void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
