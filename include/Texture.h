@@ -16,6 +16,7 @@ public:
 	TextureType type;
 
 	Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType, bool specular);
+	~Texture();
 
 	void initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLenum pixelType, int width, int height);
 	void setTexUnit(Shader& shader, const char* uniform, GLuint unit);

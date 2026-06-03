@@ -15,6 +15,8 @@ public:
 	void draw(Shader& shader, Camera& camera);
 private:
 	VAO vao;
+	VBO vbo;
+	EBO ebo;
 	std::vector <Vertex> vertices;
 	std::vector <GLuint> indices;
 	std::vector <Texture> textures;

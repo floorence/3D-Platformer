@@ -1,15 +1,17 @@
 #include "Mesh.h"
 
-Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures) {
-	Mesh::vertices = vertices;
-	Mesh::indices = indices;
-	Mesh::textures = textures;
-
+Mesh::Mesh(
+	std::vector <Vertex>& vertices, 
+	std::vector <GLuint>& indices, 
+	std::vector <Texture>& textures
+)
+	: vbo(vertices),
+	  ebo(indices),
+	  vertices(vertices),
+	  indices(indices),
+	  textures(textures)
+{
 	vao.bind();
-	// Generates Vertex Buffer Object and links it to vertices
-	VBO vbo(vertices);
-	// Generates Element Buffer Object and links it to indices
-	EBO ebo(indices);
 	// Links VBO attributes such as coordinates and colors to VAO
 	vao.linkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
 	vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
@@ -19,10 +21,15 @@ Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::v
 	vao.unbind();
 	vbo.unbind();
 	ebo.unbind();
+
+	std::cout << "Mesh VBO = " << vbo.ID << std::endl;
+	std::cout << "Mesh EBO = " << ebo.ID << std::endl;
 }
 
 
 void Mesh::draw(Shader& shader, Camera& camera) {
+	//std::cout << "Drawing with VBO = " << vbo.ID << std::endl;
+	//std::cout << "Drawing with EBO = " << ebo.ID << std::endl;
 	// Bind shader to be able to access uniforms
 	shader.activate();
 	vao.bind();
@@ -50,6 +57,7 @@ void Mesh::draw(Shader& shader, Camera& camera) {
 	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
 	camera.exportMatrix(shader, "camMatrix");
 
+	ebo.bind();
 	// Draw the actual mesh
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }

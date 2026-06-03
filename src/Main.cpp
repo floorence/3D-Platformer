@@ -113,7 +113,7 @@ int main() {
 		Texture("assets/planks.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false),
 		Texture("assets/planks.png", TextureType::Specular, 1, GL_UNSIGNED_BYTE, true)
 	};
-	std::cout << "TEXTURES INITIALISED" << std::endl;
+	std::cout << "textures initialized" << std::endl;
 
 	// Generates Shader object using shaders defualt.vert and default.frag
 	Shader shader("shader/default.vert", "shader/default.frag");
@@ -149,7 +149,8 @@ int main() {
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
 	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	
+
+	std::cout << "shaders initialized" << std::endl;
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
@@ -183,8 +184,8 @@ int main() {
 	}
 
 	// Delete all the objects we've created
-	shader._delete();
-	lightShader._delete();
+	//shader._delete();
+	//lightShader._delete();
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
