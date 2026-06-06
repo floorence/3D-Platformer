@@ -1,3 +1,4 @@
+#include <cmath>
 #include<iostream>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
@@ -7,9 +8,11 @@
 #include<glm/gtc/type_ptr.hpp>
 
 #include"Mesh.h"
+#include"Log.h"
 
 const unsigned int width = 800;
 const unsigned int height = 800;
+const std::string TAG = "Main";
 
 // Vertices coordinates
 Vertex vertices[] =
@@ -88,7 +91,7 @@ int main() {
 	GLFWwindow* window = glfwCreateWindow(width, height, "window", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL) {
-		std::cout << "Failed to create GLFW window" << std::endl;
+		Log::log(TAG, "Failed to create GLFW window");
 		glfwTerminate();
 		return -1;
 	}
@@ -103,17 +106,17 @@ int main() {
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
-	std::cout << "configuring viewport: 0, 0, " << fbWidth << ", " << fbHeight << std::endl;
+	Log::log(TAG, Log::oss("configuring viewport: 0, 0, ", fbWidth, ", ", fbHeight));
 
 	glViewport(0, 0, fbWidth, fbHeight);
 
-	std::cout << "opengl initialized" << std::endl;
+	Log::log(TAG, "opengl initialized");
 
 	Texture planksDiffuse = Texture("assets/planks.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false);
 	Texture planksSpecular = Texture("assets/planks.png", TextureType::Specular, 1, GL_UNSIGNED_BYTE, true);
 
 	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
-	std::cout << "textures initialized" << std::endl;
+	Log::log(TAG, "textures initialized");
 
 	// Generates Shader object using shaders defualt.vert and default.frag
 	Shader shader("shader/default.vert", "shader/default.frag");
@@ -150,7 +153,7 @@ int main() {
 	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
-	std::cout << "shaders initialized" << std::endl;
+	Log::log(TAG, "shaders initialized");
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);

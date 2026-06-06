@@ -21,15 +21,10 @@ Mesh::Mesh(
 	vao.unbind();
 	vbo.unbind();
 	ebo.unbind();
-
-	std::cout << "Mesh VBO = " << vbo.ID << std::endl;
-	std::cout << "Mesh EBO = " << ebo.ID << std::endl;
 }
 
 
 void Mesh::draw(Shader& shader, Camera& camera) {
-	//std::cout << "Drawing with VBO = " << vbo.ID << std::endl;
-	//std::cout << "Drawing with EBO = " << ebo.ID << std::endl;
 	// Bind shader to be able to access uniforms
 	shader.activate();
 	vao.bind();

@@ -17,6 +17,7 @@ add_executable(Platformer
     src/VBO.cpp
     src/EBO.cpp
     src/Shader.cpp
+    src/util/Log.cpp
     src/stb.cpp
     src/glad.c
 )

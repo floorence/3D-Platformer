@@ -4,6 +4,7 @@ refactor and clean up
     - honestly this one might be fine since it's dynamically sized... and using vector would be annoying
 
 feature
+- different log levels, add nanoseconds
 - debug text and gui engine
 
 fix

@@ -11,8 +11,8 @@ Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pix
 	stbi_set_flip_vertically_on_load(true);
 	// Reads the image from a file and stores it in bytes
 	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
-	std::cout << "loaded image" << std::endl;
-	std::cout << "colour channels: " << numColCh << std::endl;
+	Log::log(TAG, "loaded image");
+	Log::log(TAG, Log::oss("colour channels: ", numColCh));
 	if (specular && numColCh >= 3) {
 		// Create 1-channel red-only array
 		unsigned char* redChannel = new unsigned char[widthImg * heightImg];

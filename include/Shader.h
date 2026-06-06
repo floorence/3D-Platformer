@@ -7,6 +7,7 @@
 #include<sstream>
 #include<iostream>
 #include<cerrno>
+#include"Log.h"
 
 enum class ShaderType {
 	Vertex, Fragment, Program
@@ -28,6 +29,7 @@ public:
 
 	void activate();
 private:
+	const std::string TAG = "Shader";
 	// Checks if the different Shaders have compiled properly
 	void compileErrors(unsigned int shader, ShaderType type);
 	std::string typeToString(ShaderType type);

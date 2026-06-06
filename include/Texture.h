@@ -6,6 +6,7 @@
 #include<stb/stb_image.h>
 #include<string>
 #include"Shader.h"
+#include"Log.h"
 
 enum class TextureType {
 	Diffuse, Specular
@@ -33,5 +34,7 @@ public:
 private:
 	GLuint ID;
 	GLuint unit;
+	const std::string TAG = "Texture";
 };
+
 #endif

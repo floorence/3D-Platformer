@@ -21,4 +21,5 @@ private:
 	std::vector <GLuint> indices;
 	std::vector <Texture*> textures;
 };
+
 #endif
