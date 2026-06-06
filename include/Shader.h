@@ -31,7 +31,7 @@ public:
 private:
 	const std::string TAG = "Shader";
 	// Checks if the different Shaders have compiled properly
-	void compileErrors(unsigned int shader, ShaderType type);
+	void logCompileErrors(unsigned int shader, ShaderType type);
 	std::string typeToString(ShaderType type);
 	// Reads a text file and outputs a string with everything in the text file
 	std::string getFileContents(const char* filename);

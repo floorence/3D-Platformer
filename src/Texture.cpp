@@ -79,7 +79,7 @@ void Texture::setTexUnit(Shader& shader, const char* uniform, GLuint unit) {
 	glUniform1i(texUni, unit);
 }
 
-std::string Texture::getTypeAsString() {
+std::string Texture::typeToString(TextureType type) {
 	switch (type) {
 		case TextureType::Diffuse: return "diffuse";
 		case TextureType::Specular: return "specular";

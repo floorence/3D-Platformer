@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <sstream>
+#include <ctime>
+#include <iomanip>
 #include <chrono>
 
 namespace Log {

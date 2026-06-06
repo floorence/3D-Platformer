@@ -1,10 +1,9 @@
 refactor and clean up
-- clean up typeToString/getTypeAsString discrepancy
 - don't use heap array in texture constructor
     - honestly this one might be fine since it's dynamically sized... and using vector would be annoying
 
 feature
-- different log levels, add nanoseconds
+- different log levels, migrate to spd log??
 - debug text and gui engine
 
 fix

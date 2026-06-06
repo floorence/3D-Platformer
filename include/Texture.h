@@ -27,7 +27,7 @@ public:
 
 	void initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLenum pixelType, int width, int height);
 	void setTexUnit(Shader& shader, const char* uniform, GLuint unit);
-	std::string getTypeAsString();
+	std::string typeToString(TextureType type);
 	void bind();
 	void unbind();
 	void _delete();

@@ -44,7 +44,7 @@ void Mesh::draw(Shader& shader, Camera& camera) {
 		{
 			num = std::to_string(numSpecular++);
 		}
-		std::string typeString = textures[i]->getTypeAsString();
+		std::string typeString = textures[i]->typeToString(textures[i]->type);
 		textures[i]->setTexUnit(shader, (typeString + num).c_str(), i);
 		textures[i]->bind();
 	}
