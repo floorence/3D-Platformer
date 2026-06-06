@@ -3,7 +3,7 @@
 Mesh::Mesh(
 	std::vector <Vertex>& vertices, 
 	std::vector <GLuint>& indices, 
-	std::vector <Texture>& textures
+	std::vector <Texture*>& textures
 )
 	: vbo(vertices),
 	  ebo(indices),
@@ -40,7 +40,7 @@ void Mesh::draw(Shader& shader, Camera& camera) {
 
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		std::string num;
-		TextureType type = textures[i].type;
+		TextureType type = textures[i]->type;
 		if (type == TextureType::Diffuse)
 		{
 			num = std::to_string(numDiffuse++);
@@ -49,9 +49,9 @@ void Mesh::draw(Shader& shader, Camera& camera) {
 		{
 			num = std::to_string(numSpecular++);
 		}
-		std::string typeString = textures[i].getTypeAsString();
-		textures[i].setTexUnit(shader, (typeString + num).c_str(), i);
-		textures[i].bind();
+		std::string typeString = textures[i]->getTypeAsString();
+		textures[i]->setTexUnit(shader, (typeString + num).c_str(), i);
+		textures[i]->bind();
 	}
 	// Take care of the camera Matrix
 	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);

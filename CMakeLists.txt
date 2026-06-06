@@ -38,7 +38,6 @@ target_compile_options(Platformer PRIVATE
     -fsanitize=address
     -fsanitize=undefined
     -g
-
 )
 
 target_link_options(Platformer PRIVATE

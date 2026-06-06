@@ -12,6 +12,12 @@ public:
 	EBO(std::vector<GLuint>& indices);
 	~EBO();
 
+	EBO(const EBO&) = delete;
+    EBO& operator=(const EBO&) = delete;
+
+    EBO(EBO&& other) noexcept;
+    EBO& operator=(EBO&& other) noexcept;
+
 	void bind();
 	void unbind();
 };

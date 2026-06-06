@@ -24,3 +24,14 @@ void VAO::unbind() {
 VAO::~VAO() {
 	glDeleteVertexArrays(1, &ID);
 }
+
+VAO::VAO(VAO&& other) noexcept {
+	ID = other.ID;
+}
+
+VAO& VAO::operator=(VAO&& other) noexcept {
+	if (this != &other) {
+		ID = other.ID;
+	}
+	return *this;
+}

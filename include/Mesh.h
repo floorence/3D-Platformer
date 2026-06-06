@@ -10,7 +10,7 @@
 
 class Mesh {
 public:
-	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures);
+	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture*>& textures);
 
 	void draw(Shader& shader, Camera& camera);
 private:
@@ -19,6 +19,6 @@ private:
 	EBO ebo;
 	std::vector <Vertex> vertices;
 	std::vector <GLuint> indices;
-	std::vector <Texture> textures;
+	std::vector <Texture*> textures;
 };
 #endif

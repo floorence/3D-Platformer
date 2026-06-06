@@ -18,6 +18,12 @@ public:
 	Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType, bool specular);
 	~Texture();
 
+	Texture(const Texture&) = delete;
+    Texture& operator=(const Texture&) = delete;
+
+    Texture(Texture&& other) noexcept;
+    Texture& operator=(Texture&& other) noexcept;
+
 	void initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLenum pixelType, int width, int height);
 	void setTexUnit(Shader& shader, const char* uniform, GLuint unit);
 	std::string getTypeAsString();

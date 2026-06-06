@@ -20,6 +20,12 @@ public:
 	VBO(std::vector<Vertex>& vertices);
 	~VBO();
 
+	VBO(const VBO&) = delete;
+    VBO& operator=(const VBO&) = delete;
+
+    VBO(VBO&& other) noexcept;
+    VBO& operator=(VBO&& other) noexcept;
+
 	void bind();
 	void unbind();
 };

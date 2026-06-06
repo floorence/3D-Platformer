@@ -20,6 +20,12 @@ public:
 	Shader(const char* vertexFile, const char* fragmentFile);
 	~Shader();
 
+	Shader(const Shader&) = delete;
+    Shader& operator=(const Shader&) = delete;
+
+    Shader(Shader&& other) noexcept;
+    Shader& operator=(Shader&& other) noexcept;
+
 	void activate();
 private:
 	// Checks if the different Shaders have compiled properly

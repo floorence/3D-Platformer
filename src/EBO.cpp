@@ -19,3 +19,14 @@ EBO::~EBO() {
 	std::cout << "Deleting EBO " << ID << std::endl;
 	glDeleteBuffers(1, &ID);
 }
+
+EBO::EBO(EBO&& other) noexcept {
+	ID = other.ID;
+}
+
+EBO& EBO::operator=(EBO&& other) noexcept {
+	if (this != &other) {
+		ID = other.ID;
+	}
+	return *this;
+}

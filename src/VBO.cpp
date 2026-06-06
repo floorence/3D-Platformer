@@ -19,3 +19,14 @@ VBO::~VBO() {
 	std::cout << "Deleting VBO " << ID << std::endl;
     glDeleteBuffers(1, &ID);
 }
+
+VBO::VBO(VBO&& other) noexcept {
+	ID = other.ID;
+}
+
+VBO& VBO::operator=(VBO&& other) noexcept {
+	if (this != &other) {
+		ID = other.ID;
+	}
+	return *this;
+}

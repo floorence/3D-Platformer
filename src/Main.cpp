@@ -109,10 +109,10 @@ int main() {
 
 	std::cout << "opengl initialized" << std::endl;
 
-	Texture textures[] {
-		Texture("assets/planks.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false),
-		Texture("assets/planks.png", TextureType::Specular, 1, GL_UNSIGNED_BYTE, true)
-	};
+	Texture planksDiffuse = Texture("assets/planks.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false);
+	Texture planksSpecular = Texture("assets/planks.png", TextureType::Specular, 1, GL_UNSIGNED_BYTE, true);
+
+	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
 	std::cout << "textures initialized" << std::endl;
 
 	// Generates Shader object using shaders defualt.vert and default.frag
@@ -120,7 +120,7 @@ int main() {
 	// Store mesh data in vectors for the mesh
 	std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
 	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
-	std::vector <Texture> tex(textures, textures + sizeof(textures) / sizeof(Texture));
+	std::vector <Texture*> tex(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
 	// Create floor mesh
 	Mesh floor(verts, ind, tex);
 

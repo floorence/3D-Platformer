@@ -1,0 +1,10 @@
+refactor and clean up
+- clean up typeToString/getTypeAsString discrepancy
+- don't use heap array in texture constructor
+    - honestly this one might be fine since it's dynamically sized... and using vector would be annoying
+
+feature
+- debug text and gui engine
+
+fix
+- camera weirdness

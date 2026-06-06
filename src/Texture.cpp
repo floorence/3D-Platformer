@@ -99,3 +99,18 @@ void Texture::unbind() {
 Texture::~Texture() {
 	glDeleteTextures(1, &ID);
 }
+
+Texture::Texture(Texture&& other) noexcept {
+	type = other.type;
+	ID = other.ID;
+	unit = other.unit;
+}
+
+Texture& Texture::operator=(Texture&& other) noexcept {
+	if (this != &other) {
+		type = other.type;
+		ID = other.ID;
+		unit = other.unit;
+	}
+	return *this;
+}
