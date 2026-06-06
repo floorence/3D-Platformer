@@ -80,8 +80,12 @@ GLuint lightIndices[] =
 
 Camera* camera_ptr;
 
-void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
-	camera_ptr->handleMousePos(window, xpos, ypos);
+void mouseCallback(GLFWwindow*, double xpos, double ypos) {
+	camera_ptr->handleMousePos(xpos, ypos);
+}
+
+void keyCallback(GLFWwindow* window, int key, int, int action, int) {
+	camera_ptr->handleKeyInputs(window, key, action);
 }
 
 int main() {
@@ -173,6 +177,7 @@ int main() {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetKeyCallback(window, keyCallback);
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {

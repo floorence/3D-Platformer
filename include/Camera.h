@@ -24,13 +24,14 @@ public:
 	void exportMatrix(Shader& shader, const char* uniform);
 	// Handles camera inputs
 	void handleKeyInputs(GLFWwindow* window, float deltaTime);
-	void handleMousePos(GLFWwindow* window, double xpos, double ypos);
+	void handleKeyInputs(GLFWwindow* window, int key, int action);
+	void handleMousePos(double xpos, double ypos);
 private:
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::mat4 cameraMatrix = glm::mat4(1.0f);
 
-	// Prevents the camera from jumping around when first clicking left click
 	bool firstClick = true;
+	bool focused = true;
 
 	// Stores the width and height of the window
 	int width;
@@ -46,6 +47,9 @@ private:
 	// constants
 	const glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
 	const std::string TAG = "Camera";
+
+	// functions
+	void handleFocusChange(GLFWwindow* window);
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include"Camera.h"
+#include "GLFW/glfw3.h"
 
 Camera::Camera(int width, int height, glm::vec3 position) {
 	Camera::width = width;
@@ -47,19 +48,38 @@ void Camera::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
 		movement += -UP;
 	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-		speed = 1.5f;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE) {
-		speed = 1.5f;
-	}
 
 	if (movement != glm::vec3(0.0, 0.0, 0.0)) 
 		position += speed * deltaTime * glm::normalize(movement);
 }
 
-void Camera::handleMousePos(GLFWwindow*, double xpos, double ypos) {
-	Log::log(TAG, Log::oss("handleMousePos: ", xpos, ", ", ypos));
+void Camera::handleKeyInputs(GLFWwindow* window, int key, int action) {
+	if (key == GLFW_KEY_LEFT_CONTROL) {
+		if (action == GLFW_PRESS) {
+			speed = 1.5f;
+		} else if (action == GLFW_RELEASE) {
+			speed = 1.0f;
+		}
+	}
+	if (key == GLFW_KEY_E) {
+		if (action == GLFW_PRESS) handleFocusChange(window);
+	}
+}
+
+void Camera::handleFocusChange(GLFWwindow* window) {
+	if (focused) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		focused = false;
+	} else {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		firstClick = true;
+		focused = true;
+	}
+}
+
+void Camera::handleMousePos(double xpos, double ypos) {
+//	Log::log(TAG, Log::oss("handleMousePos: ", xpos, ", ", ypos));
+	if (!focused) return;
 
 	if (firstClick) {
 		lastX = xpos;
@@ -78,11 +98,11 @@ void Camera::handleMousePos(GLFWwindow*, double xpos, double ypos) {
 	float rotY = sensitivity * (float)(yOffset) / height;
 
 	// Calculates upcoming vertical change in the orientation
-	glm::vec3 newOrientation = glm::rotate(orientation, glm::radians(-rotY), glm::normalize(glm::cross(orientation, UP)));
+	glm::vec3 verticalOrientation = glm::rotate(orientation, glm::radians(-rotY), glm::normalize(glm::cross(orientation, UP)));
 
 	// Decides whether or not the next vertical orientation is legal or not
-	if (abs(glm::angle(newOrientation, UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
-		orientation = newOrientation;
+	if (std::abs(glm::angle(verticalOrientation, UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
+		orientation = verticalOrientation;
 	}
 
 	// Rotates the orientation left and right
