@@ -78,6 +78,12 @@ GLuint lightIndices[] =
 	4, 6, 7
 };
 
+Camera* camera_ptr;
+
+void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
+	camera_ptr->handleMousePos(window, xpos, ypos);
+}
+
 int main() {
 	glfwInit();
 
@@ -160,9 +166,13 @@ int main() {
 
 	// Creates camera object
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+	camera_ptr = &camera;
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouseCallback);
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
@@ -175,7 +185,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		camera.handleInputs(window, deltaTime);
+		camera.handleKeyInputs(window, deltaTime);
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
 
 		floor.draw(shader, camera);
@@ -186,12 +196,7 @@ int main() {
 		glfwPollEvents();
 	}
 
-	// Delete all the objects we've created
-	//shader._delete();
-	//lightShader._delete();
-	// Delete window before ending the program
 	glfwDestroyWindow(window);
-	// Terminate GLFW before ending the program
 	glfwTerminate();
 	return 0;
 }

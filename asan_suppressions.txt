@@ -1,3 +1,4 @@
 leak:libfontconfig.so
 leak:libpangocairo-1.0.so
 leak:libwayland-client.so
+leak:libglib-2.0.so

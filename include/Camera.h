@@ -10,6 +10,7 @@
 #include<glm/gtx/vector_angle.hpp>
 
 #include"Shader.h"
+#include"Log.h"
 
 class Camera {
 public:
@@ -22,7 +23,8 @@ public:
 	void updateMatrix(float FOVdeg, float nearPlane, float farPlane);
 	void exportMatrix(Shader& shader, const char* uniform);
 	// Handles camera inputs
-	void handleInputs(GLFWwindow* window, float deltaTime);
+	void handleKeyInputs(GLFWwindow* window, float deltaTime);
+	void handleMousePos(GLFWwindow* window, double xpos, double ypos);
 private:
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::mat4 cameraMatrix = glm::mat4(1.0f);
@@ -34,12 +36,16 @@ private:
 	int width;
 	int height;
 
+	double lastX;
+	double lastY;
+
 	// Adjust the speed of the camera and it's sensitivity when looking around
 	float speed = 1.0f;
-	float sensitivity = 1.0f;
+	float sensitivity = 100.0f;
 
 	// constants
 	const glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
+	const std::string TAG = "Camera";
 };
 
 #endif
