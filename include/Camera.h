@@ -28,7 +28,14 @@ public:
 	void handleMousePos(double xpos, double ypos);
 private:
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);	// units per second
 	glm::mat4 cameraMatrix = glm::mat4(1.0f);
+
+	const float MAX_SPEED_DEFAULT = 1.0f;
+	const float MAX_SPEED_SPRINTING = 2.0f;
+	const float ACCELERATION_MULTIPLIER = 1.0f;
+	const float AIR_RESISTANCE_MULTIPLIER = 2.0f;
+	const float STOPPING_SPEED = 0.0005f;
 
 	bool firstClick = true;
 	bool focused = true;
@@ -40,9 +47,8 @@ private:
 	double lastX;
 	double lastY;
 
-	// Adjust the speed of the camera and it's sensitivity when looking around
-	float speed = 1.0f;
-	float sensitivity = 100.0f;
+	float maxSpeed = MAX_SPEED_DEFAULT; // units per second
+	float sensitivity = 100.0f; 
 
 	// constants
 	const glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -50,6 +56,9 @@ private:
 
 	// functions
 	void handleFocusChange(GLFWwindow* window);
+	void applyAcceleration(glm::vec3 a, float dt);
+	glm::vec3 getAirResistance(); // return acceleration from air resistance
+	void processVelocity();
 };
 
 #endif

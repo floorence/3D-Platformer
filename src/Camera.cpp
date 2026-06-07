@@ -28,37 +28,45 @@ void Camera::exportMatrix(Shader& shader, const char* uniform) {
 }
 
 void Camera::handleKeyInputs(GLFWwindow* window, float deltaTime) {
-	glm::vec3 movement = glm::vec3(0.0, 0.0, 0.0);
+	glm::vec3 acceleration = glm::vec3(0.0, 0.0, 0.0); // units per second per second
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		movement += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
+		acceleration += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		movement += -glm::normalize(glm::cross(orientation, UP));
+		acceleration += -glm::normalize(glm::cross(orientation, UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		movement += -glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
+		acceleration += -glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		movement += glm::normalize(glm::cross(orientation, UP));
+		acceleration += glm::normalize(glm::cross(orientation, UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		movement += UP;
+		acceleration += UP;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		movement += -UP;
+		acceleration += -UP;
 	}
 
-	if (movement != glm::vec3(0.0, 0.0, 0.0)) 
-		position += speed * deltaTime * glm::normalize(movement);
+	applyAcceleration(getAirResistance(), deltaTime);
+
+	if (acceleration != glm::vec3(0.0, 0.0, 0.0)) {
+		acceleration = ACCELERATION_MULTIPLIER * glm::normalize(acceleration);
+		applyAcceleration(acceleration, deltaTime);
+		Log::log(TAG, Log::oss("new velocity: ", velocity.x, ", ", velocity.y, ", ", velocity.z, ", speed: ", glm::length(velocity)));
+	} else {
+		processVelocity();
+	}
+	position += velocity * deltaTime;
 }
 
 void Camera::handleKeyInputs(GLFWwindow* window, int key, int action) {
 	if (key == GLFW_KEY_LEFT_CONTROL) {
 		if (action == GLFW_PRESS) {
-			speed = 1.5f;
+			maxSpeed = MAX_SPEED_SPRINTING;
 		} else if (action == GLFW_RELEASE) {
-			speed = 1.0f;
+			maxSpeed = MAX_SPEED_DEFAULT;
 		}
 	}
 	if (key == GLFW_KEY_E) {
@@ -107,4 +115,25 @@ void Camera::handleMousePos(double xpos, double ypos) {
 
 	// Rotates the orientation left and right
 	orientation = glm::rotate(orientation, glm::radians(-rotX), UP);
+}
+
+void Camera::applyAcceleration(glm::vec3 a, float dt) {
+	velocity.x += a.x * dt;
+	velocity.y += a.y * dt;
+	velocity.z += a.z * dt;
+	float len2 = glm::length2(velocity);
+	if (len2 > maxSpeed * maxSpeed) {
+		Log::log(TAG, "reached max speed!");
+		velocity * (maxSpeed / std::sqrt(len2));
+	}
+}
+
+glm::vec3 Camera::getAirResistance() {
+	return -velocity * AIR_RESISTANCE_MULTIPLIER;
+}
+
+void Camera::processVelocity() {
+	if (glm::length(velocity) < STOPPING_SPEED) {
+		velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	}
 }
