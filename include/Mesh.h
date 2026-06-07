@@ -8,18 +8,22 @@
 #include"Camera.h"
 #include"Texture.h"
 
+struct Material {
+	Shader* shader;
+	std::vector <Texture*> textures;
+};
+
 class Mesh {
 public:
-	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture*>& textures);
+	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, Material& material);
 
-	void draw(Shader& shader, Camera& camera);
+	void draw(Camera& camera);
 private:
 	VAO vao;
 	VBO vbo;
 	EBO ebo;
-	std::vector <Vertex> vertices;
-	std::vector <GLuint> indices;
-	std::vector <Texture*> textures;
+	int drawCount;
+	Material material;
 };
 
 #endif

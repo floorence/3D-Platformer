@@ -16,7 +16,8 @@ struct Vertex {
 class VBO {
 public:
 	GLuint ID;
-	// Constructor that generates a Vertex Buffer Object and links it to vertices
+
+	VBO();
 	VBO(std::vector<Vertex>& vertices);
 	~VBO();
 
@@ -26,6 +27,7 @@ public:
     VBO(VBO&& other) noexcept;
     VBO& operator=(VBO&& other) noexcept;
 
+	void linkVertices(std::vector<Vertex>& vertices);
 	void bind();
 	void unbind();
 };

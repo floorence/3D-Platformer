@@ -1,5 +1,4 @@
 #include"Camera.h"
-#include "GLFW/glfw3.h"
 
 Camera::Camera(int width, int height, glm::vec3 position) {
 	Camera::width = width;
@@ -54,7 +53,7 @@ void Camera::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (acceleration != glm::vec3(0.0, 0.0, 0.0)) {
 		acceleration = ACCELERATION_MULTIPLIER * glm::normalize(acceleration);
 		applyAcceleration(acceleration, deltaTime);
-		Log::log(TAG, Log::oss("new velocity: ", velocity.x, ", ", velocity.y, ", ", velocity.z, ", speed: ", glm::length(velocity)));
+		//Log::log(TAG, Log::oss("new velocity: ", velocity.x, ", ", velocity.y, ", ", velocity.z, ", speed: ", glm::length(velocity)));
 	} else {
 		processVelocity();
 	}

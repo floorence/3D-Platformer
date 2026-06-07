@@ -126,22 +126,22 @@ int main() {
 	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
 	Log::log(TAG, "textures initialized");
 
-	// Generates Shader object using shaders defualt.vert and default.frag
 	Shader shader("shader/default.vert", "shader/default.frag");
 	// Store mesh data in vectors for the mesh
 	std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
 	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
 	std::vector <Texture*> tex(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
-	// Create floor mesh
-	Mesh floor(verts, ind, tex);
 
-	// Shader for light cube
+	Material pyramidMaterial { &shader, tex };
+	Mesh pyramid(verts, ind, pyramidMaterial);
+
 	Shader lightShader("shader/light.vert", "shader/light.frag");
 	// Store mesh data in vectors for the mesh
 	std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
 	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
-	// Create light mesh
-	Mesh light(lightVerts, lightInd, tex);
+
+	Material lightMaterial { &lightShader, {} };
+	Mesh light(lightVerts, lightInd, lightMaterial);
 
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -191,8 +191,8 @@ int main() {
 		camera.handleKeyInputs(window, deltaTime);
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
 
-		floor.draw(shader, camera);
-		light.draw(lightShader, camera);
+		pyramid.draw(camera);
+		light.draw(camera);
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events

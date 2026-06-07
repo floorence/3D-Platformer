@@ -3,15 +3,15 @@
 Mesh::Mesh(
 	std::vector <Vertex>& vertices, 
 	std::vector <GLuint>& indices, 
-	std::vector <Texture*>& textures
+	Material& material
 )
-	: vbo(vertices),
-	  ebo(indices),
-	  vertices(vertices),
-	  indices(indices),
-	  textures(textures)
+	: material(material)
 {
+	drawCount = indices.size();
+
 	vao.bind();
+	vbo.linkVertices(vertices);
+	ebo.linkIndices(indices);
 	// Links VBO attributes such as coordinates and colors to VAO
 	vao.linkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
 	vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
@@ -24,35 +24,32 @@ Mesh::Mesh(
 }
 
 
-void Mesh::draw(Shader& shader, Camera& camera) {
+void Mesh::draw(Camera& camera) {
 	// Bind shader to be able to access uniforms
-	shader.activate();
+	material.shader->activate();
 	vao.bind();
 
 	// Keep track of how many of each type of textures we have
 	unsigned int numDiffuse = 0;
 	unsigned int numSpecular = 0;
 
-	for (unsigned int i = 0; i < textures.size(); i++) {
+	for (unsigned int i = 0; i < material.textures.size(); i++) {
 		std::string num;
-		TextureType type = textures[i]->type;
-		if (type == TextureType::Diffuse)
-		{
+		TextureType type = material.textures[i]->type;
+		if (type == TextureType::Diffuse) {
 			num = std::to_string(numDiffuse++);
 		}
-		else if (type == TextureType::Specular)
-		{
+		else if (type == TextureType::Specular) {
 			num = std::to_string(numSpecular++);
 		}
-		std::string typeString = textures[i]->typeToString(textures[i]->type);
-		textures[i]->setTexUnit(shader, (typeString + num).c_str(), i);
-		textures[i]->bind();
+		std::string typeString = material.textures[i]->typeToString(material.textures[i]->type);
+		material.textures[i]->setTexUnit(*material.shader, (typeString + num).c_str(), i);
+		material.textures[i]->bind();
 	}
 	// Take care of the camera Matrix
-	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
-	camera.exportMatrix(shader, "camMatrix");
+	glUniform3f(glGetUniformLocation(material.shader->ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
+	camera.exportMatrix(*material.shader, "camMatrix");
 
-	ebo.bind();
 	// Draw the actual mesh
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }

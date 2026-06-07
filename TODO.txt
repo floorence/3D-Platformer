@@ -1,7 +1,7 @@
 refactor and clean up
 - don't use heap array in texture constructor
     - honestly this one might be fine since it's dynamically sized... and using vector would be annoying
-- refactor vbo and ebo to separate initialization and actual data creation
+- optimize getting length of vectors
 
 feature
 - different log levels, migrate to spd log??
