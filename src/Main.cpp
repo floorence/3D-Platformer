@@ -76,6 +76,22 @@ GLuint lightIndices[] =
 	4, 6, 7
 };
 
+// square
+Vertex guiVertices[] =
+{
+	Vertex{glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f)},
+	Vertex{glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f)},
+	Vertex{glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f)},
+	Vertex{glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f)}
+};
+
+// square
+GLuint guiIndices[] =
+{
+	0, 2, 1,
+	0, 3, 2
+};
+
 Camera* camera_ptr;
 
 void mouseCallback(GLFWwindow*, double xpos, double ypos) {
@@ -120,29 +136,41 @@ int main() {
 
 	Log::log(TAG, "opengl initialized");
 
+	// make pyramid mesh
 	Texture planksDiffuse = Texture("assets/planks.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false);
 	Texture planksSpecular = Texture("assets/planks.png", TextureType::Specular, 1, GL_UNSIGNED_BYTE, true);
-
 	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
-	Log::log(TAG, "textures initialized");
+	std::vector <Texture*> planksTextures(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
+
+	Log::log(TAG, "pyramid textures initialized");
 
 	Shader shader("shader/default.vert", "shader/default.frag");
-	// Store mesh data in vectors for the mesh
+	Material pyramidMaterial { &shader, planksTextures };
+
 	std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
 	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
-	std::vector <Texture*> tex(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
-
-	Material pyramidMaterial { &shader, tex };
 	Mesh pyramid(verts, ind, pyramidMaterial);
 
+	// make light cube mesh
 	Shader lightShader("shader/light.vert", "shader/light.frag");
-	// Store mesh data in vectors for the mesh
+	Material lightMaterial { &lightShader, {} };
+
 	std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
 	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
-
-	Material lightMaterial { &lightShader, {} };
 	Mesh light(lightVerts, lightInd, lightMaterial);
 
+	// make gui mesh
+	Texture guiDiffuse = Texture("assets/bun_bun_tree.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false);
+	std::vector<Texture*> guiTextures;
+	guiTextures.push_back(&guiDiffuse);
+	Shader guiShader("shader/gui.vert", "shader/gui.frag");
+	Material guiMaterial {&guiShader, guiTextures};
+
+	std::vector <Vertex> guiVerts(guiVertices, guiVertices + sizeof(guiVertices) / sizeof(Vertex));
+	std::vector <GLuint> guiInd(guiIndices, guiIndices + sizeof(guiIndices) / sizeof(GLuint));
+	Mesh gui(guiVerts, guiInd, guiMaterial);
+
+	// make models
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::mat4 lightModel = glm::mat4(1.0f);
@@ -152,7 +180,7 @@ int main() {
 	glm::mat4 pyramidModel = glm::mat4(1.0f);
 	pyramidModel = glm::translate(pyramidModel, pyramidPos);
 
-
+	// configure shaders
 	lightShader.activate();
 	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
 	glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
@@ -160,6 +188,8 @@ int main() {
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
 	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	guiShader.activate();
+	glUniform1f(glGetUniformLocation(guiShader.ID, "scale"), 0.5f);
 
 	Log::log(TAG, "shaders initialized");
 
@@ -193,6 +223,7 @@ int main() {
 
 		pyramid.draw(camera);
 		light.draw(camera);
+		gui.draw(camera);
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events

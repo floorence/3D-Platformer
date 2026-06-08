@@ -3,7 +3,6 @@
 // Outputs colors in RGBA
 out vec4 FragColor;
 
-
 // Imports the current position from the Vertex Shader
 in vec3 crntPos;
 // Imports the normal from the Vertex Shader
@@ -13,18 +12,17 @@ in vec3 color;
 // Imports the texture coordinates from the Vertex Shader
 in vec2 texCoord;
 
-// Gets the Texture Unit from the main function
+// Gets the Texture Unit from the Texture setTexUnit function
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 // Gets the color of the light from the main function
 uniform vec4 lightColor;
 // Gets the position of the light from the main function
 uniform vec3 lightPos;
-// Gets the position of the camera from the main function
+// Gets the position of the camera from the Mesh draw function
 uniform vec3 camPos;
 
-void main()
-{
+void main() {
 	// ambient lighting
 	float ambient = 0.20f;
 
