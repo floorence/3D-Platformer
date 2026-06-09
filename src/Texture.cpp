@@ -1,7 +1,8 @@
+#define STB_TRUETYPE_IMPLEMENTATION
 #include"Texture.h"
 #include <cmath>
 
-Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType, bool specular) {
+Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType) {
 	// Assigns the type of the texture ot the texture object
 	type = texType;
 
@@ -13,6 +14,8 @@ Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pix
 	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
 	Log::log(TAG, "loaded image");
 	Log::log(TAG, Log::oss("colour channels: ", numColCh));
+
+	bool specular = texType == TextureType::Specular;
 	if (specular && numColCh >= 3) {
 		// Create 1-channel red-only array
 		unsigned char* redChannel = new unsigned char[widthImg * heightImg];
@@ -45,6 +48,43 @@ Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pix
 	stbi_image_free(bytes);
 }
 
+Texture::Texture(const char* ttfFile, GLuint slot, GLenum pixelType) {
+    std::ifstream file(ttfFile, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open font file.\n";
+        return;
+    }
+
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+	unsigned char* ttf_buffer = new unsigned char[size];
+    
+    if (!file.read(reinterpret_cast<char*>(ttf_buffer), size)) {
+		std::cerr << "Failed to read font file.\n";
+		delete[] ttf_buffer;
+		return;
+	}
+
+	int atlas_w = 512;
+    int atlas_h = 512;
+	
+    unsigned char* bitmap_pixels = new unsigned char[atlas_w * atlas_h];
+    stbtt_bakedchar cdata[96]; // Allocation for ASCII 32-128
+
+    float font_height = 32.0f;
+    int result = stbtt_BakeFontBitmap(ttf_buffer, 0, font_height, 
+                                      bitmap_pixels, atlas_w, atlas_h, 
+                                      32, 96, cdata);
+    
+    if (result <= 0) {
+        std::cerr << "Font didn't fit into the atlas matrix.\n";
+    } else {
+		initTexture(bitmap_pixels, slot, GL_RED, pixelType, atlas_w, atlas_h);
+	}
+	delete[] ttf_buffer;
+	delete[] bitmap_pixels;
+}
+
 void Texture::initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLenum pixelType, int width, int height) {
 	// Generates an OpenGL texture object
 	glGenTextures(1, &ID);
@@ -62,7 +102,7 @@ void Texture::initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLen
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
 	// Assigns the image to the OpenGL Texture object
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, pixelType, bytes);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, pixelType, bytes);
 	// Generates MipMaps
 	glGenerateMipmap(GL_TEXTURE_2D);
 

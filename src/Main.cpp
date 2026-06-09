@@ -137,8 +137,8 @@ int main() {
 	Log::log(TAG, "opengl initialized");
 
 	// make pyramid mesh
-	Texture planksDiffuse = Texture("assets/planks.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false);
-	Texture planksSpecular = Texture("assets/planks.png", TextureType::Specular, 1, GL_UNSIGNED_BYTE, true);
+	Texture planksDiffuse = Texture("assets/planks.png", TextureType::Diffuse, 0);
+	Texture planksSpecular = Texture("assets/planks.png", TextureType::Specular, 1);
 	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
 	std::vector <Texture*> planksTextures(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
 
@@ -160,7 +160,7 @@ int main() {
 	Mesh light(lightVerts, lightInd, lightMaterial);
 
 	// make gui mesh
-	Texture guiDiffuse = Texture("assets/bun_bun_tree.png", TextureType::Diffuse, 0, GL_UNSIGNED_BYTE, false);
+	Texture guiDiffuse = Texture("assets/PixelOperator.ttf", 0);
 	std::vector<Texture*> guiTextures;
 	guiTextures.push_back(&guiDiffuse);
 	Shader guiShader("shader/gui.vert", "shader/gui.frag");

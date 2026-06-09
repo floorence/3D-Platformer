@@ -4,6 +4,10 @@
 #include<glad/glad.h>
 #include<stb/stb_image.h>
 #include<string>
+#include"stb/stb_truetype.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 #include"Shader.h"
 #include"Log.h"
 
@@ -15,7 +19,10 @@ class Texture {
 public:
 	TextureType type;
 
-	Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType, bool specular);
+	// constructor for rasterized images
+	Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType = GL_UNSIGNED_BYTE);
+	// constructor for ttf font files
+	Texture(const char* ttfFile, GLuint slot, GLenum pixelType = GL_UNSIGNED_BYTE);
 	~Texture();
 
 	Texture(const Texture&) = delete;
