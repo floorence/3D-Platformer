@@ -41,6 +41,7 @@ private:
 	GLuint ID;
 	GLuint unit;
 	const std::string TAG = "Texture";
+	void flipBitmap(unsigned char* bytes, int width, int height);
 };
 
 #endif

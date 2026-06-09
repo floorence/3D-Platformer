@@ -163,7 +163,7 @@ int main() {
 	Texture guiDiffuse = Texture("assets/PixelOperator.ttf", 0);
 	std::vector<Texture*> guiTextures;
 	guiTextures.push_back(&guiDiffuse);
-	Shader guiShader("shader/gui.vert", "shader/gui.frag");
+	Shader guiShader("shader/gui.vert", "shader/font.frag");
 	Material guiMaterial {&guiShader, guiTextures};
 
 	std::vector <Vertex> guiVerts(guiVertices, guiVertices + sizeof(guiVertices) / sizeof(Vertex));

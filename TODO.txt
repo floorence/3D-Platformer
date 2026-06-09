@@ -1,6 +1,7 @@
 refactor and clean up
 - optimize getting length of vectors
 - stop hard coding stuff
+- stop putting all includes in header files
 
 feature
 - different log levels, migrate to spd log??

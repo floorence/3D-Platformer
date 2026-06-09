@@ -15,3 +15,7 @@ std::string getTimestamp() {
 void Log::log(std::string tag, std::string message) {
     std::cout << getTimestamp() << " " << tag << ": " << message << std::endl;
 }
+
+void Log::err(std::string tag, std::string message) {
+    std::cerr << getTimestamp() << " " << tag << ": " << message << std::endl;
+}

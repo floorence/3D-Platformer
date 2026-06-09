@@ -51,7 +51,7 @@ Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pix
 Texture::Texture(const char* ttfFile, GLuint slot, GLenum pixelType) {
     std::ifstream file(ttfFile, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
-        std::cerr << "Failed to open font file.\n";
+        Log::err(TAG, "Failed to open font file.");
         return;
     }
 
@@ -60,13 +60,13 @@ Texture::Texture(const char* ttfFile, GLuint slot, GLenum pixelType) {
 	unsigned char* ttf_buffer = new unsigned char[size];
     
     if (!file.read(reinterpret_cast<char*>(ttf_buffer), size)) {
-		std::cerr << "Failed to read font file.\n";
+		Log::err(TAG, "Failed to read font file.");
 		delete[] ttf_buffer;
 		return;
 	}
 
-	int atlas_w = 512;
-    int atlas_h = 512;
+	int atlas_w = 192;
+    int atlas_h = 192;
 	
     unsigned char* bitmap_pixels = new unsigned char[atlas_w * atlas_h];
     stbtt_bakedchar cdata[96]; // Allocation for ASCII 32-128
@@ -77,8 +77,9 @@ Texture::Texture(const char* ttfFile, GLuint slot, GLenum pixelType) {
                                       32, 96, cdata);
     
     if (result <= 0) {
-        std::cerr << "Font didn't fit into the atlas matrix.\n";
+        Log::err(TAG, "stbtt_BakeFontBitmap failed. does the font fit into the atlas matrix?");
     } else {
+		flipBitmap(bitmap_pixels, atlas_w, atlas_h);
 		initTexture(bitmap_pixels, slot, GL_RED, pixelType, atlas_w, atlas_h);
 	}
 	delete[] ttf_buffer;
@@ -86,7 +87,6 @@ Texture::Texture(const char* ttfFile, GLuint slot, GLenum pixelType) {
 }
 
 void Texture::initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLenum pixelType, int width, int height) {
-	// Generates an OpenGL texture object
 	glGenTextures(1, &ID);
 	// Assigns the texture to a Texture Unit
 	glActiveTexture(GL_TEXTURE0 + slot);
@@ -103,7 +103,6 @@ void Texture::initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLen
 	
 	// Assigns the image to the OpenGL Texture object
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, pixelType, bytes);
-	// Generates MipMaps
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
@@ -134,6 +133,20 @@ void Texture::bind() {
 
 void Texture::unbind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture::flipBitmap(unsigned char* bytes, int width, int height) {
+	unsigned char* temp_row = new unsigned char[width];
+	for (int i = 0; i < height / 2; ++i) {
+		unsigned char* row1 = bytes + i * width;
+		unsigned char* row2 = bytes + (height - 1 - i) * width;
+		
+		// Swap rows
+		memcpy(temp_row, row1, width);
+		memcpy(row1, row2, width);
+		memcpy(row2, temp_row, width);
+	}
+	delete[] temp_row;
 }
 
 Texture::~Texture() {
