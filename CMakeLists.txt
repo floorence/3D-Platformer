@@ -24,6 +24,9 @@ add_executable(Platformer
 
 target_include_directories(Platformer PRIVATE
     include
+)
+
+target_include_directories(Platformer SYSTEM PRIVATE
     Libraries/include
 )
 

@@ -1,11 +1,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <iostream>
 #include <sstream>
-#include <ctime>
-#include <iomanip>
-#include <chrono>
 
 namespace Log {
     void log(std::string tag, std::string message);

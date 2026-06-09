@@ -1,4 +1,5 @@
 #include"Camera.h"
+#include"Log.h"
 
 Camera::Camera(int width, int height, glm::vec3 position) {
 	Camera::width = width;

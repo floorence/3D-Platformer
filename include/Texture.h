@@ -5,11 +5,9 @@
 #include<stb/stb_image.h>
 #include<string>
 #include"stb/stb_truetype.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 #include"Shader.h"
-#include"Log.h"
 
 enum class TextureType {
 	Diffuse, Specular

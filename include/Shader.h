@@ -3,11 +3,6 @@
 
 #include<glad/glad.h>
 #include<string>
-#include<fstream>
-#include<sstream>
-#include<iostream>
-#include<cerrno>
-#include"Log.h"
 
 enum class ShaderType {
 	Vertex, Fragment, Program

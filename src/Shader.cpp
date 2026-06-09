@@ -1,4 +1,8 @@
 #include"Shader.h"
+#include<fstream>
+#include<iostream>
+#include<cerrno>
+#include"Log.h"
 
 // Constructor that build the Shader Program from 2 different shaders
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {

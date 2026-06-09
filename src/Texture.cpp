@@ -1,6 +1,10 @@
 #define STB_TRUETYPE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include"Texture.h"
-#include <cmath>
+#include"Log.h"
+#include<fstream>
+#include<cmath>
+#include"stb/stb_image_write.h"
 
 Texture::Texture(const char* image, TextureType texType, GLuint slot, GLenum pixelType) {
 	// Assigns the type of the texture ot the texture object
@@ -79,6 +83,7 @@ Texture::Texture(const char* ttfFile, GLuint slot, GLenum pixelType) {
     if (result <= 0) {
         Log::err(TAG, "stbtt_BakeFontBitmap failed. does the font fit into the atlas matrix?");
     } else {
+		// stbi_write_png("assets/font_dev.png", atlas_w, atlas_h, 1, bitmap_pixels, atlas_w);
 		flipBitmap(bitmap_pixels, atlas_w, atlas_h);
 		initTexture(bitmap_pixels, slot, GL_RED, pixelType, atlas_w, atlas_h);
 	}

@@ -4,7 +4,6 @@
 #include<glm/glm.hpp>
 #include<glad/glad.h>
 #include<vector>
-#include<iostream>
 
 struct Vertex {
 	glm::vec3 position;

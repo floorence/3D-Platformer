@@ -3,7 +3,6 @@
 
 #include<glad/glad.h>
 #include<vector>
-#include<iostream>
 
 class EBO {
 public:
