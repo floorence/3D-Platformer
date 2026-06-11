@@ -2,6 +2,7 @@ refactor and clean up
 - optimize getting length of vectors
 - stop hard coding stuff
 - is stb.cpp needed??
+- remove year from log
 
 feature
 - different log levels, migrate to spd log??

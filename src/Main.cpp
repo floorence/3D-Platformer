@@ -6,6 +6,8 @@
 #include<glm/gtc/type_ptr.hpp>
 
 #include"Mesh.h"
+#include"FontTexture.h"
+#include"ImageTexture.h"
 #include"Log.h"
 
 const unsigned int width = 800;
@@ -137,8 +139,8 @@ int main() {
 	Log::log(TAG, "opengl initialized");
 
 	// make pyramid mesh
-	Texture planksDiffuse = Texture("assets/planks.png", TextureType::Diffuse, 0);
-	Texture planksSpecular = Texture("assets/planks.png", TextureType::Specular, 1);
+	Texture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse, 0);
+	Texture planksSpecular = ImageTexture("assets/planks.png", TextureType::Specular, 1);
 	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
 	std::vector <Texture*> planksTextures(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
 
@@ -160,7 +162,7 @@ int main() {
 	Mesh light(lightVerts, lightInd, lightMaterial);
 
 	// make gui mesh
-	Texture guiDiffuse = Texture("assets/PixelOperator.ttf", 0);
+	Texture guiDiffuse = FontTexture("assets/PixelOperator.ttf", 0);
 	std::vector<Texture*> guiTextures;
 	guiTextures.push_back(&guiDiffuse);
 	Shader guiShader("shader/gui.vert", "shader/font.frag");

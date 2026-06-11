@@ -30,11 +30,14 @@ VBO::~VBO() {
 
 VBO::VBO(VBO&& other) noexcept {
 	ID = other.ID;
+	other.ID = 0;
 }
 
 VBO& VBO::operator=(VBO&& other) noexcept {
 	if (this != &other) {
+		glDeleteBuffers(1, &ID);
 		ID = other.ID;
+		other.ID = 0;
 	}
 	return *this;
 }

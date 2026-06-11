@@ -27,11 +27,14 @@ VAO::~VAO() {
 
 VAO::VAO(VAO&& other) noexcept {
 	ID = other.ID;
+	other.ID = 0;
 }
 
 VAO& VAO::operator=(VAO&& other) noexcept {
 	if (this != &other) {
+		glDeleteVertexArrays(1, &ID);
 		ID = other.ID;
+		other.ID = 0;
 	}
 	return *this;
 }

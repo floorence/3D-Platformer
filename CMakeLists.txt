@@ -8,19 +8,12 @@ find_package(glfw3 REQUIRED)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(Platformer
-    src/Main.cpp
-    src/Camera.cpp
-    src/Texture.cpp
-    src/Mesh.cpp
-    src/VAO.cpp
-    src/VBO.cpp
-    src/EBO.cpp
-    src/Shader.cpp
-    src/util/Log.cpp
-    src/stb.cpp
-    src/glad.c
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS 
+    "src/*.cpp"
+    "src/*.c"
 )
+
+add_executable(Platformer ${SOURCE_FILES})
 
 target_include_directories(Platformer PRIVATE
     include

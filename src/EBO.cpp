@@ -30,11 +30,14 @@ EBO::~EBO() {
 
 EBO::EBO(EBO&& other) noexcept {
 	ID = other.ID;
+	other.ID = 0;
 }
 
 EBO& EBO::operator=(EBO&& other) noexcept {
 	if (this != &other) {
+		glDeleteBuffers(1, &ID);
 		ID = other.ID;
+		other.ID = 0;
 	}
 	return *this;
 }

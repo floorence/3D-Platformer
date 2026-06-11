@@ -99,11 +99,14 @@ std::string Shader::getFileContents(const char* filename) {
 
 Shader::Shader(Shader&& other) noexcept {
 	ID = other.ID;
+	other.ID = 0;
 }
     
 Shader& Shader::operator=(Shader&& other) noexcept {
 	if (this != &other) {
+		glDeleteProgram(ID);
 		ID = other.ID;
+		other.ID = 0;
 	}
 	return *this;
 }
