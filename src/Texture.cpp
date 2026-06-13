@@ -1,11 +1,8 @@
 #include "Texture.h"
 
-void Texture::initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLenum pixelType, int width, int height) {
+void Texture::initTexture(unsigned char* bytes, GLenum format, GLenum pixelType, int width, int height) {
 	glGenTextures(1, &ID);
-	// Assigns the texture to a Texture Unit
-	glActiveTexture(GL_TEXTURE0 + slot);
-	unit = slot;
-	glBindTexture(GL_TEXTURE_2D, ID);
+	bind();
 
 	// Configures the type of algorithm that is used to make the image smaller or bigger
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
@@ -32,7 +29,8 @@ void Texture::setTexUnit(Shader& shader, const char* uniform, GLuint unit) {
 	glUniform1i(texUni, unit);
 }
 
-void Texture::bind() {
+// bind texture to given unit
+void Texture::bind(GLuint unit) {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, ID);
 }
@@ -54,11 +52,9 @@ Texture::~Texture() {
 }
 
 Texture::Texture(Texture&& other) noexcept
-    : ID(other.ID), 
-	  unit(other.unit)
+    : ID(other.ID)
 {
     other.ID = 0;
-    other.unit = 0;
 }
 
 Texture& Texture::operator=(Texture&& other) noexcept {
@@ -66,10 +62,7 @@ Texture& Texture::operator=(Texture&& other) noexcept {
 		glDeleteTextures(1, &ID);
 
 		ID = other.ID;
-		unit = other.unit;
-
 		other.ID = 0;
-        other.unit = 0;
 	}
 	return *this;
 }

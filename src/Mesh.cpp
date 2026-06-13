@@ -45,7 +45,7 @@ void Mesh::draw(Camera& camera) {
 		}
 		std::string typeString = material.textures[i]->typeToString(material.textures[i]->type);
 		material.textures[i]->setTexUnit(*material.shader, (typeString + num).c_str(), i);
-		material.textures[i]->bind();
+		material.textures[i]->bind(i);
 	}
 	// Take care of the camera Matrix
 	glUniform3f(glGetUniformLocation(material.shader->ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);

@@ -5,9 +5,8 @@
 #include<string.h>
 #include "Log.h"
 #include"stb/stb_image_write.h"
-#include"stb/stb_truetype.h"
 
-FontTexture::FontTexture(const char* ttfFile, GLuint slot, GLenum pixelType) {
+FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
     std::ifstream file(ttfFile, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
         Log::err(TAG, "Failed to open font file.");
@@ -39,11 +38,25 @@ FontTexture::FontTexture(const char* ttfFile, GLuint slot, GLenum pixelType) {
         Log::err(TAG, "stbtt_BakeFontBitmap failed. does the font fit into the atlas matrix?");
     } else {
 		//stbi_write_png("assets/font_dev_small.png", atlas_w, atlas_h, 1, bitmap_pixels, atlas_w);
+		saveCharData(cdata);
 		flipBitmap(bitmap_pixels, atlas_w, atlas_h);
-		initTexture(bitmap_pixels, slot, GL_RED, pixelType, atlas_w, atlas_h);
+		initTexture(bitmap_pixels, GL_RED, pixelType, atlas_w, atlas_h);
 	}
 	delete[] ttf_buffer;
 	delete[] bitmap_pixels;
+}
+
+std::vector<Vertex> FontTexture::generateVertices(std::string text, int x, int y, int w) {
+	std::vector<Vertex> vertices;
+	for (const auto& c : text) {
+		int i = c - 32;
+	}
+}
+
+void FontTexture::saveCharData(stbtt_bakedchar* charData) {
+	for (int i = 0; i < 96; i++) {
+		this->charData[i] = charData[i];
+	}
 }
 
 void FontTexture::flipBitmap(unsigned char* bytes, int width, int height) {

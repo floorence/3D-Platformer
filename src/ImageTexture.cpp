@@ -1,8 +1,9 @@
+#include<cmath>
+#include<stb/stb_image.h>
 #include"ImageTexture.h"
 #include"Log.h"
-#include<cmath>
 
-ImageTexture::ImageTexture(const char* image, TextureType texType, GLuint slot, GLenum pixelType) {
+ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType) {
 	// Assigns the type of the texture ot the texture object
 	type = texType;
 
@@ -35,13 +36,13 @@ ImageTexture::ImageTexture(const char* image, TextureType texType, GLuint slot, 
 			redChannel[i] = static_cast<unsigned char>(gray);
 		}
 
-		initTexture(redChannel, slot, GL_RED, pixelType, widthImg, heightImg);
+		initTexture(redChannel, GL_RED, pixelType, widthImg, heightImg);
 		delete[] redChannel;
 	} else {
 		if (type == TextureType::Specular) {
-			initTexture(bytes, slot, GL_RED, pixelType, widthImg, heightImg);
+			initTexture(bytes, GL_RED, pixelType, widthImg, heightImg);
 		} else {
-			initTexture(bytes, slot, GL_RGBA, pixelType, widthImg, heightImg);
+			initTexture(bytes, GL_RGBA, pixelType, widthImg, heightImg);
 		}
 	}
 	// Deletes the image data as it is already in the OpenGL Texture object

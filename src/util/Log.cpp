@@ -13,7 +13,7 @@ std::string getTimestamp() {
     auto duration = now.time_since_epoch();
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() % 1000;
 
-    return Log::oss(std::put_time(local_tm, "%Y-%m-%d %H:%M:%S"), ".", std::setfill('0'), std::setw(3), millis);
+    return Log::oss(std::put_time(local_tm, "%m-%d %H:%M:%S"), ".", std::setfill('0'), std::setw(3), millis);
 }
 
 void Log::log(std::string tag, std::string message) {

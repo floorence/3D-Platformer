@@ -12,10 +12,11 @@ public:
 	TextureType type = TextureType::Diffuse;
 
 	Texture() = default;
-	void initTexture(unsigned char* bytes, GLuint slot, GLenum format, GLenum pixelType, int width, int height);
+	void initTexture(unsigned char* bytes, GLenum format, GLenum pixelType, int width, int height);
 	void setTexUnit(Shader& shader, const char* uniform, GLuint unit);
-	void bind();
+	void bind(GLuint unit = 0);
 	void unbind();
+	//virtual std::string getUniformString() const;
 	std::string typeToString(TextureType type);
 
 	virtual ~Texture();
@@ -27,7 +28,6 @@ public:
     Texture& operator=(Texture&& other) noexcept;
 protected:
 	GLuint ID = 0;
-	GLuint unit = 0;
 };
 
 #endif
