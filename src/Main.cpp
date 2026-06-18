@@ -79,10 +79,10 @@ GLuint lightIndices[] =
 // square
 Vertex guiVertices[] =
 {
-	Vertex{glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f)},
-	Vertex{glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f)},
-	Vertex{glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f)},
-	Vertex{glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f)}
+	Vertex{glm::vec3(200.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f)},
+	Vertex{glm::vec3(200.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f)},
+	Vertex{glm::vec3(600.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f)},
+	Vertex{glm::vec3(600.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f)}
 };
 
 // square
@@ -189,7 +189,9 @@ int main() {
 	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 	guiShader.activate();
-	glUniform1f(glGetUniformLocation(guiShader.ID, "scale"), 0.5f);
+	glUniform1f(glGetUniformLocation(guiShader.ID, "scale"), 0.0f);
+	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
+	glUniformMatrix4fv(glGetUniformLocation(guiShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(guiProjection));
 
 	Log::log(TAG, "shaders initialized");
 
