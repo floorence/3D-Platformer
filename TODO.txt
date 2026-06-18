@@ -2,11 +2,11 @@ refactor and clean up
 - optimize getting length of vectors
 - stop hard coding stuff
 - is stb.cpp needed??
-- remove year from log
 - move typetostring stuff to utils file? check for functions that dont belong to class
 - fix imageTexture no longer allow regular specular way
 - move structs and enums to their own files?
 - actually lock in on cleaning up comments
+- use static constexpr for actual constants
 
 feature
 - different log levels, migrate to spd log??

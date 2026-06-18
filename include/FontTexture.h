@@ -16,12 +16,19 @@ public:
 	 * @param y y coordinate of top-left corner of where the text should be drawn
 	 * @param w maximum width of the text to be drawn, will go on new lines if text is too long
 	 */
-	std::vector<Vertex> generateVertices(std::string text, int x, int y, int w);
+	std::vector<Vertex> generateVertices(const std::string& text, int x, int y, int w);
+	std::vector<GLuint> generateIndices(std::vector<Vertex>& vertices);
 private:
-	stbtt_bakedchar charData[96];
+	//constants
+	static constexpr int NUM_CHARS = 96;
+	static constexpr int ATLAS_WIDTH = 96;
+	static constexpr int ATLAS_HEIGHT = 96;
+
+	stbtt_bakedchar charData[NUM_CHARS]; // ascii 32-128
+	int maxCharHeight = 0;
     const std::string TAG = "FontTexture";
 
-	void saveCharData(stbtt_bakedchar* charData);
+	void updateCharData();
 	void flipBitmap(unsigned char* bytes, int width, int height);
 };
 

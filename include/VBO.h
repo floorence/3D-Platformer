@@ -1,8 +1,10 @@
 #ifndef VBO_CLASS_H
 #define VBO_CLASS_H
 
+#include "Log.h"
 #include<glm/glm.hpp>
 #include<glad/glad.h>
+#include <string>
 #include<vector>
 
 struct Vertex {
@@ -10,6 +12,13 @@ struct Vertex {
 	glm::vec3 normal;
 	glm::vec3 color;
 	glm::vec2 texUV;
+
+	std::string to_string() {
+		return Log::oss("Vertex { position: ", 
+			position.x, ", ", position.y, ", ", position.z, 
+			" texUV: ", 
+			texUV.x, ", ", texUV.y, "}");
+	}
 };
 
 class VBO {
