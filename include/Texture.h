@@ -13,8 +13,8 @@ public:
 
 	Texture() = default;
 	void initTexture(unsigned char* bytes, GLenum format, GLenum pixelType, int width, int height);
-	void setTexUnit(Shader& shader, const char* uniform, GLuint unit);
-	void bind(GLuint unit = 0); // bind texture to given unit
+	void exportTexture(Shader& shader, const char* uniform, GLuint unit); // gives shader this texture, caller has to activate shader beforehand
+	void bind(GLuint unit); // bind texture to given unit
 	void unbind();
 	//virtual std::string getUniformString() const;
 	std::string typeToString(TextureType type);

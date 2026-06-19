@@ -18,7 +18,7 @@ Mesh::Mesh(
 	vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
 	vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
 	vao.linkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
-	// Unbind all to prevent accidentally modifying them
+
 	vao.unbind();
 	vbo.unbind();
 	ebo.unbind();
@@ -42,12 +42,11 @@ void Mesh::draw(Camera& camera) {
 			num = std::to_string(numSpecular++);
 		}
 		std::string typeString = material.textures[i]->typeToString(material.textures[i]->type);
-		material.textures[i]->setTexUnit(*material.shader, (typeString + num).c_str(), i);
-		material.textures[i]->bind(i);
+
+		material.textures[i]->exportTexture(*material.shader, (typeString + num).c_str(), i);
 	}
 
-	glUniform3f(glGetUniformLocation(material.shader->ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
-	camera.exportMatrix(*material.shader, "camMatrix");
+	camera.exportCamera(*material.shader, "camPos", "camMatrix");
 
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }

@@ -13,18 +13,17 @@
 
 class Camera {
 public:
-	glm::vec3 position;
-
 	Camera(int width, int height, glm::vec3 position);
 
 	void updateMatrix(float FOVdeg, float nearPlane, float farPlane);
-	void exportMatrix(Shader& shader, const char* uniform);
+	void exportCamera(Shader& shader, const char* posUniform, const char* matUniform); // give shader the position and cameraMatrix, caller has to activate shader beforehand
 
 	// inputs
 	void handleKeyInputs(GLFWwindow* window, float deltaTime);
 	void handleKeyInputs(GLFWwindow* window, int key, int action);
 	void handleMousePos(double xpos, double ypos);
 private:
+	glm::vec3 position;
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);	// units per second
 	glm::mat4 cameraMatrix = glm::mat4(1.0f);

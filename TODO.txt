@@ -1,7 +1,6 @@
 refactor and clean up
 - optimize getting length of vectors
 - stop hard coding stuff
-- is stb.cpp needed??
 - move typetostring stuff to utils file? check for functions that dont belong to class
 - move structs and enums to their own files?
 - optimize: generateIndices only needs size of vertices. and it will be the same every time till the size is reached

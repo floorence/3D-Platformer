@@ -2,7 +2,7 @@
 
 void Texture::initTexture(unsigned char* bytes, GLenum format, GLenum pixelType, int width, int height) {
 	glGenTextures(1, &ID);
-	bind();
+	bind(0);
 
 	// how the image is scaled
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
@@ -19,10 +19,9 @@ void Texture::initTexture(unsigned char* bytes, GLenum format, GLenum pixelType,
 	unbind();
 }
 
-void Texture::setTexUnit(Shader& shader, const char* uniform, GLuint unit) {
-	GLuint texUni = glGetUniformLocation(shader.ID, uniform);
-	shader.activate(); // shader needs to be activated before changing the value of a uniform
-	glUniform1i(texUni, unit);
+void Texture::exportTexture(Shader& shader, const char* uniform, GLuint unit) {
+	glUniform1i(glGetUniformLocation(shader.ID, uniform), unit);
+	bind(unit);
 }
 
 void Texture::bind(GLuint unit) {
