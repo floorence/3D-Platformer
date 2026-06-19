@@ -4,42 +4,32 @@
 #include<cerrno>
 #include"Log.h"
 
-// Constructor that build the Shader Program from 2 different shaders
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {
-	// Read vertexFile and fragmentFile and store the strings
 	std::string vertexCode = getFileContents(vertexFile);
 	std::string fragmentCode = getFileContents(fragmentFile);
 
-	// Convert the shader source strings into character arrays
 	const char* vertexSource = vertexCode.c_str();
 	const char* fragmentSource = fragmentCode.c_str();
 
-	// Create Vertex Shader Object and get its reference
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// Attach Vertex Shader source to the Vertex Shader Object
+	// attach shader code to opengl shader object
 	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	// Compile the Vertex Shader into machine code
 	glCompileShader(vertexShader);
 	logCompileErrors(vertexShader, ShaderType::Vertex);
 
-	// Create Fragment Shader Object and get its reference
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	// Attach Fragment Shader source to the Fragment Shader Object
 	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	// Compile the Vertex Shader into machine code
 	glCompileShader(fragmentShader);
 	logCompileErrors(fragmentShader, ShaderType::Fragment);
 
-	// Create Shader Program Object and get its reference
 	ID = glCreateProgram();
-	// Attach the Vertex and Fragment Shaders to the Shader Program
+	// attach the vertex and fragment shaders to the shader program
 	glAttachShader(ID, vertexShader);
 	glAttachShader(ID, fragmentShader);
-	// Wrap-up/Link all the shaders together into the Shader Program
+	// link all the shaders together into the shader program
 	glLinkProgram(ID);
 	logCompileErrors(ID, ShaderType::Program);
 
-	// Delete the now useless Vertex and Fragment Shader objects
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 }
@@ -52,11 +42,10 @@ Shader::~Shader() {
 	glDeleteProgram(ID);
 }
 
-// Logs error message if shader has not compiled properly
 void Shader::logCompileErrors(unsigned int shader, ShaderType type) {
 	GLint hasCompiled;
-	// Character array to store error message in
 	char infoLog[1024];
+
 	if (type != ShaderType::Program) {
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
 		if (hasCompiled == GL_FALSE) {
@@ -81,7 +70,6 @@ std::string Shader::typeToString(ShaderType type) {
 	return "";
 }
 
-// Reads a text file and outputs a string with everything in the text file
 std::string Shader::getFileContents(const char* filename) {
 	std::ifstream in(filename, std::ios::binary);
 	if (in) {

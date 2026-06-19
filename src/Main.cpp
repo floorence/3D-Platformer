@@ -105,25 +105,21 @@ void keyCallback(GLFWwindow* window, int key, int, int action, int) {
 int main() {
 	glfwInit();
 
-	// Tell GLFW what version of OpenGL we are using 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// Tell GLFW we are using the CORE profile so that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Create a GLFWwindow object of 800 by 800 pixels
 	GLFWwindow* window = glfwCreateWindow(width, height, "window", NULL, NULL);
-	// Error check if the window fails to create
+
 	if (window == NULL) {
 		Log::log(TAG, "Failed to create GLFW window");
 		glfwTerminate();
 		return -1;
 	}
-	// Introduce the window into the current context
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);  // Enable VSync
 
-	//Load GLAD so it configures OpenGL
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);  // enable VSync
+
 	gladLoadGL();
 
 	// on linux, framebuffer size and window size are not always identical
@@ -138,7 +134,7 @@ int main() {
 
 	// make pyramid mesh
 	Texture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
-	Texture planksSpecular = ImageTexture("assets/planks.png", TextureType::Specular);
+	Texture planksSpecular = ImageTexture("assets/planks.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
 	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
 	std::vector <Texture*> planksTextures(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
 
@@ -197,10 +193,8 @@ int main() {
 
 	Log::log(TAG, "shaders initialized");
 
-	// Enables the Depth Buffer
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 
-	// Creates camera object
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
 	camera_ptr = &camera;
 
@@ -211,13 +205,10 @@ int main() {
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetKeyCallback(window, keyCallback);
 
-	// Main while loop
 	while (!glfwWindowShouldClose(window)) {
-		// Specify the color of the background
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-		// Clean the back buffer and assign the new color to it
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the back buffer
+
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -228,9 +219,8 @@ int main() {
 		pyramid.draw(camera);
 		light.draw(camera);
 		gui.draw(camera);
-		// Swap the back buffer with the front buffer
+
 		glfwSwapBuffers(window);
-		// Take care of all GLFW events
 		glfwPollEvents();
 	}
 

@@ -4,32 +4,27 @@ void Texture::initTexture(unsigned char* bytes, GLenum format, GLenum pixelType,
 	glGenTextures(1, &ID);
 	bind();
 
-	// Configures the type of algorithm that is used to make the image smaller or bigger
+	// how the image is scaled
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	// Configures the way the texture repeats (if it does at all)
+	// how the image repeats
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
-	// Assigns the image to the OpenGL Texture object
+	// assigns the image to the OpenGL Texture object
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, pixelType, bytes);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
-	glBindTexture(GL_TEXTURE_2D, 0);
+	unbind();
 }
 
 void Texture::setTexUnit(Shader& shader, const char* uniform, GLuint unit) {
-	// Gets the location of the uniform
 	GLuint texUni = glGetUniformLocation(shader.ID, uniform);
-	// Shader needs to be activated before changing the value of a uniform
-	shader.activate();
-	// Sets the value of the uniform
+	shader.activate(); // shader needs to be activated before changing the value of a uniform
 	glUniform1i(texUni, unit);
 }
 
-// bind texture to given unit
 void Texture::bind(GLuint unit) {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, ID);

@@ -10,9 +10,7 @@ enum class ShaderType {
 
 class Shader {
 public:
-	// Reference ID of the Shader Program
 	GLuint ID;
-	// Constructor that build the Shader Program from 2 different shaders
 	Shader(const char* vertexFile, const char* fragmentFile);
 	~Shader();
 
@@ -25,10 +23,8 @@ public:
 	void activate();
 private:
 	const std::string TAG = "Shader";
-	// Checks if the different Shaders have compiled properly
 	void logCompileErrors(unsigned int shader, ShaderType type);
 	std::string typeToString(ShaderType type);
-	// Reads a text file and outputs a string with everything in the text file
 	std::string getFileContents(const char* filename);
 };
 

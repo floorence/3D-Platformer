@@ -11,9 +11,9 @@ Camera::Camera(int width, int height, glm::vec3 position) {
 }
 
 void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
-	// Makes camera look in the right direction from the right position
+	// make camera look in the right direction from the right position
 	glm::mat4 view = glm::lookAt(position, position + orientation, UP);
-	// Adds perspective to the scene
+	// add perspective to the scene
 	glm::mat4 projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
 
 	cameraMatrix = projection * view;
@@ -91,7 +91,6 @@ void Camera::handleMousePos(double xpos, double ypos) {
 		firstClick = false;
 	}
 
-	// Calculate the difference (delta) since the last frame
 	double xOffset = xpos - lastX;
 	double yOffset = ypos - lastY;
 
@@ -101,15 +100,15 @@ void Camera::handleMousePos(double xpos, double ypos) {
 	float rotX = sensitivity * (float)(xOffset) / width;
 	float rotY = sensitivity * (float)(yOffset) / height;
 
-	// Calculates upcoming vertical change in the orientation
+	// calculate upcoming vertical change in the orientation
 	glm::vec3 verticalOrientation = glm::rotate(orientation, glm::radians(-rotY), glm::normalize(glm::cross(orientation, UP)));
 
-	// Decides whether or not the next vertical orientation is legal or not
+	// decide whether or not the next vertical orientation is legal or not
 	if (std::abs(glm::angle(verticalOrientation, UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
 		orientation = verticalOrientation;
 	}
 
-	// Rotates the orientation left and right
+	// rotate the orientation left and right
 	orientation = glm::rotate(orientation, glm::radians(-rotX), UP);
 }
 

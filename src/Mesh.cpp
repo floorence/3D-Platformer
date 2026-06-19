@@ -26,11 +26,9 @@ Mesh::Mesh(
 
 
 void Mesh::draw(Camera& camera) {
-	// Bind shader to be able to access uniforms
-	material.shader->activate();
+	material.shader->activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	// Keep track of how many of each type of textures we have
 	unsigned int numDiffuse = 0;
 	unsigned int numSpecular = 0;
 
@@ -47,10 +45,9 @@ void Mesh::draw(Camera& camera) {
 		material.textures[i]->setTexUnit(*material.shader, (typeString + num).c_str(), i);
 		material.textures[i]->bind(i);
 	}
-	// Take care of the camera Matrix
+
 	glUniform3f(glGetUniformLocation(material.shader->ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
 	camera.exportMatrix(*material.shader, "camMatrix");
 
-	// Draw the actual mesh
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }

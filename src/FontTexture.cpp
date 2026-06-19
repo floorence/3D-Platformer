@@ -30,7 +30,7 @@ FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
     unsigned char* bitmap_pixels = new unsigned char[atlas_w * atlas_h];
 	stbtt_bakedchar cData[NUM_CHARS]; // ascii 32-128
 
-    float font_height = 16.0f;
+    float font_height = fontHeight;
     int result = stbtt_BakeFontBitmap(ttf_buffer, 0, font_height, 
                                       bitmap_pixels, atlas_w, atlas_h, 
                                       32, NUM_CHARS, cData);
