@@ -7,6 +7,7 @@ refactor and clean up
 - move structs and enums to their own files?
 - actually lock in on cleaning up comments
 - use static constexpr for actual constants
+- optimize: generateIndices only needs size of vertices. and it will be the same every time till the size is reached
 
 feature
 - different log levels, migrate to spd log??

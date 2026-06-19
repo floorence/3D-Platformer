@@ -168,7 +168,7 @@ int main() {
 
 	//std::vector <Vertex> guiVerts(guiVertices, guiVertices + sizeof(guiVertices) / sizeof(Vertex));
 	//std::vector <GLuint> guiInd(guiIndices, guiIndices + sizeof(guiIndices) / sizeof(GLuint));
-	std::vector guiVerts = guiDiffuse.generateVertices("Hello world!", 200, 200, 400);
+	std::vector guiVerts = guiDiffuse.generateVertices("Hello world!", 200, 200, 400, 20);
 	std::vector guiInd = guiDiffuse.generateIndices(guiVerts);
 	Mesh gui(guiVerts, guiInd, guiMaterial);
 

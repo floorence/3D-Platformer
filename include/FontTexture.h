@@ -5,6 +5,11 @@
 #include "Texture.h"
 #include "VBO.h"
 
+// coordinates of quad within texture atlas as if texture atlas width and height was 1
+struct NormalizedCharQuad {
+	float x0, x1, y0, y1;
+};
+
 class FontTexture : public Texture {
 public:
 	FontTexture(const char* ttfFile, GLenum pixelType = GL_UNSIGNED_BYTE);
@@ -16,7 +21,7 @@ public:
 	 * @param y y coordinate of top-left corner of where the text should be drawn
 	 * @param w maximum width of the text to be drawn, will go on new lines if text is too long
 	 */
-	std::vector<Vertex> generateVertices(const std::string& text, int x, int y, int w);
+	std::vector<Vertex> generateVertices(const std::string& text, int x, int y, int w, int lineHeight);
 	std::vector<GLuint> generateIndices(std::vector<Vertex>& vertices);
 private:
 	//constants
@@ -24,11 +29,14 @@ private:
 	static constexpr int ATLAS_WIDTH = 96;
 	static constexpr int ATLAS_HEIGHT = 96;
 
-	stbtt_bakedchar charData[NUM_CHARS]; // ascii 32-128
-	int maxCharHeight = 0;
+	const float invW = 1.0f / ATLAS_WIDTH;
+	const float invH = 1.0f / ATLAS_HEIGHT;
+
+	NormalizedCharQuad charData[NUM_CHARS]; // ascii 32-128
+	float normalizedLineHeight = 0.0f;
     const std::string TAG = "FontTexture";
 
-	void updateCharData();
+	void processCharData(stbtt_bakedchar* cData);
 	void flipBitmap(unsigned char* bytes, int width, int height);
 };
 
