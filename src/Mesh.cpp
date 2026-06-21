@@ -50,3 +50,16 @@ void Mesh::draw(Camera& camera) {
 
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
+
+void Mesh::drawGui() {
+	if (material.textures.empty()) {
+		Log::err(TAG, "drawGui() called when textures is empty! not drawing anything.");
+		return;
+	}
+
+	material.shader->activate(); // bind shader to be able to access uniforms
+	vao.bind();
+	
+	material.textures[0]->exportTexture(*material.shader, "diffuse0", 0);
+	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
+}

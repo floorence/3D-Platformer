@@ -11,13 +11,11 @@ layout (location = 3) in vec2 aTex;
 out vec3 color;
 out vec2 texCoord;
 
-// Controls the scale of the vertices
-uniform float scale;
 uniform mat4 projection;
 
 void main() {
 	color = aColor;
 	texCoord = aTex;
 
-	gl_Position = projection * vec4(aPos.x + aPos.x * scale, aPos.y + aPos.y * scale, aPos.z + aPos.z * scale, 1.0);
+	gl_Position = projection * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }

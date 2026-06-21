@@ -53,15 +53,31 @@ std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x
 	float scale = lineHeight / normalizedLineHeight;
 	float spacing = lineHeight / 10.0f;
 	float spaceWidth = lineHeight / 6.0f;
+	float tabWidth = lineHeight * 2;
 	int currX = x;
 	int currY = y + lineHeight;
 	for (unsigned long i = 0; i < text.size(); i++) {
+
+		// handle "special" characters (not ascii 32 - 127)
+		if (text[i] == '\n') {
+			currX = x;
+			currY += lineHeight;
+			continue;
+		} else if (text[i] == '\t') {
+			currX += tabWidth;
+			continue;
+		} else if (text[i] < ' ' /* char type can't be > 127 so no need to check here */) {
+			Log::err(TAG, Log::oss("unrecognized character: ", text[i]));
+			continue;
+		}
+
 		NormalizedCharQuad c = charData[text[i] - ' '];
 		int width = (c.x1 - c.x0) * scale;
 		int height = (c.y1 - c.y0) * scale;
 
 		//Log::log(TAG, Log::oss(text[i], " c: ", text[i] - ' ', " width: ", width, " height: ", height));
 
+		// constrain width
 		if (currX + width > x + w) {
 			currX = x;
 			currY += lineHeight;

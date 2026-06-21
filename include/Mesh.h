@@ -16,12 +16,14 @@ public:
 	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, Material& material);
 
 	void draw(Camera& camera);
+	void drawGui();
 private:
 	VAO vao;
 	VBO vbo;
 	EBO ebo;
 	int drawCount;
 	Material material;
+	const std::string TAG = "Mesh";
 };
 
 #endif

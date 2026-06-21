@@ -5,6 +5,7 @@ Camera::Camera(int width, int height, glm::vec3 position) {
 	Camera::width = width;
 	Camera::height = height;
 	Camera::position = position;
+	Camera::mass = 1.0f;
 
 	lastX = width / 2.0;
 	lastY = height / 2.0;
@@ -25,37 +26,35 @@ void Camera::exportCamera(Shader& shader, const char* posUniform, const char* ma
 }
 
 void Camera::handleKeyInputs(GLFWwindow* window, float deltaTime) {
-	glm::vec3 acceleration = glm::vec3(0.0, 0.0, 0.0); // units per second per second
+	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
+	acceleration = glm::vec3(0.0f);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		acceleration += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
+		force += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		acceleration += -glm::normalize(glm::cross(orientation, UP));
+		force += -glm::normalize(glm::cross(orientation, UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		acceleration += -glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
+		force += -glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		acceleration += glm::normalize(glm::cross(orientation, UP));
+		force += glm::normalize(glm::cross(orientation, UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		acceleration += UP;
+		force += UP;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		acceleration += -UP;
+		force += -UP;
 	}
 
-	applyAcceleration(getAirResistance(), deltaTime);
-
-	if (acceleration != glm::vec3(0.0, 0.0, 0.0)) {
-		acceleration = ACCELERATION_MULTIPLIER * glm::normalize(acceleration);
-		applyAcceleration(acceleration, deltaTime);
+	if (force != glm::vec3(0.0, 0.0, 0.0)) {
+		force = glm::normalize(force);
+		applyForce(force);
 		//Log::log(TAG, Log::oss("new velocity: ", velocity.x, ", ", velocity.y, ", ", velocity.z, ", speed: ", glm::length(velocity)));
-	} else {
-		processVelocity();
 	}
-	position += velocity * deltaTime;
+
+	updatePosition(deltaTime);
 }
 
 void Camera::handleKeyInputs(GLFWwindow* window, int key, int action) {
@@ -111,25 +110,4 @@ void Camera::handleMousePos(double xpos, double ypos) {
 
 	// rotate the orientation left and right
 	orientation = glm::rotate(orientation, glm::radians(-rotX), UP);
-}
-
-void Camera::applyAcceleration(glm::vec3 a, float dt) {
-	velocity.x += a.x * dt;
-	velocity.y += a.y * dt;
-	velocity.z += a.z * dt;
-	float len2 = glm::length2(velocity);
-	if (len2 > maxSpeed * maxSpeed) {
-		Log::log(TAG, "reached max speed!");
-		velocity * (maxSpeed / std::sqrt(len2));
-	}
-}
-
-glm::vec3 Camera::getAirResistance() {
-	return -velocity * AIR_RESISTANCE_MULTIPLIER;
-}
-
-void Camera::processVelocity() {
-	if (glm::length(velocity) < STOPPING_SPEED) {
-		velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-	}
 }

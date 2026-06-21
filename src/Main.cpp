@@ -8,6 +8,7 @@
 #include"Mesh.h"
 #include"FontTexture.h"
 #include"ImageTexture.h"
+#include"Gui.h"
 #include"Log.h"
 
 const unsigned int width = 800;
@@ -155,20 +156,11 @@ int main() {
 	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
 	Mesh light(lightVerts, lightInd, lightMaterial);
 
-	// make gui mesh
+	// make gui
 	FontTexture guiDiffuse = FontTexture("assets/PixelOperator.ttf");
-	std::vector<Texture*> guiTextures;
-	guiTextures.push_back(&guiDiffuse);
-	Shader guiShader("shader/gui.vert", "shader/font.frag");
-	Material guiMaterial {&guiShader, guiTextures};
+	Gui gui(&guiDiffuse, width, height);
 
-	//std::vector <Vertex> guiVerts(guiVertices, guiVertices + sizeof(guiVertices) / sizeof(Vertex));
-	//std::vector <GLuint> guiInd(guiIndices, guiIndices + sizeof(guiIndices) / sizeof(GLuint));
-	std::vector guiVerts = guiDiffuse.generateVertices("Hello world!", 200, 200, 400, 20);
-	std::vector guiInd = guiDiffuse.generateIndices(guiVerts);
-	Mesh gui(guiVerts, guiInd, guiMaterial);
-
-	// make models
+	// make models - shader uses model to place vertices around correct location in the world
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	glm::mat4 lightModel = glm::mat4(1.0f);
@@ -186,10 +178,6 @@ int main() {
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
 	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-	guiShader.activate();
-	glUniform1f(glGetUniformLocation(guiShader.ID, "scale"), 0.0f);
-	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
-	glUniformMatrix4fv(glGetUniformLocation(guiShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(guiProjection));
 
 	Log::log(TAG, "shaders initialized");
 
@@ -218,7 +206,7 @@ int main() {
 
 		pyramid.draw(camera);
 		light.draw(camera);
-		gui.draw(camera);
+		gui.drawText(camera.getDebugString(), 200, 200, 400, 20);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

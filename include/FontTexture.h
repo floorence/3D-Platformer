@@ -37,7 +37,7 @@ private:
 	 */
 	const float fontHeight = 16.0f; 
 
-	NormalizedCharQuad charData[NUM_CHARS]; // ascii 32-128
+	NormalizedCharQuad charData[NUM_CHARS]; // ascii 32-127
 	float normalizedLineHeight = 0.0f; // height of tallest char as if texture atlas width and height was 1
     const std::string TAG = "FontTexture";
 
