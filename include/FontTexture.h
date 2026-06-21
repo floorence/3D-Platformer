@@ -41,6 +41,7 @@ private:
 	float normalizedLineHeight = 0.0f; // height of tallest char as if texture atlas width and height was 1
     const std::string TAG = "FontTexture";
 
+	int getHeightFromBaseline(char c, int charHeight, int lineHeight);
 	void processCharData(stbtt_bakedchar* cData);
 	void flipBitmap(unsigned char* bytes, int width, int height);
 };

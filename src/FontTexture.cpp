@@ -38,7 +38,7 @@ FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
     if (result <= 0) {
         Log::err(TAG, "stbtt_BakeFontBitmap failed. does the font fit into the atlas matrix?");
     } else {
-		//stbi_write_png("assets/font_dev_small.png", atlas_w, atlas_h, 1, bitmap_pixels, atlas_w);
+		//stbi_write_png("assets/font_dev.png", atlas_w, atlas_h, 1, bitmap_pixels, atlas_w);
 		processCharData(cData);
 		//flipBitmap(bitmap_pixels, atlas_w, atlas_h);
 		initTexture(bitmap_pixels, GL_RED, pixelType, atlas_w, atlas_h);
@@ -49,13 +49,13 @@ FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
 
 std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x, int y, int w, int lineHeight) {
 	std::vector<Vertex> vertices;
-	// current x and y of the BOTTOM LEFT of the character
 	float scale = lineHeight / normalizedLineHeight;
 	float spacing = lineHeight / 10.0f;
 	float spaceWidth = lineHeight / 6.0f;
 	float tabWidth = lineHeight * 2;
+	// current x and y of the BOTTOM LEFT of the character
 	int currX = x;
-	int currY = y + lineHeight;
+	int currY = y - lineHeight;
 	for (unsigned long i = 0; i < text.size(); i++) {
 
 		// handle "special" characters (not ascii 32 - 127)
@@ -88,26 +88,28 @@ std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x
 			continue;
 		}
 
+		int baselineHeight = getHeightFromBaseline(text[i], height, lineHeight);
+
 		Vertex topLeft = {
-			glm::vec3(currX, currY + height, 0.0f),
+			glm::vec3(currX, currY - baselineHeight, 0.0f),
 			glm::vec3(0.0f),
 			glm::vec3(0.0f),
 			glm::vec2(c.x0, c.y0)
 		};
 		Vertex topRight = {
-			glm::vec3(currX + width, currY + height, 0.0f),
+			glm::vec3(currX + width, currY - baselineHeight, 0.0f),
 			glm::vec3(0.0f),
 			glm::vec3(0.0f),
 			glm::vec2(c.x1, c.y0)
 		};
 		Vertex botLeft = {
-			glm::vec3(currX, currY, 0.0f),
+			glm::vec3(currX, currY - baselineHeight + height, 0.0f),
 			glm::vec3(0.0f),
 			glm::vec3(0.0f),
 			glm::vec2(c.x0, c.y1)
 		};
 		Vertex botRight = {
-			glm::vec3(currX + width, currY, 0.0f),
+			glm::vec3(currX + width, currY - baselineHeight + height, 0.0f),
 			glm::vec3(0.0f),
 			glm::vec3(0.0f),
 			glm::vec2(c.x1, c.y1)
@@ -129,6 +131,17 @@ std::vector<GLuint> FontTexture::generateIndices(std::vector<Vertex>& vertices) 
 		indices.insert(indices.end(), {i, i + 3, i + 2, i, i + 3, i + 1});
 	}
 	return indices;
+}
+
+int FontTexture::getHeightFromBaseline(char c, int charHeight, int lineHeight) {
+	if (c == 'g' || c == 'j' || c == 'p' || c == 'q' || c == 'y') { // delimiters
+		return charHeight - (charHeight / 4.0f);
+	} else if (c == '+' || c == '-' || c == '<' || c == '=' || c == '>' || c == '~') { // center vertically
+		return lineHeight / 2.0f - charHeight / 2.0f;
+	} else if (c == '\"' || c == '\'' || c == '*' || c == '^') { // top aligned
+		return lineHeight;
+	}
+	return charHeight; // bottom aligned
 }
 
 void FontTexture::processCharData(stbtt_bakedchar* cData) {

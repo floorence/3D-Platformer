@@ -36,6 +36,6 @@ void Gui::drawText(const std::string& text, int x, int y, int w, int lineHeight)
 
 void Gui::configureShader(int windowW, int windowH) {
     shader.activate();
-    glm::mat4 guiProjection = glm::ortho(0.0f, (float)windowW, 0.0f, (float)windowH, -1.0f, 1.0f);	
+    glm::mat4 guiProjection = glm::ortho(0.0f, (float)windowW, (float)windowH, 0.0f, -1.0f, 1.0f);	
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(guiProjection));
 }

@@ -27,7 +27,6 @@ void Camera::exportCamera(Shader& shader, const char* posUniform, const char* ma
 
 void Camera::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
-	acceleration = glm::vec3(0.0f);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		force += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
@@ -49,7 +48,7 @@ void Camera::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	}
 
 	if (force != glm::vec3(0.0, 0.0, 0.0)) {
-		force = glm::normalize(force);
+		force = 2.0f * glm::normalize(force);
 		applyForce(force);
 		//Log::log(TAG, Log::oss("new velocity: ", velocity.x, ", ", velocity.y, ", ", velocity.z, ", speed: ", glm::length(velocity)));
 	}
