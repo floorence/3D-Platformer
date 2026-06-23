@@ -15,7 +15,7 @@ void Mass::updatePosition(float dt) {
 }
 
 std::string Mass::getDebugString() {
-    return fmt::format("position: {:.4f}, {:.4f}, {:.4f}\nvelocity: {:.4f}, {:.4f}, {:.4f}\nspeed: {:.4f}\nacceleration: {:.4f}, {:.4f}, {:.4f}", 
+    return fmt::format("position: {:.3f}, {:.3f}, {:.3f}\nvelocity: {:.3f}, {:.3f}, {:.3f}\nspeed: {:.3f}\nacceleration: {:.3f}, {:.3f}, {:.3f}", 
         position.x, position.y, position.z,
         velocity.x, velocity.y, velocity.z,
         glm::length(velocity),

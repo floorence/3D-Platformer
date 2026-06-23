@@ -4,7 +4,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
-#include<format>
+#include<fmt/format.h>
 
 #include"Mesh.h"
 #include"FontTexture.h"
@@ -104,6 +104,13 @@ void keyCallback(GLFWwindow* window, int key, int, int action, int) {
 	camera_ptr->handleKeyInputs(window, key, action);
 }
 
+std::string formatPerformanceInfo(float frameTime, float realFrameTime) {
+	int fps = 1 / frameTime;
+	int realFps = 1 / realFrameTime;
+
+	return fmt::format("FPS: {}  |  {}\nframe time: {:.3f}  |  {:.3f}", fps, realFps, frameTime * 1000, realFrameTime * 1000);
+}
+
 int main() {
 	glfwInit();
 
@@ -189,6 +196,12 @@ int main() {
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
+	float lastUpdatedInfoText = 0.0f;
+	std::string currInfoText = "";
+
+	// first: total frame time, second: number of frames. real frame time is the frame time if vsync wasn't on.
+	std::pair<float, int> totalFrameTime(0.0f, 0);
+	std::pair<float, int> totalRealFrameTime(0.0f, 0);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouseCallback);
@@ -210,6 +223,26 @@ int main() {
 		gui.drawText(camera.getDebugString(), 200, 200, 400, 20);
 
 		glfwPollEvents();
+
+		// doing this here since glfwSwapBuffers() is what actually suspends when using vsync
+
+		float realCurrentFrame = glfwGetTime();
+		totalFrameTime.first += deltaTime;
+		totalFrameTime.second++;
+		totalRealFrameTime.first += realCurrentFrame - currentFrame;
+		totalRealFrameTime.second++;
+
+		if (realCurrentFrame - lastUpdatedInfoText >= 1.0f) {
+			lastUpdatedInfoText = realCurrentFrame;
+			float avgFrameTime = totalFrameTime.first / totalFrameTime.second;
+			float avgRealFrameTime = totalRealFrameTime.first / totalRealFrameTime.second;
+			
+			currInfoText = formatPerformanceInfo(avgFrameTime, avgRealFrameTime); 
+			totalFrameTime = std::pair(0.0f, 0);
+			totalRealFrameTime = std::pair(0.0f, 0);
+		}
+
+		gui.drawText(currInfoText, width - 200, 10, 200, 16);
 		glfwSwapBuffers(window);
 	}
 

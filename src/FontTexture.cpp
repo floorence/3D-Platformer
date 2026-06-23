@@ -52,11 +52,11 @@ std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x
 	std::vector<Vertex> vertices;
 	float scale = lineHeight / normalizedLineHeight;
 	float spacing = lineHeight / 10.0f;
-	float spaceWidth = lineHeight / 6.0f;
+	float spaceWidth = lineHeight / 4.0f;
 	float tabWidth = lineHeight * 2;
 	// current x and y of the BOTTOM LEFT of the character
 	int currX = x;
-	int currY = y - lineHeight;
+	int currY = y + lineHeight;
 	for (unsigned long i = 0; i < text.size(); i++) {
 
 		// handle "special" characters (not ascii 32 - 127)
