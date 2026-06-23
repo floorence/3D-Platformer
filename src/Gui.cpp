@@ -1,4 +1,6 @@
 #include "Gui.h"
+#include"Log.h"
+#include"Mesh.h"
 
 Gui::Gui(FontTexture* t, int windowW, int windowH)
     : fontTex(t),

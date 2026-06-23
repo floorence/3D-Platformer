@@ -1,5 +1,5 @@
 #include "Mass.h"
-#include "Log.h"
+#include<fmt/format.h>
 #include <glm/gtx/vector_angle.hpp>
 
 void Mass::applyForce(glm::vec3 f) {
@@ -15,10 +15,11 @@ void Mass::updatePosition(float dt) {
 }
 
 std::string Mass::getDebugString() {
-    return Log::oss("position: ", position.x, ", ", position.y, ", ", position.z, "\n"
-        "velocity: ", velocity.x, ", ", velocity.y, ", ", velocity.z, "\n",
-        "speed: ", glm::length(velocity), "\n",
-        "acceleration: ", acceleration.x, ", ", acceleration.y, ", ", acceleration.z
+    return fmt::format("position: {:.4f}, {:.4f}, {:.4f}\nvelocity: {:.4f}, {:.4f}, {:.4f}\nspeed: {:.4f}\nacceleration: {:.4f}, {:.4f}, {:.4f}", 
+        position.x, position.y, position.z,
+        velocity.x, velocity.y, velocity.z,
+        glm::length(velocity),
+        acceleration.x, acceleration.y, acceleration.z
     );
 }
 

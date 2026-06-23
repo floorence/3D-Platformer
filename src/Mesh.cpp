@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include<string>
+#include"Log.h"
 
 Mesh::Mesh(
 	std::vector <Vertex>& vertices, 

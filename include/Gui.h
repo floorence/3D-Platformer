@@ -3,7 +3,6 @@
 
 #include "FontTexture.h"
 #include "ImageTexture.h"
-#include "Mesh.h"
 
 class Gui {
 public:

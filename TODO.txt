@@ -6,8 +6,7 @@ refactor and clean up
 - optimize: generateIndices only needs size of vertices. and it will be the same every time till the size is reached
 
 feature
-- different log levels, migrate to spd log??
-- debug text and gui engine
+- way to only log some log levels
 - test on different window aspect ratio
 - collision
 - gravity

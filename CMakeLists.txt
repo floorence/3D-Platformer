@@ -4,6 +4,7 @@ project(Platformer)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(fmt)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -26,6 +27,7 @@ target_include_directories(Platformer SYSTEM PRIVATE
 target_link_libraries(Platformer PRIVATE
     OpenGL::GL
     glfw
+    fmt::fmt
 )
 
 target_compile_options(Platformer PRIVATE

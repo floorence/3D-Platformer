@@ -5,6 +5,7 @@
 #include "FontTexture.h"
 #include<string.h>
 #include "Log.h"
+#include<fmt/format.h>
 #include"stb/stb_image_write.h"
 
 FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
@@ -67,7 +68,7 @@ std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x
 			currX += tabWidth;
 			continue;
 		} else if (text[i] < ' ' /* char type can't be > 127 so no need to check here */) {
-			Log::err(TAG, Log::oss("unrecognized character: ", text[i]));
+			Log::warn(TAG, fmt::format("unrecognized character: {}", text[i]));
 			continue;
 		}
 

@@ -2,6 +2,7 @@
 #include<stb/stb_image.h>
 #include"ImageTexture.h"
 #include"Log.h"
+#include<fmt/format.h>
 
 ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType, bool convertToSpecular) {
 	type = texType;
@@ -11,7 +12,7 @@ ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelT
 
 	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
 	Log::log(TAG, "loaded image");
-	Log::log(TAG, Log::oss("colour channels: ", numColCh));
+	Log::log(TAG, fmt::format("colour channels: {}", numColCh));
 
 	if (convertToSpecular && numColCh >= 3) {
 		type = TextureType::Specular;

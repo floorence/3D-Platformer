@@ -4,6 +4,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
+#include<format>
 
 #include"Mesh.h"
 #include"FontTexture.h"
@@ -127,7 +128,7 @@ int main() {
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
-	Log::log(TAG, Log::oss("configuring viewport: 0, 0, ", fbWidth, ", ", fbHeight));
+	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
 	glViewport(0, 0, fbWidth, fbHeight);
 
@@ -194,12 +195,12 @@ int main() {
 	glfwSetKeyCallback(window, keyCallback);
 
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the back buffer
-
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the back buffer
 
 		camera.handleKeyInputs(window, deltaTime);
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
@@ -208,8 +209,8 @@ int main() {
 		light.draw(camera);
 		gui.drawText(camera.getDebugString(), 200, 200, 400, 20);
 
-		glfwSwapBuffers(window);
 		glfwPollEvents();
+		glfwSwapBuffers(window);
 	}
 
 	glfwDestroyWindow(window);

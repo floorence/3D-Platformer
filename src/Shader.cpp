@@ -1,7 +1,7 @@
 #include"Shader.h"
+#include <fmt/format.h>
 #include<fstream>
 #include<iostream>
-#include<cerrno>
 #include"Log.h"
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {
@@ -50,13 +50,13 @@ void Shader::logCompileErrors(unsigned int shader, ShaderType type) {
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
 		if (hasCompiled == GL_FALSE) {
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			Log::err(TAG, Log::oss("SHADER_COMPILATION_ERROR for:", typeToString(type), "\n", infoLog));
+			Log::err(TAG, fmt::format("SHADER_COMPILATION_ERROR for: {}\n{}", typeToString(type), infoLog));
 		}
 	} else {
 		glGetProgramiv(shader, GL_LINK_STATUS, &hasCompiled);
 		if (hasCompiled == GL_FALSE) {
 			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			Log::err(TAG, Log::oss("SHADER_LINKING_ERROR for:", typeToString(type), "\n", infoLog));
+			Log::err(TAG, fmt::format("SHADER_LINKING_ERROR for: {}\n{}", typeToString(type), infoLog));
 		}
 	}
 }
@@ -81,7 +81,7 @@ std::string Shader::getFileContents(const char* filename) {
 		in.close();
 		return(contents);
 	}
-	Log::log(TAG, Log::oss("failed to read shader file: ", filename));
+	Log::err(TAG, fmt::format("failed to read shader file: {}", filename));
 	throw(errno);
 }
 

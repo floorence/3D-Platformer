@@ -1,7 +1,7 @@
 #ifndef VBO_CLASS_H
 #define VBO_CLASS_H
 
-#include "Log.h"
+#include<fmt/format.h>
 #include<glm/glm.hpp>
 #include<glad/glad.h>
 #include <string>
@@ -14,10 +14,8 @@ struct Vertex {
 	glm::vec2 texUV;
 
 	std::string to_string() {
-		return Log::oss("Vertex { position: ", 
-			position.x, ", ", position.y, ", ", position.z, 
-			" texUV: ", 
-			texUV.x, ", ", texUV.y, "}");
+		return fmt::format("Vertex {{ position: {}, {}, {}, texUV: {}, {} }}", 
+			position.x, position.y, position.z, texUV.x, texUV.y);
 	}
 };
 

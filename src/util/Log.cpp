@@ -1,25 +1,29 @@
 #include"Log.h"
-#include <ctime>
-#include <iomanip>
-#include <chrono>
-#include <iostream>
+#include <fmt/base.h>
+#include <fmt/format.h>
+#include <fmt/chrono.h>
+#include <fmt/color.h>
 
 std::string getTimestamp() {
     auto now = std::chrono::system_clock::now();
 
     std::time_t time_t_now = std::chrono::system_clock::to_time_t(now);
-    std::tm* local_tm = std::localtime(&time_t_now); // Use localtime_s or localtime_r for thread-safety
+    std::tm* local_tm = std::localtime(&time_t_now); // not thread safe btw but idc rn
 
     auto duration = now.time_since_epoch();
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() % 1000;
 
-    return Log::oss(std::put_time(local_tm, "%m-%d %H:%M:%S"), ".", std::setfill('0'), std::setw(3), millis);
+    return fmt::format("{:%m-%d %H:%M:%S}.{:03d}", *local_tm, millis);
 }
 
 void Log::log(std::string tag, std::string message) {
-    std::cout << getTimestamp() << " " << tag << ": " << message << std::endl;
+    fmt::print("{} {}: {}\n", getTimestamp(), tag, message);
 }
 
 void Log::err(std::string tag, std::string message) {
-    std::cerr << getTimestamp() << " " << tag << ": " << message << std::endl;
+    fmt::print(fg(fmt::color::red), "{} {}: {}\n", getTimestamp(), tag, message);
+}
+
+void Log::warn(std::string tag, std::string message) {
+    fmt::print(fg(fmt::color::gold), "{} {}: {}\n", getTimestamp(), tag, message);
 }
