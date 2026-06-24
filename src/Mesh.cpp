@@ -3,9 +3,9 @@
 #include"Log.h"
 
 Mesh::Mesh(
-	std::vector <Vertex>& vertices, 
-	std::vector <GLuint>& indices, 
-	Material& material
+	const std::vector <Vertex>& vertices, 
+	const std::vector <GLuint>& indices, 
+	const Material& material
 )
 	: material(material)
 {

@@ -10,7 +10,7 @@ VBO::VBO(std::vector<Vertex>& vertices) {
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 }
 
-void VBO::linkVertices(std::vector<Vertex>& vertices) {
+void VBO::linkVertices(const std::vector<Vertex>& vertices) {
 	bind();
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 }

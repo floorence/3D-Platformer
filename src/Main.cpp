@@ -7,6 +7,7 @@
 #include<fmt/format.h>
 
 #include"Mesh.h"
+#include"Sphere.h"
 #include"FontTexture.h"
 #include"ImageTexture.h"
 #include"Gui.h"
@@ -178,6 +179,10 @@ int main() {
 	glm::mat4 pyramidModel = glm::mat4(1.0f);
 	pyramidModel = glm::translate(pyramidModel, pyramidPos);
 
+	// make sphere
+	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(3.0f, 0.0f, 0.0f), 1);
+	sphere.registerLightSource(lightColor, lightPos);
+
 	// configure shaders
 	lightShader.activate();
 	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
@@ -220,6 +225,7 @@ int main() {
 
 		pyramid.draw(camera);
 		light.draw(camera);
+		sphere.draw(camera);
 		gui.drawText(camera.getDebugString(), 200, 200, 400, 20);
 
 		glfwPollEvents();

@@ -18,7 +18,7 @@ public:
     EBO(EBO&& other) noexcept;
     EBO& operator=(EBO&& other) noexcept;
 
-	void linkIndices(std::vector<GLuint>& indices);
+	void linkIndices(const std::vector<GLuint>& indices);
 	void bind();
 	void unbind();
 };

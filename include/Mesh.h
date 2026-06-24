@@ -13,7 +13,7 @@ struct Material {
 
 class Mesh {
 public:
-	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, Material& material);
+	Mesh(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices, const Material& material);
 
 	void draw(Camera& camera);
 	void drawGui();

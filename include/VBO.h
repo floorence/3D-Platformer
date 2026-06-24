@@ -33,7 +33,7 @@ public:
     VBO(VBO&& other) noexcept;
     VBO& operator=(VBO&& other) noexcept;
 
-	void linkVertices(std::vector<Vertex>& vertices);
+	void linkVertices(const std::vector<Vertex>& vertices);
 	void bind();
 	void unbind();
 };
