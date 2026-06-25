@@ -2,6 +2,8 @@
 #include<string>
 #include"Log.h"
 
+Mesh::Mesh(const Material& material) : material(material) {}
+
 Mesh::Mesh(
 	const std::vector <Vertex>& vertices, 
 	const std::vector <GLuint>& indices, 
@@ -9,6 +11,14 @@ Mesh::Mesh(
 )
 	: material(material)
 {
+	setShapeData(vertices, indices);
+}
+
+void Mesh::setMaterial(const Material& material) {
+	this->material = material;
+}
+
+void Mesh::setShapeData(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices) {
 	drawCount = indices.size();
 
 	vao.bind();
@@ -25,8 +35,12 @@ Mesh::Mesh(
 	ebo.unbind();
 }
 
-
 void Mesh::draw(Camera& camera) {
+	if (material.shader == nullptr) {
+		Log::err(TAG, "draw() called when shader is null! not drawing anything.");
+		return;
+	}
+
 	material.shader->activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
@@ -53,8 +67,8 @@ void Mesh::draw(Camera& camera) {
 }
 
 void Mesh::drawGui() {
-	if (material.textures.empty()) {
-		Log::err(TAG, "drawGui() called when textures is empty! not drawing anything.");
+	if (material.shader == nullptr || material.textures.empty()) {
+		Log::err(TAG, "drawGui() called when shader is null or textures is empty! not drawing anything.");
 		return;
 	}
 

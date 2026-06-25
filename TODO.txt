@@ -4,6 +4,7 @@ refactor and clean up
 - move typetostring stuff to utils file? check for functions that dont belong to class
 - move structs and enums to their own files?
 - optimize: generateIndices only needs size of vertices. and it will be the same every time till the size is reached
+- pi in multiple different places
 
 feature
 - way to only log some log levels

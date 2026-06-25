@@ -1,16 +1,14 @@
 #include"Sphere.h"
 
-Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, int radius) 
-    : shader("shader/default.vert", "shader/default.frag"),
-      mesh(
-        generateVertices(radius, NUM_STACKS, NUM_SECTORS),
-        generateIndices(NUM_STACKS, NUM_SECTORS),
-        Material {&shader, {diffuse, specular}}
-      )
+Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, int radius, int numStacks, int numSectors) 
+    : Shape3D(diffuse, specular, position),
+      numStacks(numStacks),
+      numSectors(numSectors)
 {
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-    configureShader(model);
+    mesh.setShapeData(        
+        generateVertices(radius, numStacks, numSectors),
+        generateIndices(numStacks, numSectors)
+    );
 }
 
 // adapted from https://www.songho.ca/opengl/gl_sphere.html#example_sphere
@@ -77,19 +75,4 @@ std::vector<GLuint> Sphere::generateIndices(int stacks, int sectors) {
         }
     }
     return indices;
-}
-
-void Sphere::configureShader(glm::mat4 model) {
-	shader.activate();
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-}
-
-void Sphere::registerLightSource(glm::vec4 lightColor, glm::vec3 lightPos) {
-    shader.activate();
-	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
-}
-
-void Sphere::draw(Camera& camera) {
-    mesh.draw(camera);
 }
