@@ -5,8 +5,9 @@ Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, int radi
       numStacks(numStacks),
       numSectors(numSectors)
 {
+    vertices = generateVertices(radius, numStacks, numSectors);
     mesh.setShapeData(        
-        generateVertices(radius, numStacks, numSectors),
+        vertices,
         generateIndices(numStacks, numSectors)
     );
 }

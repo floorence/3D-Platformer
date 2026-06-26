@@ -5,8 +5,9 @@
 RectangularPrism::RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length) 
     : Shape3D(diffuse, specular, position)
 {
+    vertices = generateVertices(width, height, length);
     mesh.setShapeData(        
-        generateVertices(width, height, length),
+        vertices,
         generateIndices()
     );
 }

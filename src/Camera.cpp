@@ -26,6 +26,8 @@ void Camera::exportCamera(Shader& shader, const char* posUniform, const char* ma
 }
 
 void Camera::handleKeyInputs(GLFWwindow* window, float deltaTime) {
+	if (!focused) return;
+
 	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {

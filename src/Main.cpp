@@ -190,6 +190,7 @@ int main() {
 
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-3.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
 	rect.registerLightSource(lightColor, lightPos);
+	rect.setRotation(0, 0, 60);
 
 	// configure shaders
 	lightShader.activate();

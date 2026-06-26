@@ -11,6 +11,7 @@ void Mass::updatePosition(float dt) {
     velocity += acceleration * dt;
     processVelocity();
     position += velocity * dt;
+    prevAcceleration = acceleration;
 	acceleration = glm::vec3(0.0f);
 }
 
@@ -19,7 +20,7 @@ std::string Mass::getDebugString() {
         position.x, position.y, position.z,
         velocity.x, velocity.y, velocity.z,
         glm::length(velocity),
-        acceleration.x, acceleration.y, acceleration.z
+        prevAcceleration.x, prevAcceleration.y, prevAcceleration.z
     );
 }
 

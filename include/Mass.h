@@ -20,6 +20,8 @@ protected:
 	const float AIR_RESISTANCE_COEFFICIENT = 2.0f;
 	const float STOPPING_SPEED = 0.0005f;
 
+	glm::vec3 prevAcceleration;
+
 	glm::vec3 getAirResistance(); // return force from air resistance
 	virtual void processVelocity();
 };

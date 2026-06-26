@@ -1,17 +1,20 @@
 #include "Shape3D.h"
 
-Shape3D::Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position, float rotationX, float rotationY, float rotationZ) 
-    : shader("shader/default.vert", "shader/default.frag"),
+Shape3D::Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position) 
+    : position(position),
+      shader("shader/default.vert", "shader/default.frag"),
       mesh(Material{&shader, {diffuse, specular}})
 {
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
+    model = glm::translate(model, position);
+    configureShader(model);
+}
 
+void Shape3D::setRotation(float rotationX, float rotationY, float rotationZ) {
+    model = glm::translate(glm::mat4(1.0f), position); // reset model
     // apply translation first and rotation second since matrix multiplication in glm works from right to left 
     if (rotationX) model = glm::rotate(model, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
     if (rotationY) model = glm::rotate(model, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
     if (rotationZ) model = glm::rotate(model, glm::radians(rotationZ), glm::vec3(0.0f, 0.0f, 1.0f));
-
     configureShader(model);
 }
 
