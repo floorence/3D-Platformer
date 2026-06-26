@@ -8,6 +8,7 @@
 
 #include"Mesh.h"
 #include"Sphere.h"
+#include"RectangularPrism.h"
 #include"FontTexture.h"
 #include"ImageTexture.h"
 #include"Gui.h"
@@ -183,6 +184,13 @@ int main() {
 	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(3.0f, 0.0f, 0.0f), 1);
 	sphere.registerLightSource(lightColor, lightPos);
 
+	// make rectangular prism
+	Texture bunDiffuse = ImageTexture("assets/bun_bun_tree.png", TextureType::Diffuse);
+	Texture bunSpecular = ImageTexture("assets/bun_bun_tree.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
+
+	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-3.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
+	rect.registerLightSource(lightColor, lightPos);
+
 	// configure shaders
 	lightShader.activate();
 	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
@@ -226,6 +234,7 @@ int main() {
 		pyramid.draw(camera);
 		light.draw(camera);
 		sphere.draw(camera);
+		rect.draw(camera);
 		gui.drawText(camera.getDebugString(), 200, 200, 400, 20);
 
 		glfwPollEvents();

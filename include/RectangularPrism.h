@@ -14,9 +14,11 @@ public:
      * @param length size in z axis
      * @param height size in y axis
      */ 
-    RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, int width, int length, int height);
+    RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length);
 private:
-    std::vector<Vertex> generateVertices(int width, int length, int height);
+    const std::string TAG = "RectangularPrism";
+
+    std::vector<Vertex> generateVertices(float width, float height, float length);
     std::vector<GLuint> generateIndices();
     glm::vec2 deriveTexCoord(glm::vec3 vertex, Facing dir);
 };
