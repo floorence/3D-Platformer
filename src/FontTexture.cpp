@@ -94,24 +94,20 @@ std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x
 		Vertex topLeft = {
 			glm::vec3(currX, currY - baselineHeight, 0.0f),
 			glm::vec3(0.0f),
-			glm::vec3(0.0f),
 			glm::vec2(c.x0, c.y0)
 		};
 		Vertex topRight = {
 			glm::vec3(currX + width, currY - baselineHeight, 0.0f),
-			glm::vec3(0.0f),
 			glm::vec3(0.0f),
 			glm::vec2(c.x1, c.y0)
 		};
 		Vertex botLeft = {
 			glm::vec3(currX, currY - baselineHeight + height, 0.0f),
 			glm::vec3(0.0f),
-			glm::vec3(0.0f),
 			glm::vec2(c.x0, c.y1)
 		};
 		Vertex botRight = {
 			glm::vec3(currX + width, currY - baselineHeight + height, 0.0f),
-			glm::vec3(0.0f),
 			glm::vec3(0.0f),
 			glm::vec2(c.x1, c.y1)
 		};

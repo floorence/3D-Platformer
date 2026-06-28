@@ -2,7 +2,7 @@ refactor and clean up
 - optimize getting length of vectors
 - stop hard coding stuff
 - optimize: FontTexture::generateIndices only needs size of vertices. and it will be the same every time till the size is reached
-- DEPRECATE COLOR! think of a better way to apply color instead of/on top of texture.
+- implement way to apply solid colour tint to entire object
 
 feature
 - way to only log some log levels

@@ -19,33 +19,31 @@ const unsigned int height = 800;
 const std::string TAG = "Main";
 
 // Vertices coordinates
-Vertex vertices[] =
-{ //                      COORDINATES           /        NORMALS          /            COLOURS          /  TEXTURE COORDINATES  //
-	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(0.0f, 0.0f)},  // Bottom side
-	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(0.0f, 5.0f)},  // Bottom side
-	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(5.0f, 5.0f)},  // Bottom side
-	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(5.0f, 0.0f)},  // Bottom side
+Vertex vertices[] = {
+	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},  // Bottom side
+	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 5.0f)},  // Bottom side
+	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(5.0f, 5.0f)},  // Bottom side
+	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(5.0f, 0.0f)},  // Bottom side
 
-	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(0.0f, 0.0f)},  // Left Side
-	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(5.0f, 0.0f)},  // Left Side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec3(0.92f, 0.86f, 0.76f), glm::vec2(2.5f, 5.0f)},  // Left Side
+	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec2(0.0f, 0.0f)},  // Left Side
+	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec2(5.0f, 0.0f)},  // Left Side
+	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec2(2.5f, 5.0f)},  // Left Side
 
-	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(5.0f, 0.0f)},  // Non-facing side
-	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(0.0f, 0.0f)},  // Non-facing side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec3(0.92f, 0.86f, 0.76f), glm::vec2(2.5f, 5.0f)},  // Non-facing side
+	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec2(5.0f, 0.0f)},  // Non-facing side
+	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec2(0.0f, 0.0f)},  // Non-facing side
+	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec2(2.5f, 5.0f)},  // Non-facing side
 
-	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(0.0f, 0.0f)},  // Right side
-	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(5.0f, 0.0f)},  // Right side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec3(0.92f, 0.86f, 0.76f), glm::vec2(2.5f, 5.0f)},  // Right side
+	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec2(0.0f, 0.0f)},  // Right side
+	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec2(5.0f, 0.0f)},  // Right side
+	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec2(2.5f, 5.0f)},  // Right side
 
-	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(5.0f, 0.0f)},  // Facing side
-	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec3(0.83f, 0.70f, 0.44f), glm::vec2(0.0f, 0.0f)},  // Facing side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec3(0.92f, 0.86f, 0.76f), glm::vec2(2.5f, 5.0f)},  // Facing side
+	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec2(5.0f, 0.0f)},  // Facing side
+	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec2(0.0f, 0.0f)},  // Facing side
+	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec2(2.5f, 5.0f)},  // Facing side
 };
 
 // Indices for vertices order
-GLuint indices[] =
-{
+GLuint indices[] = {
 	0, 1, 2, // Bottom side
 	0, 2, 3, // Bottom side
 	4, 6, 5, // Left side
@@ -54,20 +52,18 @@ GLuint indices[] =
 	13, 15, 14 // Facing side
 };
 
-Vertex lightVertices[] =
-{ //               COORDINATES            // normal        // color        // texture       //
-	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f)}
+Vertex lightVertices[] = {
+	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
+	Vertex{glm::vec3( 0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)}
 };
 
-GLuint lightIndices[] =
-{
+GLuint lightIndices[] = {
 	0, 1, 2,
 	0, 2, 3,
 	0, 4, 7,
@@ -81,17 +77,15 @@ GLuint lightIndices[] =
 };
 
 // square
-Vertex guiVertices[] =
-{
-	Vertex{glm::vec3(200.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f)},
-	Vertex{glm::vec3(200.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f)},
-	Vertex{glm::vec3(600.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f)},
-	Vertex{glm::vec3(600.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f)}
+Vertex guiVertices[] = {
+	Vertex{glm::vec3(200.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f)},
+	Vertex{glm::vec3(200.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f)},
+	Vertex{glm::vec3(600.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f)},
+	Vertex{glm::vec3(600.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f)}
 };
 
 // square
-GLuint guiIndices[] =
-{
+GLuint guiIndices[] = {
 	0, 2, 1,
 	0, 3, 2
 };

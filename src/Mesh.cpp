@@ -24,11 +24,10 @@ void Mesh::setShapeData(const std::vector <Vertex>& vertices, const std::vector 
 	vao.bind();
 	vbo.linkVertices(vertices);
 	ebo.linkIndices(indices);
-	// Links VBO attributes such as coordinates and colors to VAO
+	// link vertex data from vbo to vao
 	vao.linkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
 	vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
-	vao.linkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
-	vao.linkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
+	vao.linkAttrib(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
 
 	vao.unbind();
 	vbo.unbind();

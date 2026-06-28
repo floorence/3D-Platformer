@@ -37,21 +37,18 @@ std::vector<Vertex> RectangularPrism::generateVertices() {
         Vertex xFacing = Vertex{
             pos,
             xNormal,
-            glm::vec3(0.0f),
             xFacingTexCoord
         };
 
         Vertex yFacing = Vertex{
             glm::vec3(x, y, z),
             yNormal,
-            glm::vec3(0.0f),
             yFacingTexCoord
         };
 
         Vertex zFacing = Vertex{
             glm::vec3(x, y, z),
             zNormal,
-            glm::vec3(0.0f),
             zFacingTexCoord
         };
 

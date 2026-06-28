@@ -38,7 +38,6 @@ std::vector<Vertex> Sphere::generateVertices() {
             Vertex vertex = Vertex {
                 glm::vec3(x, y, z),
                 glm::vec3(x, y, z), // normals same as position for smooth lighting
-                glm::vec3(0.39f, 0.73f, 0.36f),
                 glm::vec2(u, v)
             };
 
