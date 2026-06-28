@@ -5,6 +5,7 @@ refactor and clean up
 - implement way to apply solid colour tint to entire object
 
 feature
+- light controller that keeps track of objects and light sources close enough to them
 - way to only log some log levels
 - test on different window aspect ratio
 - collision

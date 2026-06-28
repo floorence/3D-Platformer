@@ -52,30 +52,6 @@ GLuint indices[] = {
 	13, 15, 14 // Facing side
 };
 
-Vertex lightVertices[] = {
-	Vertex{glm::vec3(-0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3(-0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f, -0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f, -0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3(-0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3(-0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f,  0.1f, -0.1f), glm::vec3(0.0f), glm::vec2(0.0f)},
-	Vertex{glm::vec3( 0.1f,  0.1f,  0.1f), glm::vec3(0.0f), glm::vec2(0.0f)}
-};
-
-GLuint lightIndices[] = {
-	0, 1, 2,
-	0, 2, 3,
-	0, 4, 7,
-	0, 7, 3,
-	3, 7, 6,
-	3, 6, 2,
-	2, 6, 5,
-	2, 5, 1, 1, 5, 4, 1, 4, 0,
-	4, 5, 6,
-	4, 6, 7
-};
-
 // square
 Vertex guiVertices[] = {
 	Vertex{glm::vec3(200.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f)},
@@ -152,14 +128,6 @@ int main() {
 	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
 	Mesh pyramid(verts, ind, pyramidMaterial);
 
-	// make light cube mesh
-	Shader lightShader("shader/light.vert", "shader/light.frag");
-	Material lightMaterial { &lightShader, {} };
-
-	std::vector <Vertex> lightVerts(lightVertices, lightVertices + sizeof(lightVertices) / sizeof(Vertex));
-	std::vector <GLuint> lightInd(lightIndices, lightIndices + sizeof(lightIndices) / sizeof(GLuint));
-	Mesh light(lightVerts, lightInd, lightMaterial);
-
 	// make gui
 	FontTexture guiDiffuse = FontTexture("assets/pixel_operator_short_dollar.ttf");
 	Gui gui(&guiDiffuse, width, height);
@@ -167,8 +135,8 @@ int main() {
 	// make models - shader uses model to place vertices around correct location in the world
 	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
-	glm::mat4 lightModel = glm::mat4(1.0f);
-	lightModel = glm::translate(lightModel, lightPos);
+	RectangularPrism light(nullptr, nullptr, lightPos, 0.2f, 0.2f, 0.2f, true);
+	light.setColor(lightColor, 1.0f);
 
 	glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::mat4 pyramidModel = glm::mat4(1.0f);
@@ -187,9 +155,6 @@ int main() {
 	rect.setRotation(0, 0, 180);
 
 	// configure shaders
-	lightShader.activate();
-	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
-	glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
 	shader.activate();
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
 	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);

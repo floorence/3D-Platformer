@@ -2,8 +2,8 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
 
-RectangularPrism::RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length) 
-    : Shape3D(diffuse, specular, position),
+RectangularPrism::RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length, bool isLightSource) 
+    : Shape3D(diffuse, specular, position, isLightSource),
       width(width), height(height), length(length)
 {
     invalidateShape();

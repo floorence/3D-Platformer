@@ -5,7 +5,8 @@
 
 class Shape3D {
 public:
-    Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position);
+    Shape3D(glm::vec3 position, bool isLightSource);
+    Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position, bool isLightSource);
     virtual ~Shape3D() = default;
 
     /**
@@ -14,6 +15,7 @@ public:
      * @param rotationZ rotation around z axis in degrees
      */
     void setRotation(float rotationX, float rotationY, float rotationZ);
+    void setColor(glm::vec4 color, float intensity);
     void registerLightSource(glm::vec4 lightColor, glm::vec3 lightPos);
     void draw(Camera& camera);
 protected:
@@ -28,7 +30,8 @@ protected:
      * call this after updating position and/or rotation.
      */
     void invalidateModel();
-private:    
+private:
+    bool isLightSource = false;
     glm::mat4 model = glm::mat4(1.0f);
 
     std::vector<Vertex> vertices;

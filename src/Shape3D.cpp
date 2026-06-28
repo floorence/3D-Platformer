@@ -1,10 +1,21 @@
 #include "Shape3D.h"
 
-Shape3D::Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position) 
+Shape3D::Shape3D(glm::vec3 position, bool isLightSource) 
     : position(position),
-      shader("shader/default.vert", "shader/default.frag"),
-      mesh(Material{&shader, {diffuse, specular}})
+      isLightSource(isLightSource),
+      shader(
+        (isLightSource) ? "shader/light.vert" : "shader/default.vert", 
+        (isLightSource) ? "shader/light.frag" : "shader/default.frag"
+      ) {}
+
+Shape3D::Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position, bool isLightSource) 
+    : Shape3D(position, isLightSource)
 {
+    std::vector<Texture*> textures;
+    if (diffuse != nullptr) {
+        textures = {diffuse, specular};
+    }
+    mesh.setMaterial(Material{&shader, textures});
     model = glm::translate(model, position);
     configureShader(model);
 }
@@ -46,6 +57,12 @@ void Shape3D::setRotation(float rotationX, float rotationY, float rotationZ) {
     
     invalidateShape();
     invalidateModel();
+}
+    
+void Shape3D::setColor(glm::vec4 color, float intensity) {
+    shader.activate();
+    glUniform4f(glGetUniformLocation(shader.ID, "color"), color.x, color.y, color.z, color.w);
+    glUniform1f(glGetUniformLocation(shader.ID, "colorIntensity"), intensity);
 }
 
 void Shape3D::configureShader(glm::mat4 model) {

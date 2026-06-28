@@ -9,6 +9,8 @@ in vec2 texCoord;
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
 
+uniform vec4 color;
+uniform float colorIntensity; // 0 to 1
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform vec3 camPos;
@@ -28,9 +30,8 @@ void main() {
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 
-	// outputs final color
-	// without specular lighting
-	//FragColor = texture(diffuse0, texCoord) * lightColor * (diffuse + ambient + specular);
-	// with specular lighting
-	FragColor = (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor;
+	vec4 preTintColor = (texture(diffuse0, texCoord) * (diffuse + ambient) + texture(specular0, texCoord).r * specular) * lightColor;
+	vec3 tintedColor = mix(preTintColor.rgb, color.rgb, colorIntensity);
+    
+    FragColor = vec4(tintedColor, preTintColor.a);
 }

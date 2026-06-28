@@ -14,7 +14,7 @@ public:
      * @param length size in z axis
      * @param height size in y axis
      */ 
-    RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length);
+    RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length, bool isLightSource = false);
 private:
     float width, height, length;
     const std::string TAG = "RectangularPrism";
