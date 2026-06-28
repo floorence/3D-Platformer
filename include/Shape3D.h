@@ -21,7 +21,7 @@ protected:
     float rotationX, rotationY, rotationZ;
  
     /**
-     * call this after updating rotation or any fields used by generateVertices/Indices
+     * call this after updating rotation or any subclass fields used by generateVertices/Indices
      */
     void invalidateShape();
     /**

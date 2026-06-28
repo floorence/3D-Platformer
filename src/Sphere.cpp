@@ -1,4 +1,5 @@
 #include"Sphere.h"
+#include <glm/gtc/constants.hpp>
 
 Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, float radius, int stacks, int sectors) 
     : Shape3D(diffuse, specular, position),
@@ -11,7 +12,7 @@ Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, float ra
 //              Sphere::buildVerticesSmooth() (first half)
 std::vector<Vertex> Sphere::generateVertices() {
     std::vector<Vertex> vertices;
-    const float PI = acos(-1.0f);
+    const float PI = glm::pi<float>();
 
     float sectorStep = 2 * PI / sectors;
     float stackStep = PI / stacks;

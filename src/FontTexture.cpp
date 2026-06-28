@@ -155,17 +155,3 @@ void FontTexture::processCharData(stbtt_bakedchar* cData) {
 		normalizedLineHeight = std::max(normalizedLineHeight, charData[i].y1 - charData[i].y0);
 	}
 }
-
-void FontTexture::flipBitmap(unsigned char* bytes, int width, int height) {
-	unsigned char* temp_row = new unsigned char[width];
-	for (int i = 0; i < height / 2; ++i) {
-		unsigned char* row1 = bytes + i * width;
-		unsigned char* row2 = bytes + (height - 1 - i) * width;
-		
-		// Swap rows
-		memcpy(temp_row, row1, width);
-		memcpy(row1, row2, width);
-		memcpy(row2, temp_row, width);
-	}
-	delete[] temp_row;
-}

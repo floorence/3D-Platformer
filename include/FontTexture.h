@@ -43,7 +43,6 @@ private:
 
 	int getHeightFromBaseline(char c, int charHeight, int lineHeight);
 	void processCharData(stbtt_bakedchar* cData);
-	void flipBitmap(unsigned char* bytes, int width, int height);
 };
 
 #endif

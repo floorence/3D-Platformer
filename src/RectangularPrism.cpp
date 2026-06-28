@@ -1,6 +1,6 @@
 #include "RectangularPrism.h"
-#include "Log.h"
 #include <glm/geometric.hpp>
+#include <glm/gtc/constants.hpp>
 
 RectangularPrism::RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length) 
     : Shape3D(diffuse, specular, position),
@@ -28,7 +28,7 @@ std::vector<Vertex> RectangularPrism::generateVertices() {
 
         glm::vec3 pos(x, y, z);
 
-        Log::log(TAG, fmt::format("pos = {}, {}, {}", x, y, z));
+        // Log::log(TAG, fmt::format("pos = {}, {}, {}", x, y, z));
 
         glm::vec2 xFacingTexCoord = deriveTexCoord(pos, (x < 0) ? Facing::negX : Facing::posX);
         glm::vec2 yFacingTexCoord = deriveTexCoord(pos, (y < 0) ? Facing::negY : Facing::posY);
@@ -72,7 +72,7 @@ std::vector<GLuint> RectangularPrism::generateIndices() {
 }
 
 glm::vec2 RectangularPrism::deriveTexCoord(glm::vec3 vertex, Facing dir) {
-    const float PI = acos(-1.0f);
+    const float PI = glm::pi<float>();
     glm::mat4 rotation(1.0f);
 
     // rotate vertex such that it's "facing" posZ so that i can just drop z coord to get texCoord

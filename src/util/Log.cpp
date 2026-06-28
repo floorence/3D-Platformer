@@ -17,13 +17,13 @@ std::string getTimestamp() {
 }
 
 void Log::log(std::string tag, std::string message) {
-    fmt::print("{} {}: {}\n", getTimestamp(), tag, message);
+    fmt::print("{} [I] {}: {}\n", getTimestamp(), tag, message);
 }
 
 void Log::err(std::string tag, std::string message) {
-    fmt::print(fg(fmt::color::red), "{} {}: {}\n", getTimestamp(), tag, message);
+    fmt::print(fg(fmt::color::red), "{} [E] {}: {}\n", getTimestamp(), tag, message);
 }
 
 void Log::warn(std::string tag, std::string message) {
-    fmt::print(fg(fmt::color::gold), "{} {}: {}\n", getTimestamp(), tag, message);
+    fmt::print(fg(fmt::color::gold), "{} [W] {}: {}\n", getTimestamp(), tag, message);
 }
