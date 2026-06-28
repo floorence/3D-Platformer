@@ -5,13 +5,13 @@
 
 class Sphere: public Shape3D {
 public:
-    Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, int radius, int numStacks = 16, int numSectors = 32);
+    Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, float radius, int stacks = 16, int sectors = 32);
 private:
-    int numStacks;
-    int numSectors;
+    float radius;
+    int stacks, sectors;
 
-    std::vector<Vertex> generateVertices(int radius, int stacks, int sectors);
-    std::vector<GLuint> generateIndices(int stacks, int sectors);
+    std::vector<Vertex> generateVertices() override;
+    std::vector<GLuint> generateIndices() override;
 };
 
 #endif

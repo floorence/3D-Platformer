@@ -21,7 +21,8 @@ public:
 	void setShapeData(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices);
 
 	void draw(Camera& camera);
-	void drawGui();
+	void drawGui(); // version of draw that ignores camera and assumes exactly one texture
+	void drawLightSource();
 private:
 	VAO vao;
 	VBO vbo;

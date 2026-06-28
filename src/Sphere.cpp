@@ -1,20 +1,15 @@
 #include"Sphere.h"
 
-Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, int radius, int numStacks, int numSectors) 
+Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, float radius, int stacks, int sectors) 
     : Shape3D(diffuse, specular, position),
-      numStacks(numStacks),
-      numSectors(numSectors)
+      radius(radius), stacks(stacks), sectors(sectors)
 {
-    vertices = generateVertices(radius, numStacks, numSectors);
-    mesh.setShapeData(        
-        vertices,
-        generateIndices(numStacks, numSectors)
-    );
+    invalidateShape();
 }
 
 // adapted from https://www.songho.ca/opengl/gl_sphere.html#example_sphere
 //              Sphere::buildVerticesSmooth() (first half)
-std::vector<Vertex> Sphere::generateVertices(int radius, int stacks, int sectors) {
+std::vector<Vertex> Sphere::generateVertices() {
     std::vector<Vertex> vertices;
     const float PI = acos(-1.0f);
 
@@ -54,7 +49,7 @@ std::vector<Vertex> Sphere::generateVertices(int radius, int stacks, int sectors
 
 // adapted from https://www.songho.ca/opengl/gl_sphere.html#example_sphere
 //              Sphere::buildVerticesSmooth() (second half)
-std::vector<GLuint> Sphere::generateIndices(int stacks, int sectors) {
+std::vector<GLuint> Sphere::generateIndices() {
     std::vector<GLuint> indices;
     //  k1--k1+1
     //  |  / |

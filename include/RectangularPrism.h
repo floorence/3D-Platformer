@@ -16,10 +16,11 @@ public:
      */ 
     RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length);
 private:
+    float width, height, length;
     const std::string TAG = "RectangularPrism";
 
-    std::vector<Vertex> generateVertices(float width, float height, float length);
-    std::vector<GLuint> generateIndices();
+    std::vector<Vertex> generateVertices() override;
+    std::vector<GLuint> generateIndices() override;
     glm::vec2 deriveTexCoord(glm::vec3 vertex, Facing dir);
 };
 

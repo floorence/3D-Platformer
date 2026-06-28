@@ -185,12 +185,12 @@ int main() {
 	sphere.registerLightSource(lightColor, lightPos);
 
 	// make rectangular prism
-	Texture bunDiffuse = ImageTexture("assets/bun_bun_tree.png", TextureType::Diffuse);
-	Texture bunSpecular = ImageTexture("assets/bun_bun_tree.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
+	Texture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
+	Texture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
 
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-3.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
 	rect.registerLightSource(lightColor, lightPos);
-	rect.setRotation(0, 0, 60);
+	rect.setRotation(0, 0, 180);
 
 	// configure shaders
 	lightShader.activate();

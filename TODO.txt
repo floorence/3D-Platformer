@@ -2,9 +2,9 @@ refactor and clean up
 - optimize getting length of vectors
 - stop hard coding stuff
 - move typetostring stuff to utils file? check for functions that dont belong to class
-- move structs and enums to their own files?
 - optimize: FontTexture::generateIndices only needs size of vertices. and it will be the same every time till the size is reached
 - pi in multiple different places
+- DEPRECATE COLOR! think of a better way to apply color instead of/on top of texture.
 
 feature
 - way to only log some log levels

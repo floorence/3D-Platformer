@@ -6,6 +6,12 @@
 // Texture for rasterized images
 class ImageTexture : public Texture {
 public:
+	/**
+	 * @param image path to image file from project root
+	 * @param texType TextureType: diffuse or specular
+	 * @param convertToSpecular true if TextureType == specular but the image is actually the diffuse texture and should be
+	 * 						    converted to be suitable as a specular texture
+	 */
 	ImageTexture(const char* image, TextureType texType, GLenum pixelType = GL_UNSIGNED_BYTE, bool convertToSpecular = false);
 private:
 	// constants

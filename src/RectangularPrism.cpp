@@ -3,16 +3,13 @@
 #include <glm/geometric.hpp>
 
 RectangularPrism::RectangularPrism(Texture* diffuse, Texture* specular, glm::vec3 position, float width, float height, float length) 
-    : Shape3D(diffuse, specular, position)
+    : Shape3D(diffuse, specular, position),
+      width(width), height(height), length(length)
 {
-    vertices = generateVertices(width, height, length);
-    mesh.setShapeData(        
-        vertices,
-        generateIndices()
-    );
+    invalidateShape();
 }
 
-std::vector<Vertex> RectangularPrism::generateVertices(float width, float height, float length) {
+std::vector<Vertex> RectangularPrism::generateVertices() {
     std::vector<Vertex> vertices;
 
     float x = -width / 2.0f;
