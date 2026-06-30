@@ -43,25 +43,20 @@ void Mesh::draw(Camera& camera) {
 	material.shader->activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	unsigned int numDiffuse = 0;
-	unsigned int numSpecular = 0;
-
 	for (unsigned int i = 0; i < material.textures.size(); i++) {
-		std::string num;
+		std::string uniform;
 		TextureType type = material.textures[i]->type;
 		if (type == TextureType::Diffuse) {
-			num = std::to_string(numDiffuse++);
+			uniform = "material.diffuse";
 		}
 		else if (type == TextureType::Specular) {
-			num = std::to_string(numSpecular++);
+			uniform = "material.specular";
 		}
-		std::string typeString = material.textures[i]->typeToString(material.textures[i]->type);
 
-		material.textures[i]->exportTexture(*material.shader, (typeString + num).c_str(), i);
+		material.textures[i]->exportTexture(*material.shader, uniform.c_str(), i);
 	}
 
 	camera.exportCamera(*material.shader, "camPos", "camMatrix");
-
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 

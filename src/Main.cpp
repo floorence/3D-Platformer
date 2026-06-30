@@ -133,7 +133,7 @@ int main() {
 	Gui gui(&guiDiffuse, width, height);
 
 	// make models - shader uses model to place vertices around correct location in the world
-	glm::vec4 lightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	RectangularPrism light(nullptr, nullptr, lightPos, 0.2f, 0.2f, 0.2f, true);
 	light.setColor(lightColor, 1.0f);
@@ -157,8 +157,12 @@ int main() {
 	// configure shaders
 	shader.activate();
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
-	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	glUniform1i(glGetUniformLocation(shader.ID, "numPointLights"), 1);
+	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].color"), lightColor.x, lightColor.y, lightColor.z);
+	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].position"), lightPos.x, lightPos.y, lightPos.z);
+	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].constant"), 1.0);
+	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].linear"), 0.7);
+	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].quadratic"), 1.8);
 
 	Log::log(TAG, "shaders initialized");
 

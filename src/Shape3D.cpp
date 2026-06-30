@@ -59,10 +59,10 @@ void Shape3D::setRotation(float rotationX, float rotationY, float rotationZ) {
     invalidateModel();
 }
     
-void Shape3D::setColor(glm::vec4 color, float intensity) {
+void Shape3D::setColor(glm::vec3 color, float intensity) {
     shader.activate();
-    glUniform4f(glGetUniformLocation(shader.ID, "color"), color.x, color.y, color.z, color.w);
-    glUniform1f(glGetUniformLocation(shader.ID, "colorIntensity"), intensity);
+    glUniform3f(glGetUniformLocation(shader.ID, "tintColor"), color.x, color.y, color.z);
+    glUniform1f(glGetUniformLocation(shader.ID, "tintIntensity"), intensity);
 }
 
 void Shape3D::configureShader(glm::mat4 model) {
@@ -70,10 +70,10 @@ void Shape3D::configureShader(glm::mat4 model) {
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 }
 
-void Shape3D::registerLightSource(glm::vec4 lightColor, glm::vec3 lightPos) {
+void Shape3D::registerLightSource(glm::vec3 lightColor, glm::vec3 lightPos) {
     shader.activate();
-	glUniform4f(glGetUniformLocation(shader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
-	glUniform3f(glGetUniformLocation(shader.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].color"), lightColor.x, lightColor.y, lightColor.z);
+	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].position"), lightPos.x, lightPos.y, lightPos.z);
 }
 
 void Shape3D::draw(Camera& camera) {

@@ -65,7 +65,7 @@ std::vector<GLuint> Sphere::generateIndices() {
                 indices.insert(indices.end(), {k1, k2, k1 + 1});
             }
 
-            if (i != (stacks-1)) {
+            if (i != (stacks - 1)) {
                 indices.insert(indices.end(), {k1 + 1, k2, k2 + 1});
             }
         }

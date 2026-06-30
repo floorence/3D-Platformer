@@ -15,8 +15,8 @@ public:
      * @param rotationZ rotation around z axis in degrees
      */
     void setRotation(float rotationX, float rotationY, float rotationZ);
-    void setColor(glm::vec4 color, float intensity);
-    void registerLightSource(glm::vec4 lightColor, glm::vec3 lightPos);
+    void setColor(glm::vec3 color, float intensity);
+    void registerLightSource(glm::vec3 lightColor, glm::vec3 lightPos);
     void draw(Camera& camera);
 protected:
     glm::vec3 position;
