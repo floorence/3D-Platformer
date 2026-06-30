@@ -1,0 +1,36 @@
+# this is a WIP OpenGL exploration project! I don't know what it'll become yet!
+
+## Setup
+
+Prerequisites: 
+* computer on Linux, MacOS, or Windows
+* C and C++ compiler. the project compiles in C++17 or above
+* cmake, OpenGL and fmt installed on your system. all other dependencies (glad, glfw, glm, khr, and stb) are header files in the project source (which you will get when you clone the repo)
+
+Running the game:
+
+These steps work on linux, I actually have no idea if the procedure is different for MacOS or Windows. Maybe [@andrewli200504](https://github.com/AndrewLi200504) can help? :D
+1. ensure you satisfy all the prereqs.
+2. clone the repo
+3. `cd 3D-Platformer`
+4. `cmake -B build`
+5. `cmake --build build`
+6. `build/Platformer`
+
+note: depending on your system, AddressSanitizer can be annoying and report a bunch of memory leaks from system libraries. to stop this, add the libraries you want to suppress in `asan_suppressions.txt` and run `export LSAN_OPTIONS=suppressions=./asan_suppressions.txt`
+
+## Resources and credit
+
+Without people way smarter than me making tutorials and providing open source code examples, this project would not be possible in a reasonable time frame, or be vibecoded :vomiting_face:
+
+places in my code that have been adapted from the below resources are clearly marked as such.
+
+* Victor Gordan's OpenGL tutorials
+    * youtube playlist: https://www.youtube.com/playlist?list=PLPaoO-vpZnumdcb4tZc4x5Q-v7CkrQ6M-
+    * github repo: https://github.com/VictorGordan/opengl-tutorials/tree/main
+* Joey de Vries' Learn OpenGL [©](https://creativecommons.org/licenses/by-nc/4.0/) [:bird:](https://twitter.com/JoeyDeVriez)
+    * website: https://learnopengl.com/
+    * github repo: https://github.com/JoeyDeVries/LearnOpenGL/tree/master
+* "How to do Basic 3D Collision Detection in C++" by VertoStudio3D: https://youtu.be/wVhSQHKvBW4?si=aUEeWNe_OMxw2ShF
+* Song's OpenGL Sphere: https://www.songho.ca/opengl/gl_sphere.html
+* a lot more to come I'm sure!
