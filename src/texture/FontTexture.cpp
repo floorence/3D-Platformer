@@ -3,8 +3,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include<fstream>
 #include "FontTexture.h"
-#include<string.h>
-#include "Log.h"
+#include "util/Log.h"
 #include<fmt/format.h>
 #include"stb/stb_image_write.h"
 

@@ -17,7 +17,7 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 add_executable(Platformer ${SOURCE_FILES})
 
 target_include_directories(Platformer PRIVATE
-    include
+    src
 )
 
 target_include_directories(Platformer SYSTEM PRIVATE

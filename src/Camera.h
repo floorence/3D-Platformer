@@ -10,7 +10,7 @@
 #include<glm/gtx/vector_angle.hpp>
 
 #include"Mass.h"
-#include"Shader.h"
+#include"shader/Shader.h"
 
 class Camera: public Mass {
 public:

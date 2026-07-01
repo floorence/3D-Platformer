@@ -1,7 +1,7 @@
 #ifndef SHAPE_3D_CLASS
 #define SHAPE_3D_CLASS
 
-#include"Mesh.h"
+#include"mesh/Mesh.h"
 
 struct Light {
     glm::vec3 color;

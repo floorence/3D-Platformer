@@ -6,14 +6,14 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<fmt/format.h>
 
-#include "DebugPyramid.h"
-#include"Sphere.h"
-#include"RectangularPrism.h"
-#include"LightController.h"
-#include"FontTexture.h"
-#include"ImageTexture.h"
-#include"Gui.h"
-#include"Log.h"
+#include "shape/DebugPyramid.h"
+#include"shape/Sphere.h"
+#include"shape/RectangularPrism.h"
+#include"controller/LightController.h"
+#include"texture/FontTexture.h"
+#include"texture/ImageTexture.h"
+#include"gui/Gui.h"
+#include"util/Log.h"
 
 const unsigned int width = 800;
 const unsigned int height = 800;

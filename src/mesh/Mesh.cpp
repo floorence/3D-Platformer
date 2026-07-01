@@ -1,6 +1,6 @@
 #include "Mesh.h"
 #include<string>
-#include"Log.h"
+#include"util/Log.h"
 
 Mesh::Mesh(const Material& material) : material(material) {}
 

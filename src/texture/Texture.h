@@ -1,7 +1,7 @@
 #ifndef TEXTURE_CLASS_H
 #define TEXTURE_CLASS_H
 
-#include"Shader.h"
+#include"shader/Shader.h"
 
 enum class TextureType {
 	Diffuse, Specular

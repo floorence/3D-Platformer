@@ -1,8 +1,8 @@
 #ifndef GUI_CLASS_H
 #define GUI_CLASS_H
 
-#include "FontTexture.h"
-#include "ImageTexture.h"
+#include "texture/FontTexture.h"
+#include "texture/ImageTexture.h"
 
 class Gui {
 public:

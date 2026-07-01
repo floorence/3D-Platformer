@@ -1,5 +1,5 @@
 #include "Shape3D.h"
-#include "Log.h"
+#include "util/Log.h"
 
 Shape3D::Shape3D(glm::vec3 position, bool isLightSource) 
     : position(position),

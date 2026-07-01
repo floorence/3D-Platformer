@@ -1,6 +1,5 @@
 refactor and clean up
 - optimize getting length of vectors
-- stop hard coding stuff
 - optimize: FontTexture::generateIndices only needs size of vertices. and it will be the same every time till the size is reached
 - implement way to apply solid colour tint to entire object
 

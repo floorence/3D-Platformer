@@ -3,7 +3,7 @@
 
 #include"stb/stb_truetype.h"
 #include "Texture.h"
-#include "VBO.h"
+#include "mesh/VBO.h"
 
 // coordinates of quad within texture atlas as if texture atlas width and height was 1
 struct NormalizedCharQuad {

@@ -1,7 +1,7 @@
 #ifndef LIGHT_CONTROLLER_H
 #define LIGHT_CONTROLLER_H
 
-#include "Shape3D.h"
+#include "shape/Shape3D.h"
 
 class LightController {
 public:

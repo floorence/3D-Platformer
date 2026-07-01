@@ -2,7 +2,7 @@
 #include <fmt/format.h>
 #include<fstream>
 #include<iostream>
-#include"Log.h"
+#include"util/Log.h"
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {
 	std::string vertexCode = getFileContents(vertexFile);
