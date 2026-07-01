@@ -9,6 +9,7 @@
 #include"Mesh.h"
 #include"Sphere.h"
 #include"RectangularPrism.h"
+#include"LightController.h"
 #include"FontTexture.h"
 #include"ImageTexture.h"
 #include"Gui.h"
@@ -136,7 +137,7 @@ int main() {
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
 	RectangularPrism light(nullptr, nullptr, lightPos, 0.2f, 0.2f, 0.2f, true);
-	light.setColor(lightColor, 1.0f);
+	light.setColor(lightColor, 5.0f);
 
 	glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::mat4 pyramidModel = glm::mat4(1.0f);
@@ -144,17 +145,20 @@ int main() {
 
 	// make sphere
 	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(3.0f, 0.0f, 0.0f), 1);
-	sphere.registerLightSource(lightColor, lightPos);
 
 	// make rectangular prism
 	Texture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
 	Texture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
-
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-3.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
-	rect.registerLightSource(lightColor, lightPos);
 	rect.setRotation(0, 0, 180);
 
-	// configure shaders
+	LightController lc;
+	lc.registerShapes({&light, &sphere, &rect});
+	lc.processLighting();
+
+	Log::log(TAG, "initial lighting processing completed");
+
+	// manually set uniforms for debug pyramid
 	shader.activate();
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
 	glUniform1i(glGetUniformLocation(shader.ID, "numPointLights"), 1);
@@ -163,8 +167,6 @@ int main() {
 	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].constant"), 1.0);
 	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].linear"), 0.7);
 	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].quadratic"), 1.8);
-
-	Log::log(TAG, "shaders initialized");
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 
@@ -183,6 +185,8 @@ int main() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetKeyCallback(window, keyCallback);
+
+	Log::log(TAG, "everything is set up; starting main game loop");
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();

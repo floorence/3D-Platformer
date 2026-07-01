@@ -1,4 +1,5 @@
 #include "Shape3D.h"
+#include "Log.h"
 
 Shape3D::Shape3D(glm::vec3 position, bool isLightSource) 
     : position(position),
@@ -61,8 +62,17 @@ void Shape3D::setRotation(float rotationX, float rotationY, float rotationZ) {
     
 void Shape3D::setColor(glm::vec3 color, float intensity) {
     shader.activate();
-    glUniform3f(glGetUniformLocation(shader.ID, "tintColor"), color.x, color.y, color.z);
-    glUniform1f(glGetUniformLocation(shader.ID, "tintIntensity"), intensity);
+
+    if (isLightSource) {
+        if (intensity < 0) Log::warn(TAG, fmt::format("setColor() given light range {} is less than 0!", intensity));
+        glUniform3f(glGetUniformLocation(shader.ID, "color"), color.x, color.y, color.z);
+        light.color = color;
+        light.range = intensity;
+    } else {
+        if (intensity < 0 || intensity > 1) Log::warn(TAG, fmt::format("setColor() given colour tint intensity {} is not between 0 and 1!", intensity));
+        glUniform3f(glGetUniformLocation(shader.ID, "tintColor"), color.x, color.y, color.z);
+        glUniform1f(glGetUniformLocation(shader.ID, "tintIntensity"), intensity);
+    }
 }
 
 void Shape3D::configureShader(glm::mat4 model) {
@@ -70,10 +80,23 @@ void Shape3D::configureShader(glm::mat4 model) {
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 }
 
-void Shape3D::registerLightSource(glm::vec3 lightColor, glm::vec3 lightPos) {
+void Shape3D::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
+    Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
     shader.activate();
-	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].color"), lightColor.x, lightColor.y, lightColor.z);
-	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].position"), lightPos.x, lightPos.y, lightPos.z);
+
+    std::string pointLightUniform = "pointLights[0]";
+    pointLightUniform[12] = num + '0';
+    Log::log(TAG, pointLightUniform);
+	glUniform3f(glGetUniformLocation(shader.ID, (pointLightUniform + ".color").c_str()), lightColor.x, lightColor.y, lightColor.z);
+	glUniform3f(glGetUniformLocation(shader.ID, (pointLightUniform + ".position").c_str()), lightPos.x, lightPos.y, lightPos.z);
+	glUniform1f(glGetUniformLocation(shader.ID, (pointLightUniform + ".constant").c_str()), 1.0);
+	glUniform1f(glGetUniformLocation(shader.ID, (pointLightUniform + ".linear").c_str()), linear);
+	glUniform1f(glGetUniformLocation(shader.ID, (pointLightUniform + ".quadratic").c_str()), quadratic);
+}
+
+void Shape3D::setNumPointLights(int num) {
+    shader.activate();
+	glUniform1i(glGetUniformLocation(shader.ID, "numPointLights"), num);
 }
 
 void Shape3D::draw(Camera& camera) {
