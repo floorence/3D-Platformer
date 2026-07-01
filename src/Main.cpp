@@ -6,7 +6,7 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<fmt/format.h>
 
-#include"Mesh.h"
+#include "DebugPyramid.h"
 #include"Sphere.h"
 #include"RectangularPrism.h"
 #include"LightController.h"
@@ -18,54 +18,6 @@
 const unsigned int width = 800;
 const unsigned int height = 800;
 const std::string TAG = "Main";
-
-// Vertices coordinates
-Vertex vertices[] = {
-	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},  // Bottom side
-	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 5.0f)},  // Bottom side
-	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(5.0f, 5.0f)},  // Bottom side
-	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(5.0f, 0.0f)},  // Bottom side
-
-	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec2(0.0f, 0.0f)},  // Left Side
-	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec2(5.0f, 0.0f)},  // Left Side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(-0.8f, 0.5f, 0.0f), glm::vec2(2.5f, 5.0f)},  // Left Side
-
-	Vertex{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec2(5.0f, 0.0f)},  // Non-facing side
-	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec2(0.0f, 0.0f)},  // Non-facing side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.0f, 0.5f, -0.8f), glm::vec2(2.5f, 5.0f)},  // Non-facing side
-
-	Vertex{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec2(0.0f, 0.0f)},  // Right side
-	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec2(5.0f, 0.0f)},  // Right side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.8f, 0.5f,  0.0f), glm::vec2(2.5f, 5.0f)},  // Right side
-
-	Vertex{glm::vec3( 0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec2(5.0f, 0.0f)},  // Facing side
-	Vertex{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec2(0.0f, 0.0f)},  // Facing side
-	Vertex{glm::vec3( 0.0f, 0.8f,  0.0f), glm::vec3(0.0f, 0.5f,  0.8f), glm::vec2(2.5f, 5.0f)},  // Facing side
-};
-
-// Indices for vertices order
-GLuint indices[] = {
-	0, 1, 2, // Bottom side
-	0, 2, 3, // Bottom side
-	4, 6, 5, // Left side
-	7, 9, 8, // Non-facing side
-	10, 12, 11, // Right side
-	13, 15, 14 // Facing side
-};
-
-// square
-Vertex guiVertices[] = {
-	Vertex{glm::vec3(200.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 0.0f)},
-	Vertex{glm::vec3(200.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f)},
-	Vertex{glm::vec3(600.0f, 600.0f, 0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 1.0f)},
-	Vertex{glm::vec3(600.0f, 200.0f, 0.0f), glm::vec3(0.0f), glm::vec2(1.0f, 0.0f)}
-};
-
-// square
-GLuint guiIndices[] = {
-	0, 2, 1,
-	0, 3, 2
-};
 
 Camera* camera_ptr;
 
@@ -114,34 +66,14 @@ int main() {
 
 	Log::log(TAG, "opengl initialized");
 
-	// make pyramid mesh
-	Texture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
-	Texture planksSpecular = ImageTexture("assets/planks.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
-	Texture* texture_ptrs[] { &planksDiffuse, &planksSpecular };
-	std::vector <Texture*> planksTextures(texture_ptrs, texture_ptrs + sizeof(texture_ptrs) / sizeof(Texture*));
-
-	Log::log(TAG, "pyramid textures initialized");
-
-	Shader shader("shader/default.vert", "shader/default.frag");
-	Material pyramidMaterial { &shader, planksTextures };
-
-	std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
-	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
-	Mesh pyramid(verts, ind, pyramidMaterial);
-
 	// make gui
 	FontTexture guiDiffuse = FontTexture("assets/pixel_operator_short_dollar.ttf");
 	Gui gui(&guiDiffuse, width, height);
 
-	// make models - shader uses model to place vertices around correct location in the world
-	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 lightPos = glm::vec3(0.5f, 0.5f, 0.5f);
-	RectangularPrism light(nullptr, nullptr, lightPos, 0.2f, 0.2f, 0.2f, true);
-	light.setColor(lightColor, 5.0f);
-
-	glm::vec3 pyramidPos = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::mat4 pyramidModel = glm::mat4(1.0f);
-	pyramidModel = glm::translate(pyramidModel, pyramidPos);
+	// make debug pyramid
+	Texture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
+	Texture planksSpecular = ImageTexture("assets/planks.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
+	DebugPyramid pyramid(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// make sphere
 	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(3.0f, 0.0f, 0.0f), 1);
@@ -152,21 +84,15 @@ int main() {
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-3.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
 	rect.setRotation(0, 0, 180);
 
+	// make light cube
+	RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
+	light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 5.0f);
+
 	LightController lc;
-	lc.registerShapes({&light, &sphere, &rect});
+	lc.registerShapes({&pyramid, &sphere, &rect, &light});
 	lc.processLighting();
 
 	Log::log(TAG, "initial lighting processing completed");
-
-	// manually set uniforms for debug pyramid
-	shader.activate();
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(pyramidModel));
-	glUniform1i(glGetUniformLocation(shader.ID, "numPointLights"), 1);
-	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].color"), lightColor.x, lightColor.y, lightColor.z);
-	glUniform3f(glGetUniformLocation(shader.ID, "pointLights[0].position"), lightPos.x, lightPos.y, lightPos.z);
-	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].constant"), 1.0);
-	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].linear"), 0.7);
-	glUniform1f(glGetUniformLocation(shader.ID, "pointLights[0].quadratic"), 1.8);
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 

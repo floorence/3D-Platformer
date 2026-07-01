@@ -85,8 +85,7 @@ void Shape3D::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 light
     shader.activate();
 
     std::string pointLightUniform = "pointLights[0]";
-    pointLightUniform[12] = num + '0';
-    Log::log(TAG, pointLightUniform);
+    pointLightUniform[pointLightUniform.size() - 2] = num + '0';
 	glUniform3f(glGetUniformLocation(shader.ID, (pointLightUniform + ".color").c_str()), lightColor.x, lightColor.y, lightColor.z);
 	glUniform3f(glGetUniformLocation(shader.ID, (pointLightUniform + ".position").c_str()), lightPos.x, lightPos.y, lightPos.z);
 	glUniform1f(glGetUniformLocation(shader.ID, (pointLightUniform + ".constant").c_str()), 1.0);

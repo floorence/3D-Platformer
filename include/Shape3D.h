@@ -45,7 +45,7 @@ protected:
      */
     void invalidateModel();
 private:
-    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 model = glm::mat4(1.0f); // shader uses model to place vertices around correct location in the world
 
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
