@@ -48,11 +48,11 @@ void Mesh::draw(Camera& camera) {
 		TextureType type = material.textures[i]->type;
 		if (type == TextureType::Diffuse) {
 			uniform = "material.diffuse";
-		}
-		else if (type == TextureType::Specular) {
+		} else if (type == TextureType::Specular) {
 			uniform = "material.specular";
 		}
 
+//		Log::log(TAG, fmt::format("exporting texture at {}", uniform));
 		material.textures[i]->exportTexture(*material.shader, uniform.c_str(), i);
 	}
 

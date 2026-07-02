@@ -12,6 +12,8 @@ void Texture::initTexture(unsigned char* bytes, GLenum format, GLenum pixelType,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
+	// make the alignment 1 otherwise opengl will assume 4 alignment which may cause issues with !=4 channel textures
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	// assigns the image to the OpenGL Texture object
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, pixelType, bytes);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -47,7 +49,7 @@ Texture::~Texture() {
 }
 
 Texture::Texture(Texture&& other) noexcept
-    : ID(other.ID)
+    : type(other.type), ID(other.ID)
 {
     other.ID = 0;
 }
@@ -56,6 +58,7 @@ Texture& Texture::operator=(Texture&& other) noexcept {
 	if (this != &other) {
 		glDeleteTextures(1, &ID);
 
+		type = other.type;
 		ID = other.ID;
 		other.ID = 0;
 	}

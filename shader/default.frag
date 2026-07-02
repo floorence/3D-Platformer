@@ -61,7 +61,10 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     // combine results with texture
     vec3 ambient = AMBIENT_LIGHT * vec3(texture(material.diffuse, texCoord));
     vec3 diffuse = diff * vec3(texture(material.diffuse, texCoord));
-    vec3 specular = spec * vec3(texture(material.specular, texCoord));
+    // specular texture only has red channel but needs to be grey
+    vec3 specTex = vec3(texture(material.specular, texCoord));
+    vec3 greySpecTex = vec3(specTex.r);
+    vec3 specular = spec * greySpecTex;
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;

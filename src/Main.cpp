@@ -84,12 +84,17 @@ int main() {
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-3.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
 	rect.setRotation(0, 0, 180);
 
+	// make floor
+	Texture floorDiffuse = ImageTexture("assets/stone.jpg", TextureType::Diffuse);
+	Texture floorSpecular = ImageTexture("assets/stone.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
+	RectangularPrism floor(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
+
 	// make light cube
 	RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
 	light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 5.0f);
 
 	LightController lc;
-	lc.registerShapes({&pyramid, &sphere, &rect, &light});
+	lc.registerShapes({&pyramid, &sphere, &rect, &floor, &light});
 	lc.processLighting();
 
 	Log::log(TAG, "initial lighting processing completed");
@@ -129,7 +134,8 @@ int main() {
 		light.draw(camera);
 		sphere.draw(camera);
 		rect.draw(camera);
-		gui.drawText(camera.getDebugString(), 200, 200, 400, 20);
+		floor.draw(camera);
+		gui.drawText(camera.getDebugString(), 10, 10, 400, 20);
 
 		glfwPollEvents();
 

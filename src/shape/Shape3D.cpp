@@ -13,9 +13,8 @@ Shape3D::Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position, bool i
     : Shape3D(position, isLightSource)
 {
     std::vector<Texture*> textures;
-    if (diffuse != nullptr) {
-        textures = {diffuse, specular};
-    }
+    if (diffuse != nullptr) textures.push_back(diffuse);
+    if (specular != nullptr) textures.push_back(specular);
     mesh.setMaterial(Material{&shader, textures});
     model = glm::translate(model, position);
     configureShader(model);

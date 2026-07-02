@@ -9,6 +9,12 @@ RectangularPrism::RectangularPrism(Texture* diffuse, Texture* specular, glm::vec
     invalidateShape();
 }
 
+void RectangularPrism::setTextureSize(float width, float height) {
+    texWidth = width;
+    texHeight = height;
+    invalidateShape();
+}
+
 std::vector<Vertex> RectangularPrism::generateVertices() {
     std::vector<Vertex> vertices;
 
@@ -21,7 +27,6 @@ std::vector<Vertex> RectangularPrism::generateVertices() {
         if (i % 2 == 0) y = -y;
         z = -z;
 
-        // TODO: normals have to be rotated
         glm::vec3 xNormal((x < 0) ? -1.0f : 1.0f, 0.0f, 0.0f);
         glm::vec3 yNormal(0.0f, (y < 0) ? -1.0f : 1.0f, 0.0f);
         glm::vec3 zNormal(0.0f, 0.0f, (z < 0) ? -1.0f : 1.0f);
@@ -71,6 +76,7 @@ std::vector<GLuint> RectangularPrism::generateIndices() {
 glm::vec2 RectangularPrism::deriveTexCoord(glm::vec3 vertex, Facing dir) {
     const float PI = glm::pi<float>();
     glm::mat4 rotation(1.0f);
+    float surfaceWidth, surfaceHeight;
 
     // rotate vertex such that it's "facing" posZ so that i can just drop z coord to get texCoord
     switch (dir) {
@@ -92,11 +98,29 @@ glm::vec2 RectangularPrism::deriveTexCoord(glm::vec3 vertex, Facing dir) {
         default: break; // do not have to do anything if already facing posZ
     }
 
+    // get surface dimens based on facing
+    switch (dir) {
+        case Facing::negX:
+        case Facing::posX:
+            surfaceWidth = length;
+            surfaceHeight = height;
+            break;
+        case Facing::posY:
+        case Facing::negY:
+            surfaceWidth = width;
+            surfaceHeight = length;
+            break;
+        case Facing::posZ:
+        case Facing::negZ:
+            surfaceWidth = width;
+            surfaceHeight = height;
+    }
+
     glm::vec3 rotatedVertex = glm::vec3(rotation * glm::vec4(vertex, 1.0f));
 
-    // since tex coords are 0 to 1
-    rotatedVertex.x = (rotatedVertex.x < 0) ? 0 : 1;
-    rotatedVertex.y = (rotatedVertex.y < 0) ? 0 : 1;
+    // one repetition of texture is 0 to 1
+    rotatedVertex.x = (rotatedVertex.x < 0) ? 0 : surfaceWidth / texWidth;
+    rotatedVertex.y = (rotatedVertex.y < 0) ? 0 : surfaceHeight / texHeight;
 
     return glm::vec2(rotatedVertex);
 }
