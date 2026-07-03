@@ -42,7 +42,6 @@ void LightController::processLighting() {
 }
 
 void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {
-    //TODO
-    *linear = 0.35;
-    *quadratic = 0.44;
+    *linear = LINEAR_COEFFICIENT * pow(range, LINEAR_POWER);
+    *quadratic = QUADRATIC_COEFFICIENT * pow(range, QUADRATIC_POWER);
 }
