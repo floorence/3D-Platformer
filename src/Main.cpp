@@ -14,19 +14,20 @@
 #include"texture/ImageTexture.h"
 #include"gui/Gui.h"
 #include"util/Log.h"
+#include"Player.h"
 
 const unsigned int width = 800;
 const unsigned int height = 800;
 const std::string TAG = "Main";
 
-Camera* camera_ptr;
+Player* player_ptr;
 
 void mouseCallback(GLFWwindow*, double xpos, double ypos) {
-	camera_ptr->handleMousePos(xpos, ypos);
+	player_ptr->handleMousePos(xpos, ypos);
 }
 
 void keyCallback(GLFWwindow* window, int key, int, int action, int) {
-	camera_ptr->handleKeyInputs(window, key, action);
+	player_ptr->handleKeyInputs(window, key, action);
 }
 
 std::string formatPerformanceInfo(float frameTime, float realFrameTime) {
@@ -115,8 +116,8 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 
-	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
-	camera_ptr = &camera;
+	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	player_ptr = &player;
 
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
@@ -141,14 +142,13 @@ int main() {
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the back buffer
 
-		camera.handleKeyInputs(window, deltaTime);
-		camera.updateMatrix(45.0f, 0.1f, 100.0f);
+		player.handleKeyInputs(window, deltaTime);
 
 		for (const auto& shape : objects) {
-			shape->draw(camera);
+			shape->draw(player.camera);
 		}
 
-		gui.drawText(camera.getDebugString(), 10, 10, 400, 20);
+		gui.drawText(player.getDebugString(), 10, 10, 400, 20);
 
 		glfwPollEvents();
 
