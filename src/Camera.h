@@ -14,8 +14,8 @@
 class Camera {
 public:
 	glm::vec3 position;
-	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::mat4 cameraMatrix = glm::mat4(1.0f);
+	glm::mat4 projection;
+	glm::mat4 view;
 	int width, height;
 
 	// constants
@@ -24,7 +24,10 @@ public:
 
 	Camera(glm::vec3 position, int width, int height);
 
-	void updateMatrix(float FOVdeg, float nearPlane, float farPlane);
+	void setPerspective(float FOVdeg, float nearPlane, float farPlane);
+	void lookAt(glm::vec3 orientation);
+	void lookAt(glm::vec3 orientation, glm::vec3 up);
+	glm::mat4 getCameraMatrix();
 	/** @brief give shader the position and cameraMatrix, caller has to activate shader beforehand */
 	void exportCamera(Shader& shader, const char* posUniform, const char* matUniform);
 private:

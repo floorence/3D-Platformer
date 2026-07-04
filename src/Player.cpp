@@ -4,6 +4,7 @@ Player::Player(glm::vec3 position, int width, int height)
     : camera(position, width, height)
 {
     this->position = position;
+    camera.setPerspective(45.0f, 0.1f, 100.0f);
 	mass = 1.0f;
 
 	lastX = camera.width / 2.0;
@@ -16,16 +17,16 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		force += glm::normalize(glm::vec3(camera.orientation.x, 0.0f, camera.orientation.z));
+		force += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		force += -glm::normalize(glm::cross(camera.orientation, camera.UP));
+		force += -glm::normalize(glm::cross(orientation, camera.UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		force += -glm::normalize(glm::vec3(camera.orientation.x, 0.0f, camera.orientation.z));
+		force += -glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		force += glm::normalize(glm::cross(camera.orientation, camera.UP));
+		force += glm::normalize(glm::cross(orientation, camera.UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		force += camera.UP;
@@ -41,7 +42,7 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 
 	updatePosition(deltaTime);
     camera.position = this->position;
-    camera.updateMatrix(45.0f, 0.1f, 100.0f);
+    camera.lookAt(orientation);
 }
 
 void Player::handleKeyInputs(GLFWwindow* window, int key, int action) {
@@ -88,13 +89,13 @@ void Player::handleMousePos(double xpos, double ypos) {
 	float rotY = sensitivity * (float)(yOffset) / camera.height;
 
 	// calculate upcoming vertical change in the orientation
-	glm::vec3 verticalOrientation = glm::rotate(camera.orientation, glm::radians(-rotY), glm::normalize(glm::cross(camera.orientation, camera.UP)));
+	glm::vec3 verticalOrientation = glm::rotate(orientation, glm::radians(-rotY), glm::normalize(glm::cross(orientation, camera.UP)));
 
 	// decide whether or not the next vertical orientation is legal or not
 	if (std::abs(glm::angle(verticalOrientation, camera.UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
-		camera.orientation = verticalOrientation;
+		orientation = verticalOrientation;
 	}
 
 	// rotate the orientation left and right
-	camera.orientation = glm::rotate(camera.orientation, glm::radians(-rotX), camera.UP);
+	orientation = glm::rotate(orientation, glm::radians(-rotX), camera.UP);
 }

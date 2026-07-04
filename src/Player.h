@@ -7,6 +7,7 @@
 class Player: public Mass {
 public:
     Camera camera;
+	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 
     Player(glm::vec3 position, int width, int height);
 

@@ -5,13 +5,14 @@
 #include<string>
 
 enum class ShaderType {
-	Vertex, Fragment, Program
+	Vertex, Geometry, Fragment, Program
 };
 
 class Shader {
 public:
 	GLuint ID;
 	Shader(const char* vertexFile, const char* fragmentFile);
+	Shader(const char* vertexFile, const char* geometryFile, const char* fragmentFile);
 	~Shader();
 
 	Shader(const Shader&) = delete;
@@ -23,6 +24,7 @@ public:
 	void activate();
 private:
 	const std::string TAG = "Shader";
+	GLuint createShader(const char* source, ShaderType type);
 	void logCompileErrors(unsigned int shader, ShaderType type);
 	std::string typeToString(ShaderType type);
 	std::string getFileContents(const char* filename);

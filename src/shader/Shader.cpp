@@ -8,19 +8,8 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile) {
 	std::string vertexCode = getFileContents(vertexFile);
 	std::string fragmentCode = getFileContents(fragmentFile);
 
-	const char* vertexSource = vertexCode.c_str();
-	const char* fragmentSource = fragmentCode.c_str();
-
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// attach shader code to opengl shader object
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(vertexShader);
-	logCompileErrors(vertexShader, ShaderType::Vertex);
-
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(fragmentShader);
-	logCompileErrors(fragmentShader, ShaderType::Fragment);
+	GLuint vertexShader = createShader(vertexCode.c_str(), ShaderType::Vertex);
+	GLuint fragmentShader = createShader(fragmentCode.c_str(), ShaderType::Fragment);
 
 	ID = glCreateProgram();
 	// attach the vertex and fragment shaders to the shader program
@@ -34,12 +23,53 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile) {
 	glDeleteShader(fragmentShader);
 }
 
+Shader::Shader(const char* vertexFile, const char* geometryFile, const char* fragmentFile) {
+	std::string vertexCode = getFileContents(vertexFile);
+	std::string geometryCode = getFileContents(geometryFile);
+	std::string fragmentCode = getFileContents(fragmentFile);
+
+	GLuint vertexShader = createShader(vertexCode.c_str(), ShaderType::Vertex);
+	GLuint geometryShader = createShader(geometryCode.c_str(), ShaderType::Geometry);
+	GLuint fragmentShader = createShader(fragmentCode.c_str(), ShaderType::Fragment);
+
+	ID = glCreateProgram();
+	// attach the vertex and fragment shaders to the shader program
+	glAttachShader(ID, vertexShader);
+	glAttachShader(ID, geometryShader);
+	glAttachShader(ID, fragmentShader);
+	// link all the shaders together into the shader program
+	glLinkProgram(ID);
+	logCompileErrors(ID, ShaderType::Program);
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(geometryShader);
+	glDeleteShader(fragmentShader);
+}
+
 void Shader::activate() {
 	glUseProgram(ID);
 }
 
 Shader::~Shader() {
 	glDeleteProgram(ID);
+}
+
+GLuint Shader::createShader(const char* source, ShaderType type) {
+	int glShaderType;
+	switch (type) {
+		case ShaderType::Vertex: glShaderType = GL_VERTEX_SHADER; break;
+		case ShaderType::Geometry: glShaderType = GL_GEOMETRY_SHADER; break;
+		case ShaderType::Fragment: glShaderType = GL_FRAGMENT_SHADER; break;
+		case ShaderType::Program: 
+			Log::err(TAG, "createShader() called with ShaderType Program!");
+			return 0;
+	}
+	GLuint shader = glCreateShader(glShaderType);
+	// attach shader code to opengl shader object
+	glShaderSource(shader, 1, &source, NULL);
+	glCompileShader(shader);
+	logCompileErrors(shader, type);
+	return shader;
 }
 
 void Shader::logCompileErrors(unsigned int shader, ShaderType type) {
@@ -64,6 +94,7 @@ void Shader::logCompileErrors(unsigned int shader, ShaderType type) {
 std::string Shader::typeToString(ShaderType type) {
 	switch (type) {
 		case ShaderType::Vertex: return "vertex";
+		case ShaderType::Geometry: return "geometry";
 		case ShaderType::Fragment: return "fragment";
 		case ShaderType::Program: return "program";
 	}
