@@ -1,6 +1,8 @@
 #ifndef SHADER_CLASS_H
 #define SHADER_CLASS_H
 
+#include "camera/Camera.h"
+#include "camera/PointLightCamera.h"
 #include "texture/Texture.h"
 #include<glm/glm.hpp>
 #include<string>
@@ -24,7 +26,8 @@ public:
 
 	void activate();
 	void setModel(glm::mat4 model);
-	void setCamera(glm::vec3 position, glm::mat4 camMatrix);
+	void setCamera(Camera& camera);
+	void setPointLightCamera(PointLightCamera& camera);
 	void setTexture(Texture& texture, const char* uniform, GLuint unit);
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic);

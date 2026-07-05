@@ -56,10 +56,21 @@ void Shader::setModel(glm::mat4 model) {
 	glUniformMatrix4fv(glGetUniformLocation(ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 }
 
-void Shader::setCamera(glm::vec3 position, glm::mat4 camMatrix) {
+void Shader::setCamera(Camera& camera) {
 	activate();
-	glUniform3f(glGetUniformLocation(ID, "camPos"), position.x, position.y, position.z);
-	glUniformMatrix4fv(glGetUniformLocation(ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(camMatrix));
+	glUniform3f(glGetUniformLocation(ID, "camPos"), camera.position.x, camera.position.y, camera.position.z);
+	glUniformMatrix4fv(glGetUniformLocation(ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(camera.getCameraMatrix()));
+}
+
+void Shader::setPointLightCamera(PointLightCamera& camera) {
+    std::string uniform = "shadowMatrices[0]";
+
+    for (uint i = 0; i < 6; i++) {
+        uniform[uniform.size() - 2] = i + '0';
+        glUniformMatrix4fv(glGetUniformLocation(ID, uniform.c_str()), 1, GL_FALSE, glm::value_ptr(camera.shadowTransforms[i]));
+    }
+    glUniform1f(glGetUniformLocation(ID, "far_plane"), camera.farPlane);
+    glUniform3f(glGetUniformLocation(ID, "lightPos"), camera.position.x, camera.position.y, camera.position.z);
 }
 
 void Shader::setTexture(Texture& texture, const char* uniform, GLuint unit) {

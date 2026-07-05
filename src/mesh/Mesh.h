@@ -5,6 +5,7 @@
 #include"EBO.h"
 #include"camera/Camera.h"
 #include "camera/PointLightCamera.h"
+#include "shader/Shader.h"
 #include"texture/Texture.h"
 
 class Mesh {

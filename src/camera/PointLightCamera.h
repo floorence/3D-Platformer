@@ -6,12 +6,11 @@
 
 class PointLightCamera: public Camera {
 public:
+    std::vector<glm::mat4> shadowTransforms;
+
 	PointLightCamera(glm::vec3 position, int width, int height);
 
     void generateTransforms();
-    void exportCamera(Shader& shader) override;
-private:
-    std::vector<glm::mat4> shadowTransforms;
 };
 
 #endif

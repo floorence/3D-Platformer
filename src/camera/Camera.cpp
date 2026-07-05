@@ -10,20 +10,11 @@ void Camera::setPerspective(float FOVdeg, float nearPlane, float farPlane) {
 	this->farPlane = farPlane;
 }
 
-void Camera::lookAt(glm::vec3 orientation) {
-	// make camera look in the right direction from the right position
-	view = glm::lookAt(position, position + orientation, UP);
-}
-
 void Camera::lookAt(glm::vec3 orientation, glm::vec3 up) {
+	// make camera look in the right direction from the right position
 	view = glm::lookAt(position, position + orientation, up);
 }
 
 glm::mat4 Camera::getCameraMatrix() {
 	return projection * view;
-}
-
-void Camera::exportCamera(Shader& shader) {
-	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), position.x, position.y, position.z);
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(getCameraMatrix()));
 }

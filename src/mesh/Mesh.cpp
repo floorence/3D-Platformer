@@ -55,13 +55,13 @@ void Mesh::draw(Camera& camera, Shader& shader) {
 		shader.setTexture(*textures[i], uniform.c_str(), i);
 	}
 
-	camera.exportCamera(shader);
+	shader.setCamera(camera);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::drawGui(Shader& shader) {
 	if (textures.empty()) {
-		Log::err(TAG, "drawGui() called textures is empty! not drawing anything.");
+		Log::err(TAG, "drawGui() called when textures is empty! not drawing anything.");
 		return;
 	}
 
@@ -76,6 +76,6 @@ void Mesh::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	depthShader.activate();
 	vao.bind();
 
-	camera.exportCamera(depthShader);
+	depthShader.setPointLightCamera(camera);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }

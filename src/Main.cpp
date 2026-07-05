@@ -80,13 +80,13 @@ int main() {
 	objects.push_back(&pyramid);
 
 	// make sphere
-	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(3.0f, 0.0f, 0.0f), 1);
+	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(2.0f, 0.0f, 0.0f), 0.2f);
 	objects.push_back(&sphere);
 
 	// make rectangular prism
 	Texture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
 	Texture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
-	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-3.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
+	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-2.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
 	rect.setRotation(0, 0, 180);
 	objects.push_back(&rect);
 
@@ -96,11 +96,21 @@ int main() {
 	RectangularPrism floor(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
 	objects.push_back(&floor);
 
+	RectangularPrism rightWall(&floorDiffuse, &floorSpecular, glm::vec3(2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
+	RectangularPrism leftWall(&floorDiffuse, &floorSpecular, glm::vec3(-2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
+	RectangularPrism backWall(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, 1.3f, 2.5f), 5.0f, 5.0f, 0.1f);
+	RectangularPrism frontWall(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, 1.3f, -2.5f), 5.0f, 5.0f, 0.1f);
+
+	objects.push_back(&rightWall);
+	objects.push_back(&leftWall);
+	objects.push_back(&backWall);
+	objects.push_back(&frontWall);
+
 	RectangularPrism floorCube(&planksDiffuse, &planksSpecular, glm::vec3(-1.0f, -1.0f, -1.0f), 0.4f, 0.4f, 0.4f);
 	objects.push_back(&floorCube);
 
-	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -1.0f, 0.0f), 0.2f, 0.2f, 0.2f, true);
-	floorLight.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
+	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -0.8f, 0.0f), 0.2f, 0.2f, 0.2f, true);
+	floorLight.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 15.0f);
 	objects.push_back(&floorLight);
 
 	// make light cube

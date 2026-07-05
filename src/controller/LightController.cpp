@@ -37,6 +37,7 @@ void LightController::processShadows() {
     uint depthMapFBO;
     glGenFramebuffers(1, &depthMapFBO);
 
+    // TODO: still have to give shader the texture
     CubeMapTexture depthCubeMap(DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
