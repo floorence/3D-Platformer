@@ -1,6 +1,7 @@
 #ifndef GUI_CLASS_H
 #define GUI_CLASS_H
 
+#include "shader/Shader.h"
 #include "texture/FontTexture.h"
 #include "texture/ImageTexture.h"
 

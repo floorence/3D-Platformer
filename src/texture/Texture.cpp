@@ -21,12 +21,6 @@ void Texture::initTexture(unsigned char* bytes, GLenum format, GLenum pixelType,
 	unbind();
 }
 
-void Texture::exportTexture(Shader& shader, const char* uniform, GLuint unit) {
-	glUniform1i(glGetUniformLocation(shader.ID, uniform), unit);
-	glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), 16);
-	bind(unit);
-}
-
 void Texture::bind(GLuint unit) {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, ID);

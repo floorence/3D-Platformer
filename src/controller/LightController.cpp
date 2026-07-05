@@ -15,32 +15,22 @@ void LightController::registerShapes(std::vector<Shape3D*> shapes) {
     }
 }
 
-void LightController::processLighting() {
-    int* numPointLights = new int[shapes.size()]{};
+void LightController::processLighting(Shader& shader) {
+    int numPointLights = 0;
 
     for (const auto& light: lights) {
         float linear, quadratic;
-        calculateAttenuationCoefficients(light->light.range, &linear, &quadratic);
-
-        for (uint i = 0; i < shapes.size(); i++) {
-            float distance = glm::length(light->position - shapes[i]->position);
-            if (distance < light->light.range) {
-                shapes[i]->registerLightSource(
-                    numPointLights[i],
-                    light->light.color,
-                    light->position,
-                    linear, quadratic
-                );
-                numPointLights[i]++;
-            }
-        }
+        calculateAttenuationCoefficients(light->intensity, &linear, &quadratic);
+        shader.registerLightSource(
+            numPointLights,
+            light->color,
+            light->position,
+            linear, quadratic
+        );
+        numPointLights++;
     }
 
-    for (uint i = 0; i < shapes.size(); i++) {
-        shapes[i]->setNumPointLights(numPointLights[i]);
-    }
-
-    delete[] numPointLights;
+    shader.setNumPointLights(numPointLights);
 }
 
 void LightController::processShadows() {
@@ -65,7 +55,7 @@ void LightController::processShadows() {
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
     for (const auto& shape : shapes) {
-        shape->drawToDepthMap(lightSourceCam);
+        shape->drawToDepthMap(lightSourceCam, depthShader);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

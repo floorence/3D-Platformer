@@ -1,6 +1,7 @@
 #include"Shader.h"
 #include <fmt/format.h>
 #include<fstream>
+#include <glm/gtc/type_ptr.hpp>
 #include<iostream>
 #include"util/Log.h"
 
@@ -48,6 +49,53 @@ Shader::Shader(const char* vertexFile, const char* geometryFile, const char* fra
 
 void Shader::activate() {
 	glUseProgram(ID);
+}
+
+void Shader::setModel(glm::mat4 model) {
+	activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+}
+
+void Shader::setCamera(glm::vec3 position, glm::mat4 camMatrix) {
+	activate();
+	glUniform3f(glGetUniformLocation(ID, "camPos"), position.x, position.y, position.z);
+	glUniformMatrix4fv(glGetUniformLocation(ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(camMatrix));
+}
+
+void Shader::setTexture(Texture& texture, const char* uniform, GLuint unit) {
+	activate();
+
+	glUniform1i(glGetUniformLocation(ID, uniform), unit);
+	glUniform1f(glGetUniformLocation(ID, "material.shininess"), 16);
+	texture.bind(unit);
+}
+
+void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
+    Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
+    activate();
+
+    std::string pointLightUniform = "pointLights[0]";
+    pointLightUniform[pointLightUniform.size() - 2] = num + '0';
+	glUniform3f(glGetUniformLocation(ID, (pointLightUniform + ".color").c_str()), lightColor.x, lightColor.y, lightColor.z);
+	glUniform3f(glGetUniformLocation(ID, (pointLightUniform + ".position").c_str()), lightPos.x, lightPos.y, lightPos.z);
+	glUniform1f(glGetUniformLocation(ID, (pointLightUniform + ".constant").c_str()), 1.0);
+	glUniform1f(glGetUniformLocation(ID, (pointLightUniform + ".linear").c_str()), linear);
+	glUniform1f(glGetUniformLocation(ID, (pointLightUniform + ".quadratic").c_str()), quadratic);
+}
+
+void Shader::setNumPointLights(int num) {
+    activate();
+	glUniform1i(glGetUniformLocation(ID, "numPointLights"), num);
+}
+
+void Shader::setColor(glm::vec3 color) {
+	glUniform3f(glGetUniformLocation(ID, "color"), color.x, color.y, color.z);
+}
+
+void Shader::setColorTint(glm::vec3 color, float intensity) {
+	if (intensity < 0 || intensity > 1) Log::warn(TAG, fmt::format("setColorTint() given colour tint intensity {} is not between 0 and 1!", intensity));
+	glUniform3f(glGetUniformLocation(ID, "tintColor"), color.x, color.y, color.z);
+	glUniform1f(glGetUniformLocation(ID, "tintIntensity"), intensity);
 }
 
 Shader::~Shader() {

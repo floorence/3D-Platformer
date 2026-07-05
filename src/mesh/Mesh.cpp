@@ -2,26 +2,24 @@
 #include<string>
 #include"util/Log.h"
 
-Mesh::Mesh(): depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag") {}
-
-Mesh::Mesh(const Material& material) 
+Mesh::Mesh(const std::vector<Texture*>& textures) 
 	: Mesh() 
 {
-	setMaterial(material);
+	setTextures(textures);
 }
 
 Mesh::Mesh(
 	const std::vector <Vertex>& vertices, 
 	const std::vector <GLuint>& indices, 
-	const Material& material
+	const std::vector<Texture*>& textures
 )
-	: Mesh(material)
+	: Mesh(textures)
 {
 	setShapeData(vertices, indices);
 }
 
-void Mesh::setMaterial(const Material& material) {
-	this->material = material;
+void Mesh::setTextures(const std::vector<Texture*>& textures) {
+	this->textures = textures;
 }
 
 void Mesh::setShapeData(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices) {
@@ -40,18 +38,13 @@ void Mesh::setShapeData(const std::vector <Vertex>& vertices, const std::vector 
 	ebo.unbind();
 }
 
-void Mesh::draw(Camera& camera) {
-	if (material.shader == nullptr) {
-		Log::err(TAG, "draw() called when shader is null! not drawing anything.");
-		return;
-	}
-
-	material.shader->activate(); // bind shader to be able to access uniforms
+void Mesh::draw(Camera& camera, Shader& shader) {
+	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	for (unsigned int i = 0; i < material.textures.size(); i++) {
+	for (unsigned int i = 0; i < textures.size(); i++) {
 		std::string uniform;
-		TextureType type = material.textures[i]->type;
+		TextureType type = textures[i]->type;
 		if (type == TextureType::Diffuse) {
 			uniform = "material.diffuse";
 		} else if (type == TextureType::Specular) {
@@ -59,27 +52,27 @@ void Mesh::draw(Camera& camera) {
 		}
 
 //		Log::log(TAG, fmt::format("exporting texture at {}", uniform));
-		material.textures[i]->exportTexture(*material.shader, uniform.c_str(), i);
+		shader.setTexture(*textures[i], uniform.c_str(), i);
 	}
 
-	camera.exportCamera(*material.shader);
+	camera.exportCamera(shader);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
-void Mesh::drawGui() {
-	if (material.shader == nullptr || material.textures.empty()) {
-		Log::err(TAG, "drawGui() called when shader is null or textures is empty! not drawing anything.");
+void Mesh::drawGui(Shader& shader) {
+	if (textures.empty()) {
+		Log::err(TAG, "drawGui() called textures is empty! not drawing anything.");
 		return;
 	}
 
-	material.shader->activate(); // bind shader to be able to access uniforms
+	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 	
-	material.textures[0]->exportTexture(*material.shader, "diffuse0", 0);
+	shader.setTexture(*textures[0], "diffuse0", 0);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
-void Mesh::drawToDepthMap(PointLightCamera& camera) {
+void Mesh::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	depthShader.activate();
 	vao.bind();
 

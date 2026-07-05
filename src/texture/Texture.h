@@ -1,7 +1,8 @@
 #ifndef TEXTURE_CLASS_H
 #define TEXTURE_CLASS_H
 
-#include"shader/Shader.h"
+#include"glad/glad.h"
+#include <string>
 
 enum class TextureType {
 	Diffuse, Specular
@@ -14,7 +15,6 @@ public:
 
 	Texture() = default;
 	void initTexture(unsigned char* bytes, GLenum format, GLenum pixelType, int width, int height);
-	void exportTexture(Shader& shader, const char* uniform, GLuint unit); // gives shader this texture, caller has to activate shader beforehand
 	void bind(GLuint unit); // bind texture to given unit
 	void unbind();
 	//virtual std::string getUniformString() const;

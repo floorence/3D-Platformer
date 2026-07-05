@@ -1,7 +1,8 @@
 #ifndef SHADER_CLASS_H
 #define SHADER_CLASS_H
 
-#include<glad/glad.h>
+#include "texture/Texture.h"
+#include<glm/glm.hpp>
 #include<string>
 
 enum class ShaderType {
@@ -22,6 +23,15 @@ public:
     Shader& operator=(Shader&& other) noexcept;
 
 	void activate();
+	void setModel(glm::mat4 model);
+	void setCamera(glm::vec3 position, glm::mat4 camMatrix);
+	void setTexture(Texture& texture, const char* uniform, GLuint unit);
+
+    void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic);
+    void setNumPointLights(int num);
+
+	void setColor(glm::vec3 color);
+	void setColorTint(glm::vec3 color, float intensity);
 private:
 	const std::string TAG = "Shader";
 	GLuint createShader(const char* source, ShaderType type);

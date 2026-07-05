@@ -108,9 +108,13 @@ int main() {
 	light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
 	objects.push_back(&light);
 
+	// make shaders and light controller
+	Shader shader("shader/default.vert", "shader/default.frag");
+	Shader lightShader("shader/light.vert", "shader/light.frag");
+
 	LightController lc;
 	lc.registerShapes(objects);
-	lc.processLighting();
+	lc.processLighting(shader);
 
 	Log::log(TAG, "initial lighting processing completed");
 
@@ -145,7 +149,7 @@ int main() {
 		player.handleKeyInputs(window, deltaTime);
 
 		for (const auto& shape : objects) {
-			shape->draw(player.camera);
+			shape->draw(player.camera, (shape->isLightSource) ? lightShader : shader);
 		}
 
 		gui.drawText(player.getDebugString(), 10, 10, 400, 20);

@@ -7,30 +7,24 @@
 #include "camera/PointLightCamera.h"
 #include"texture/Texture.h"
 
-struct Material {
-	Shader* shader = nullptr;
-	std::vector <Texture*> textures;
-};
-
 class Mesh {
 public:
-	Mesh();
-	Mesh(const Material& material);
-	Mesh(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices, const Material& material);
+	Mesh() = default;
+	Mesh(const std::vector<Texture*>& textures);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const std::vector<Texture*>& textures);
 
-	void setMaterial(const Material& material);
-	void setShapeData(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices);
+	void setTextures(const std::vector<Texture*>& textures);
+	void setShapeData(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices);
 
-	void draw(Camera& camera);
-	void drawGui(); // version of draw that ignores camera and assumes exactly one texture
-	void drawToDepthMap(PointLightCamera& camera); // version of draw that uses depthShader and ignores textures 
+	void draw(Camera& camera, Shader& shader);
+	void drawGui(Shader& shader); // version of draw that ignores camera and assumes exactly one texture
+	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader); // version of draw that uses depthShader and ignores textures 
 private:
 	VAO vao;
 	VBO vbo;
 	EBO ebo;
 	int drawCount = 0;
-	Material material;
-    Shader depthShader;
+	std::vector<Texture*> textures;
 	const std::string TAG = "Mesh";
 };
 

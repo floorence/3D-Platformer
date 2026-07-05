@@ -31,9 +31,8 @@ void Gui::drawText(const std::string& text, int x, int y, int w, int lineHeight)
 	std::vector<Texture*> textures;
 	textures.push_back(fontTex);
 
-    Material m = Material {&shader, textures};
-	Mesh mesh(vertices, indices, m);
-    mesh.drawGui();
+    Mesh mesh(vertices, indices, textures);
+    mesh.drawGui(shader);
 }
 
 void Gui::configureShader(int windowW, int windowH) {
