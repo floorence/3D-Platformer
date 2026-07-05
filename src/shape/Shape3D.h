@@ -33,6 +33,7 @@ public:
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic);
     void setNumPointLights(int num);
     void draw(Camera& camera);
+    void drawToDepthMap(PointLightCamera& camera);
 protected:
     float rotationX, rotationY, rotationZ;
  

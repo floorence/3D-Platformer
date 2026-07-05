@@ -29,7 +29,9 @@ public:
 	void lookAt(glm::vec3 orientation, glm::vec3 up);
 	glm::mat4 getCameraMatrix();
 	/** @brief give shader the position and cameraMatrix, caller has to activate shader beforehand */
-	void exportCamera(Shader& shader, const char* posUniform, const char* matUniform);
+	virtual void exportCamera(Shader& shader);
+protected:
+	float farPlane;
 private:
 	const std::string TAG = "Camera";
 };

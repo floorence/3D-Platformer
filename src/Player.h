@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #include"Mass.h"
-#include"Camera.h"
+#include"camera/Camera.h"
 
 class Player: public Mass {
 public:

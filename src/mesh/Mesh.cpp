@@ -2,14 +2,20 @@
 #include<string>
 #include"util/Log.h"
 
-Mesh::Mesh(const Material& material) : material(material) {}
+Mesh::Mesh(): depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag") {}
+
+Mesh::Mesh(const Material& material) 
+	: Mesh() 
+{
+	setMaterial(material);
+}
 
 Mesh::Mesh(
 	const std::vector <Vertex>& vertices, 
 	const std::vector <GLuint>& indices, 
 	const Material& material
 )
-	: material(material)
+	: Mesh(material)
 {
 	setShapeData(vertices, indices);
 }
@@ -56,7 +62,7 @@ void Mesh::draw(Camera& camera) {
 		material.textures[i]->exportTexture(*material.shader, uniform.c_str(), i);
 	}
 
-	camera.exportCamera(*material.shader, "camPos", "camMatrix");
+	camera.exportCamera(*material.shader);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
@@ -70,5 +76,13 @@ void Mesh::drawGui() {
 	vao.bind();
 	
 	material.textures[0]->exportTexture(*material.shader, "diffuse0", 0);
+	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
+}
+
+void Mesh::drawToDepthMap(PointLightCamera& camera) {
+	depthShader.activate();
+	vao.bind();
+
+	camera.exportCamera(depthShader);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }

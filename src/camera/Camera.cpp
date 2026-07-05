@@ -7,6 +7,7 @@ Camera::Camera(glm::vec3 position, int width, int height)
 void Camera::setPerspective(float FOVdeg, float nearPlane, float farPlane) {
 	// add perspective to the scene
 	projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
+	this->farPlane = farPlane;
 }
 
 void Camera::lookAt(glm::vec3 orientation) {
@@ -22,7 +23,7 @@ glm::mat4 Camera::getCameraMatrix() {
 	return projection * view;
 }
 
-void Camera::exportCamera(Shader& shader, const char* posUniform, const char* matUniform) {
-	glUniform3f(glGetUniformLocation(shader.ID, posUniform), position.x, position.y, position.z);
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, matUniform), 1, GL_FALSE, glm::value_ptr(getCameraMatrix()));
+void Camera::exportCamera(Shader& shader) {
+	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), position.x, position.y, position.z);
+	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(getCameraMatrix()));
 }

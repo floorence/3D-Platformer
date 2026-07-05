@@ -30,7 +30,6 @@ private:
      * of range will not be aware of the light source. note that most of the light falls in the first 20% of range
      */
     void calculateAttenuationCoefficients(float range, float* linear, float* quadratic);
-    void drawLightsAndShapes();
 };
 
 #endif

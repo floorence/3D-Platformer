@@ -100,3 +100,7 @@ void Shape3D::setNumPointLights(int num) {
 void Shape3D::draw(Camera& camera) {
     mesh.draw(camera);
 }
+
+void Shape3D::drawToDepthMap(PointLightCamera& camera) {
+    mesh.drawToDepthMap(camera);
+}

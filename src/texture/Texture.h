@@ -7,6 +7,7 @@ enum class TextureType {
 	Diffuse, Specular
 };
 
+// 2D texture
 class Texture {
 public:
 	TextureType type = TextureType::Diffuse;
