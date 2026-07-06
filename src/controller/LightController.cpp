@@ -1,6 +1,15 @@
 #include "LightController.h"
 #include "camera/PointLightCamera.h"
 #include "texture/CubeMapTexture.h"
+#include "util/Log.h"
+
+LightController::LightController() 
+    : depthMapTexture(DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
+      depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag"),
+      pointLightCam(glm::vec3(0.0f), DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT)
+{
+    initDepthMap();
+}
 
 void LightController::registerShape(Shape3D* shape) {
     if (shape->isLightSource)
@@ -33,34 +42,21 @@ void LightController::processLighting(Shader& shader) {
     shader.setNumPointLights(numPointLights);
 }
 
-void LightController::processShadows() {
-    uint depthMapFBO;
-    glGenFramebuffers(1, &depthMapFBO);
-
-    // TODO: still have to give shader the texture
-    CubeMapTexture depthCubeMap(DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap.ID, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    Shader depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag");
-    PointLightCamera lightSourceCam(lights[0]->position, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
-    lightSourceCam.setPerspective(90.0f, 0.1f, 100.0f);
-    lightSourceCam.generateTransforms();
-
+void LightController::processShadows(Shader& shader) {
     // first render to depth cubemap
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFboID);
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
+
+    pointLightCam.position = lights[0]->position;
+    pointLightCam.generateTransforms();
     for (const auto& shape : shapes) {
-        shape->drawToDepthMap(lightSourceCam, depthShader);
+        shape->drawToDepthMap(pointLightCam, depthShader);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    shader.setCubeMapTexture(depthMapTexture, "depthMap", 5);
+    shader.setFarPlane(pointLightCam.farPlane);
     // then render scene as normal with shadow mapping (using depth cubemap)
     // glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -68,6 +64,20 @@ void LightController::processShadows() {
     // glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
     // RenderScene();
 
+}
+
+void LightController::initDepthMap() {
+    glGenFramebuffers(1, &depthMapFboID);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFboID);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMapTexture.ID, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        Log::err(TAG, "Depth framebuffer incomplete");
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+
+    pointLightCam.setPerspective(90.0f, 0.1f, 10.0f);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {

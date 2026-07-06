@@ -42,11 +42,31 @@ in vec2 texCoord;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLight;
 uniform Material material;
+uniform samplerCube depthMap;
 
 uniform int numPointLights;
 uniform vec3 tintColor;
 uniform float tintIntensity; // 0 to 1
 uniform vec3 camPos;
+uniform float farPlane;
+
+bool isInShadow(vec3 fragPos, vec3 lightPos) {
+    // get vector between fragment position and light position
+    vec3 fragToLight = fragPos - lightPos;
+    // ise the fragment to light vector to sample from the depth map    
+    float closestDepth = texture(depthMap, fragToLight).r;
+    // it is currently in linear range between [0,1], let's re-transform it back to original depth value
+    closestDepth *= farPlane;
+    // now get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    // test for shadows
+    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    bool shadow = currentDepth - bias > closestDepth;
+    // display closestDepth as debug (to visualize depth cubemap)
+    // FragColor = vec4(vec3(closestDepth / farPlane), 1.0);    
+        
+    return shadow;
+}
 
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
@@ -59,18 +79,18 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
     // combine results with texture
-    vec3 ambient = AMBIENT_LIGHT * vec3(texture(material.diffuse, texCoord));
     vec3 diffuse = diff * vec3(texture(material.diffuse, texCoord));
     // specular texture only has red channel but needs to be grey
     vec3 specTex = vec3(texture(material.specular, texCoord));
     vec3 greySpecTex = vec3(specTex.r);
     vec3 specular = spec * greySpecTex;
-    ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
-    return light.color * (ambient + diffuse + specular);
+    float shadow = isInShadow(fragPos, light.position) ? 0.0 : 1.0;
+    return light.color * shadow * (diffuse + specular);
 }
 
+// TODO
 vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     // diffuse intensity
@@ -98,6 +118,7 @@ vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
 void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
+    vec3 ambient = AMBIENT_LIGHT * vec3(texture(material.diffuse, texCoord));
 
 //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
 	vec3 result = vec3(0);
@@ -105,7 +126,14 @@ void main() {
 	for (int i = 0; i < numPointLights; i++)
         result += calculatePointLight(pointLights[i], normal, crntPos, viewDirection);    
 
+    result += ambient;
 	result = mix(result, tintColor, tintIntensity);
     
     FragColor = vec4(result, 1.0);
+
+    // vec3 fragToLight = crntPos - pointLights[0].position;
+
+    // float depth = texture(depthMap, fragToLight).r;
+
+    // FragColor = vec4(vec3(depth), 1.0);
 }

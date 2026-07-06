@@ -57,14 +57,6 @@ int main() {
 
 	gladLoadGL();
 
-	// on linux, framebuffer size and window size are not always identical
-	int fbWidth, fbHeight;
-	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-
-	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
-
-	glViewport(0, 0, fbWidth, fbHeight);
-
 	Log::log(TAG, "opengl initialized");
 
 	// make gui
@@ -114,9 +106,9 @@ int main() {
 	objects.push_back(&floorLight);
 
 	// make light cube
-	RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
-	light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
-	objects.push_back(&light);
+	// RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
+	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
+	// objects.push_back(&light);
 
 	// make shaders and light controller
 	Shader shader("shader/default.vert", "shader/default.frag");
@@ -146,6 +138,14 @@ int main() {
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetKeyCallback(window, keyCallback);
 
+	// on linux, framebuffer size and window size are not always identical
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
+	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
+
+	glViewport(0, 0, fbWidth, fbHeight);
+
 	Log::log(TAG, "everything is set up; starting main game loop");
 
 	while (!glfwWindowShouldClose(window)) {
@@ -157,7 +157,10 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the back buffer
 
 		player.handleKeyInputs(window, deltaTime);
+		lc.processShadows(shader);
 
+        glViewport(0, 0, fbWidth, fbHeight);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (const auto& shape : objects) {
 			shape->draw(player.camera, (shape->isLightSource) ? lightShader : shader);
 		}

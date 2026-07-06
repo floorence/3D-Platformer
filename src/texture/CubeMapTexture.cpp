@@ -1,4 +1,5 @@
 #include"CubeMapTexture.h"
+#include <cstddef>
 
 CubeMapTexture::CubeMapTexture(uint width, uint height) {
     glGenTextures(1, &ID);
@@ -16,6 +17,7 @@ CubeMapTexture::CubeMapTexture(uint width, uint height) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);  
 }
 
-void CubeMapTexture::exportTexture(Shader& shader, const char* uniform, GLuint unit) {
-	glUniform1i(glGetUniformLocation(shader.ID, uniform), unit);
+void CubeMapTexture::bind(GLuint unit) {
+    glActiveTexture(GL_TEXTURE0 + unit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 }

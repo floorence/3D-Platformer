@@ -3,6 +3,7 @@
 
 #include "camera/Camera.h"
 #include "camera/PointLightCamera.h"
+#include "texture/CubeMapTexture.h"
 #include "texture/Texture.h"
 #include<glm/glm.hpp>
 #include<string>
@@ -28,7 +29,9 @@ public:
 	void setModel(glm::mat4 model);
 	void setCamera(Camera& camera);
 	void setPointLightCamera(PointLightCamera& camera);
+	void setFarPlane(float farPlane);
 	void setTexture(Texture& texture, const char* uniform, GLuint unit);
+	void setCubeMapTexture(CubeMapTexture& texture, const char* uniform, GLuint unit);
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic);
     void setNumPointLights(int num);

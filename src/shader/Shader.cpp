@@ -63,14 +63,19 @@ void Shader::setCamera(Camera& camera) {
 }
 
 void Shader::setPointLightCamera(PointLightCamera& camera) {
+	activate();
     std::string uniform = "shadowMatrices[0]";
 
     for (uint i = 0; i < 6; i++) {
         uniform[uniform.size() - 2] = i + '0';
         glUniformMatrix4fv(glGetUniformLocation(ID, uniform.c_str()), 1, GL_FALSE, glm::value_ptr(camera.shadowTransforms[i]));
     }
-    glUniform1f(glGetUniformLocation(ID, "far_plane"), camera.farPlane);
+	setFarPlane(camera.farPlane);
     glUniform3f(glGetUniformLocation(ID, "lightPos"), camera.position.x, camera.position.y, camera.position.z);
+}
+
+void Shader::setFarPlane(float farPlane) {
+    glUniform1f(glGetUniformLocation(ID, "farPlane"), farPlane);
 }
 
 void Shader::setTexture(Texture& texture, const char* uniform, GLuint unit) {
@@ -78,6 +83,13 @@ void Shader::setTexture(Texture& texture, const char* uniform, GLuint unit) {
 
 	glUniform1i(glGetUniformLocation(ID, uniform), unit);
 	glUniform1f(glGetUniformLocation(ID, "material.shininess"), 16);
+	texture.bind(unit);
+}
+
+void Shader::setCubeMapTexture(CubeMapTexture& texture, const char* uniform, GLuint unit) {
+	activate();
+
+	glUniform1i(glGetUniformLocation(ID, uniform), unit);
 	texture.bind(unit);
 }
 

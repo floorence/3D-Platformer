@@ -6,6 +6,7 @@
 #include"camera/Camera.h"
 #include "camera/PointLightCamera.h"
 #include "shader/Shader.h"
+#include "texture/CubeMapTexture.h"
 #include"texture/Texture.h"
 
 class Mesh {
@@ -26,6 +27,7 @@ private:
 	EBO ebo;
 	int drawCount = 0;
 	std::vector<Texture*> textures;
+	CubeMapTexture* cubeMapTexture;
 	const std::string TAG = "Mesh";
 };
 

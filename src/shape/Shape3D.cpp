@@ -71,5 +71,6 @@ void Shape3D::draw(Camera& camera, Shader& shader) {
 }
 
 void Shape3D::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
+    depthShader.setModel(model);
     mesh.drawToDepthMap(camera, depthShader);
 }
