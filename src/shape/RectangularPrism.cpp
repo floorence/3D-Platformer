@@ -64,12 +64,12 @@ std::vector<Vertex> RectangularPrism::generateVertices() {
 
 std::vector<GLuint> RectangularPrism::generateIndices() {
     return {
-        0, 3, 9, 0, 6, 9, // facing posX
-        12, 15, 21, 12, 18, 21, // facing negX
-        1, 4, 16, 1, 13, 16, // facing posY
-        7, 10, 22, 7, 19, 22, // facing negY
-        2, 8, 20, 2, 14, 20, // facing posZ
-        5, 11, 23, 5, 17, 23 // facing negZ
+        0, 9, 3, 0, 6, 9, // facing posX
+        12, 15, 21, 12, 21, 18, // facing negX
+        1, 4, 16, 1, 16, 13, // facing posY
+        7, 22, 10, 7, 19, 22, // facing negY
+        2, 20, 8, 2, 14, 20, // facing posZ
+        5, 11, 23, 5, 23, 17 // facing negZ
     };
 }
 

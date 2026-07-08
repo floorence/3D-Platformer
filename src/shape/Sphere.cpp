@@ -61,12 +61,13 @@ std::vector<GLuint> Sphere::generateIndices() {
 
         for (int j = 0; j < sectors; j++, k1++, k2++) {
             // 2 triangles per sector excluding 1st and last stacks
+            // TODO: figure out why for sphere front facing is drawn clockwisely here... but for other shapes its counterclockwise
             if (i != 0) {
-                indices.insert(indices.end(), {k1, k2, k1 + 1});
+                indices.insert(indices.end(), {k1, k1 + 1, k2});
             }
 
             if (i != (stacks - 1)) {
-                indices.insert(indices.end(), {k1 + 1, k2, k2 + 1});
+                indices.insert(indices.end(), {k1 + 1, k2 + 1, k2});
             }
         }
     }

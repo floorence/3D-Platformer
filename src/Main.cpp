@@ -121,6 +121,7 @@ int main() {
 	Log::log(TAG, "initial lighting processing completed");
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
+	glEnable(GL_CULL_FACE); // enable face culling, mostly so that we can cull front faces for depth map rendering to avoid peter-panning
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player_ptr = &player;

@@ -27,7 +27,6 @@ private:
 	EBO ebo;
 	int drawCount = 0;
 	std::vector<Texture*> textures;
-	CubeMapTexture* cubeMapTexture;
 	const std::string TAG = "Mesh";
 };
 

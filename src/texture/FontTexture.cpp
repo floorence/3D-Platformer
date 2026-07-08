@@ -124,7 +124,7 @@ std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x
 std::vector<GLuint> FontTexture::generateIndices(std::vector<Vertex>& vertices) {
 	std::vector<GLuint> indices;
 	for (uint i = 0; i < vertices.size(); i += 4 /* 4 vertices per quad */ ) {
-		indices.insert(indices.end(), {i, i + 3, i + 2, i, i + 3, i + 1});
+		indices.insert(indices.end(), {i, i + 2, i + 3, i, i + 3, i + 1});
 	}
 	return indices;
 }

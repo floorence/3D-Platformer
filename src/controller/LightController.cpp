@@ -43,10 +43,10 @@ void LightController::processLighting(Shader& shader) {
 }
 
 void LightController::processShadows(Shader& shader) {
-    // first render to depth cubemap
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFboID);
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
     glClear(GL_DEPTH_BUFFER_BIT);
+//    glCullFace(GL_FRONT);
 
     pointLightCam.position = lights[0]->position;
     pointLightCam.generateTransforms();
@@ -55,15 +55,10 @@ void LightController::processShadows(Shader& shader) {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+ //   glCullFace(GL_BACK);
+
     shader.setCubeMapTexture(depthMapTexture, "depthMap", 5);
     shader.setFarPlane(pointLightCam.farPlane);
-    // then render scene as normal with shadow mapping (using depth cubemap)
-    // glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // ConfigureShaderAndMatrices();
-    // glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-    // RenderScene();
-
 }
 
 void LightController::initDepthMap() {

@@ -1,6 +1,8 @@
 #version 330 core
 
-// this file was adapted from https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/2.lighting/6.multiple_lights/6.multiple_lights.fs
+// parts of this file were adapted from
+// * https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/2.lighting/6.multiple_lights/6.multiple_lights.fs
+// * https://github.com/JoeyDeVries/LearnOpenGL/blob/master/src/5.advanced_lighting/3.2.1.point_shadows/3.2.1.point_shadows.fs
 
 out vec4 FragColor;
 
@@ -50,21 +52,19 @@ uniform float tintIntensity; // 0 to 1
 uniform vec3 camPos;
 uniform float farPlane;
 
-bool isInShadow(vec3 fragPos, vec3 lightPos) {
-    // get vector between fragment position and light position
-    vec3 fragToLight = fragPos - lightPos;
-    // ise the fragment to light vector to sample from the depth map    
-    float closestDepth = texture(depthMap, fragToLight).r;
-    // it is currently in linear range between [0,1], let's re-transform it back to original depth value
-    closestDepth *= farPlane;
-    // now get current linear depth as the length between the fragment and light position
-    float currentDepth = length(fragToLight);
+bool isInShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
+    vec3 lightToFrag = fragPos - lightPos;
+    // cube texture sampling works by having vector from middle of cube point to where you want to sample
+    float closestDepth = texture(depthMap, lightToFrag).r;
+    closestDepth *= farPlane; // transform [0,1] back to original depth value
+    float currentDepth = length(lightToFrag);
+    // calculate bias
+    vec3 lightDir = normalize(lightPos - fragPos);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
     // test for shadows
-    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
     bool shadow = currentDepth - bias > closestDepth;
-    // display closestDepth as debug (to visualize depth cubemap)
-    // FragColor = vec4(vec3(closestDepth / farPlane), 1.0);    
-        
+       
     return shadow;
 }
 
@@ -86,7 +86,7 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     vec3 specular = spec * greySpecTex;
     diffuse *= attenuation;
     specular *= attenuation;
-    float shadow = isInShadow(fragPos, light.position) ? 0.0 : 1.0;
+    float shadow = isInShadow(fragPos, normal, light.position) ? 0.0 : 1.0;
     return light.color * shadow * (diffuse + specular);
 }
 
@@ -131,9 +131,8 @@ void main() {
     
     FragColor = vec4(result, 1.0);
 
+    // uncomment to see depthMap
     // vec3 fragToLight = crntPos - pointLights[0].position;
-
     // float depth = texture(depthMap, fragToLight).r;
-
     // FragColor = vec4(vec3(depth), 1.0);
 }
