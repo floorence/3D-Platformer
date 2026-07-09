@@ -13,7 +13,7 @@ public:
     glm::vec3 direction = glm::vec3(0.0f); // 0 for point light, not 0 for spot light TODO
 
     Shape3D(glm::vec3 position, bool isLightSource);
-    Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position, bool isLightSource);
+    Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource);
     virtual ~Shape3D() = default;
 
     /**

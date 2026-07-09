@@ -5,7 +5,7 @@
 
 class DebugPyramid: public Shape3D {
 public:
-    DebugPyramid(Texture* diffuse, Texture* specular, glm::vec3 position) 
+    DebugPyramid(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position) 
         : Shape3D(diffuse, specular, position, false)
     { invalidateShape(); }
 

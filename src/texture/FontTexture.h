@@ -2,7 +2,7 @@
 #define FONT_TEXTURE_CLASS_H
 
 #include"stb/stb_truetype.h"
-#include "Texture.h"
+#include "AssetTexture.h"
 #include "mesh/VBO.h"
 
 // coordinates of quad within texture atlas as if texture atlas width and height was 1
@@ -11,7 +11,7 @@ struct NormalizedCharQuad {
 };
 
 // Texture for ttf font files
-class FontTexture : public Texture {
+class FontTexture: public AssetTexture {
 public:
 	FontTexture(const char* ttfFile, GLenum pixelType = GL_UNSIGNED_BYTE);
 

@@ -28,7 +28,7 @@ void Gui::drawText(const std::string& text, int x, int y, int w, int lineHeight)
 
     std::vector<Vertex> vertices = fontTex->generateVertices(text, x, y, w, lineHeight);
     std::vector<GLuint> indices = fontTex->generateIndices(vertices);
-	std::vector<Texture*> textures;
+	std::vector<AssetTexture*> textures;
 	textures.push_back(fontTex);
 
     Mesh mesh(vertices, indices, textures);

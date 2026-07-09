@@ -6,6 +6,7 @@ refactor and clean up
 
 feature
 - softer shadows
+- multiple shadows, or clean up how it currently decides which light source casts shadows
 - way to only log some log levels
 - test on different window aspect ratio
 - collision

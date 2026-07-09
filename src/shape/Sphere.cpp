@@ -1,7 +1,7 @@
 #include"Sphere.h"
 #include <glm/gtc/constants.hpp>
 
-Sphere::Sphere(Texture* diffuse, Texture* specular, glm::vec3 position, float radius, int stacks, int sectors, bool isLightSource) 
+Sphere::Sphere(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, float radius, int stacks, int sectors, bool isLightSource) 
     : Shape3D(diffuse, specular, position, isLightSource),
       radius(radius), stacks(stacks), sectors(sectors)
 {

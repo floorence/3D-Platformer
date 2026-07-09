@@ -59,6 +59,10 @@ int main() {
 
 	Log::log(TAG, "opengl initialized");
 
+	// on linux, framebuffer size and window size are not always identical
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
 	// make gui
 	FontTexture guiDiffuse = FontTexture("assets/pixel_operator_short_dollar.ttf");
 	Gui gui(&guiDiffuse, width, height);
@@ -66,8 +70,8 @@ int main() {
 	std::vector<Shape3D*> objects;
 
 	// make debug pyramid
-	Texture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
-	Texture planksSpecular = ImageTexture("assets/planks.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
+	AssetTexture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
+	AssetTexture planksSpecular = ImageTexture("assets/planks.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
 	DebugPyramid pyramid(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, 0.0f, 0.0f));
 	objects.push_back(&pyramid);
 
@@ -76,15 +80,15 @@ int main() {
 	objects.push_back(&sphere);
 
 	// make rectangular prism
-	Texture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
-	Texture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
+	AssetTexture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
+	AssetTexture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-2.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
 	rect.setRotation(0, 0, 180);
 	objects.push_back(&rect);
 
 	// make floor
-	Texture floorDiffuse = ImageTexture("assets/stone.jpg", TextureType::Diffuse);
-	Texture floorSpecular = ImageTexture("assets/stone.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
+	AssetTexture floorDiffuse = ImageTexture("assets/stone.jpg", TextureType::Diffuse);
+	AssetTexture floorSpecular = ImageTexture("assets/stone.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
 	RectangularPrism floor(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
 	objects.push_back(&floor);
 
@@ -114,7 +118,7 @@ int main() {
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
 
-	LightController lc;
+	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
 	lc.processLighting(shader);
 
@@ -139,10 +143,6 @@ int main() {
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetKeyCallback(window, keyCallback);
 
-	// on linux, framebuffer size and window size are not always identical
-	int fbWidth, fbHeight;
-	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
 	glViewport(0, 0, fbWidth, fbHeight);
@@ -155,13 +155,10 @@ int main() {
 		lastFrame = currentFrame;
 
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the back buffer
 
 		player.handleKeyInputs(window, deltaTime);
 		lc.processShadows(shader);
 
-        glViewport(0, 0, fbWidth, fbHeight);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (const auto& shape : objects) {
 			shape->draw(player.camera, (shape->isLightSource) ? lightShader : shader);
 		}

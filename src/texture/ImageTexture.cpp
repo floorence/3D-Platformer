@@ -34,10 +34,10 @@ ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelT
 			redChannel[i] = static_cast<unsigned char>(gray);
 		}
 
-		initTexture(redChannel, GL_RED, pixelType, widthImg, heightImg);
+		setTextureData(redChannel, GL_RED, pixelType, widthImg, heightImg);
 		delete[] redChannel;
 	} else { // texType == diffuse
-		initTexture(bytes, GL_RGBA, pixelType, widthImg, heightImg);
+		setTextureData(bytes, GL_RGBA, pixelType, widthImg, heightImg);
 	}
 
 	stbi_image_free(bytes);

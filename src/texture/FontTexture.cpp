@@ -41,7 +41,7 @@ FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
 		//stbi_write_png("assets/font_dev.png", atlas_w, atlas_h, 1, bitmap_pixels, atlas_w);
 		processCharData(cData);
 		//flipBitmap(bitmap_pixels, atlas_w, atlas_h);
-		initTexture(bitmap_pixels, GL_RED, pixelType, atlas_w, atlas_h);
+		setTextureData(bitmap_pixels, GL_RED, pixelType, atlas_w, atlas_h);
 	}
 	delete[] ttf_buffer;
 	delete[] bitmap_pixels;

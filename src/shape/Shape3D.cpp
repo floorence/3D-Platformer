@@ -5,10 +5,10 @@ Shape3D::Shape3D(glm::vec3 position, bool isLightSource)
     : position(position),
       isLightSource(isLightSource) {}
 
-Shape3D::Shape3D(Texture* diffuse, Texture* specular, glm::vec3 position, bool isLightSource) 
+Shape3D::Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource) 
     : Shape3D(position, isLightSource)
 {
-    std::vector<Texture*> textures;
+    std::vector<AssetTexture*> textures;
     if (diffuse != nullptr) textures.push_back(diffuse);
     if (specular != nullptr) textures.push_back(specular);
     mesh.setTextures(textures);

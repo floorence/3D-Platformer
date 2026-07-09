@@ -2,7 +2,7 @@
 #include<string>
 #include"util/Log.h"
 
-Mesh::Mesh(const std::vector<Texture*>& textures) 
+Mesh::Mesh(const std::vector<AssetTexture*>& textures) 
 	: Mesh() 
 {
 	setTextures(textures);
@@ -11,14 +11,14 @@ Mesh::Mesh(const std::vector<Texture*>& textures)
 Mesh::Mesh(
 	const std::vector <Vertex>& vertices, 
 	const std::vector <GLuint>& indices, 
-	const std::vector<Texture*>& textures
+	const std::vector<AssetTexture*>& textures
 )
 	: Mesh(textures)
 {
 	setShapeData(vertices, indices);
 }
 
-void Mesh::setTextures(const std::vector<Texture*>& textures) {
+void Mesh::setTextures(const std::vector<AssetTexture*>& textures) {
 	this->textures = textures;
 }
 
@@ -43,16 +43,7 @@ void Mesh::draw(Camera& camera, Shader& shader) {
 	vao.bind();
 
 	for (unsigned int i = 0; i < textures.size(); i++) {
-		std::string uniform;
-		TextureType type = textures[i]->type;
-		if (type == TextureType::Diffuse) {
-			uniform = "material.diffuse";
-		} else if (type == TextureType::Specular) {
-			uniform = "material.specular";
-		}
-
-//		Log::log(TAG, fmt::format("exporting texture at {}", uniform));
-		shader.setTexture(*textures[i], uniform.c_str(), i);
+		shader.setTexture(*textures[i], textures[i]->getUniformName().c_str(), i);
 	}
 
 	shader.setCamera(camera);

@@ -1,10 +1,10 @@
 #ifndef IMAGE_TEXTURE_CLASS_H
 #define IMAGE_TEXTURE_CLASS_H
 
-#include"Texture.h"
+#include"AssetTexture.h"
 
-// Texture for rasterized images
-class ImageTexture : public Texture {
+// Texture for raster images
+class ImageTexture: public AssetTexture {
 public:
 	/**
 	 * @param image path to image file from project root
