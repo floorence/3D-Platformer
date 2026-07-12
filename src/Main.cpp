@@ -106,7 +106,7 @@ int main() {
 	objects.push_back(&floorCube);
 
 	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -0.8f, 0.0f), 0.2f, 0.2f, 0.2f, true);
-	floorLight.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 15.0f);
+	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f), 7.0f);
 	objects.push_back(&floorLight);
 
 	// make light cube
@@ -161,11 +161,10 @@ int main() {
 
 		player.handleKeyInputs(window, deltaTime);
 		lc.renderForShadows(shader);
+		lc.renderForHDR(shader, lightShader, player.camera);
+		lc.renderForReal();
 
-		for (const auto& shape : objects) {
-			shape->draw(player.camera, (shape->isLightSource) ? lightShader : shader);
-		}
-
+		// TODO: why is the text not showing anymore after hdr :skull:
 		tr.drawText(player.getDebugString(), fontShader, 10, 10, 400, 20);
 
 		glfwPollEvents();

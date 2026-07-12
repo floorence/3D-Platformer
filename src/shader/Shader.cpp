@@ -82,7 +82,7 @@ void Shader::setTexture(Texture& texture, std::string uniform, GLuint unit) {
 	activate();
 
 	glUniform1i(glGetUniformLocation(ID, uniform.c_str()), unit);
-	glUniform1f(glGetUniformLocation(ID, "material.shininess"), 16);
+	glUniform1f(glGetUniformLocation(ID, "material.shininess"), 16); // TODO
 	texture.bind(unit);
 }
 

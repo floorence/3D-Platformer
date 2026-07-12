@@ -3,6 +3,7 @@ refactor and clean up
 - optimize: FontTexture::generateIndices only needs size of vertices. and it will be the same every time till the size is reached
 - implement way to apply solid colour tint to entire object
 - having different glsl files that can be used with same c++ shader type is really confusing.
+- have one base texture class instead of separate for 2d and cube
 
 feature
 - softer shadows

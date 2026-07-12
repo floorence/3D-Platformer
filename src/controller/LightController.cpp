@@ -13,6 +13,7 @@ LightController::LightController(int windowWidth, int windowHeight)
       hdrShader("shader/gui.vert", "shader/hdr.frag")
 {
     prepareDepthMap();
+    prepareHDR();
 }
 
 void LightController::registerShape(Shape3D* shape) {
@@ -62,7 +63,7 @@ void LightController::renderForShadows(Shader& shader) {
     shader.setCubeMapTexture(depthMapTexture, "depthMap", 5);
     shader.setFarPlane(pointLightCam.farPlane);
 
-    glViewport(0, 0, windowWidth, windowWidth);
+    glViewport(0, 0, windowWidth, windowHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -85,7 +86,7 @@ void LightController::renderForReal() {
     hdrShader.setTexture(colorBufTexture, colorBufTexture.getUniformName(), 0);
 	hdrShader.setProjection(glm::mat4(1.0f));
     Quad hdr(&colorBufTexture);
-    hdr.draw(hdrShader, CoordinateSystem2D::CENTER, -1.0, -1.0, 1.0, 1.0);
+    hdr.draw(hdrShader, CoordinateSystem2D::CENTER, -1.0, 1.0, 2.0, 2.0);
 }
     
 void LightController::prepareDepthMap() {
@@ -112,14 +113,15 @@ void LightController::prepareHDR() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // create depth buffer (renderbuffer)
-    // GLuint rboDepth;
-    // glGenRenderbuffers(1, &rboDepth);
-    // glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
+    // THIS IS NEEDED TO RESOLVE VERTICES!!! (texture only does colours)
+    GLuint rboDepth;
+    glGenRenderbuffers(1, &rboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
     // attach buffers
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFboID);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufTexture.ID, 0);
-    // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         Log::err(TAG, "Framebuffer incomplete");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

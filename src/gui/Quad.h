@@ -14,6 +14,7 @@ public:
     Quad(Texture* texture);
 
     void draw(Shader& shader, CoordinateSystem2D coordSystem, float x, float y, float w, float h);
+    // TODO: draw but it takes corners instead of width and height
 private:
     Texture* tex = nullptr;
 };
