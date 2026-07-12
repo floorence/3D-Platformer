@@ -1,6 +1,5 @@
 #include "LightController.h"
 #include "camera/PointLightCamera.h"
-#include "gui/Quad.h"
 #include "texture/CubeMapTexture.h"
 #include "util/Log.h"
 
@@ -83,10 +82,10 @@ void LightController::renderForHDR(Shader& shader, Shader& lightShader, Camera& 
 }
 
 void LightController::renderForReal() {
-    hdrShader.setTexture(colorBufTexture, colorBufTexture.getUniformName(), 0);
+    hdrShader.setTexture(colorBufTexture, 0);
 	hdrShader.setProjection(glm::mat4(1.0f));
-    Quad hdr(&colorBufTexture);
-    hdr.draw(hdrShader, CoordinateSystem2D::CENTER, -1.0, 1.0, 2.0, 2.0);
+    hdrResult.setTexture(&colorBufTexture);
+    hdrResult.draw(hdrShader, -1.0f, 1.0f, 1.0f, -1.0f);
 }
     
 void LightController::prepareDepthMap() {

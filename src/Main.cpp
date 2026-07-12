@@ -164,7 +164,7 @@ int main() {
 		lc.renderForHDR(shader, lightShader, player.camera);
 		lc.renderForReal();
 
-		// TODO: why is the text not showing anymore after hdr :skull:
+		glDisable(GL_DEPTH_TEST);
 		tr.drawText(player.getDebugString(), fontShader, 10, 10, 400, 20);
 
 		glfwPollEvents();
@@ -188,6 +188,8 @@ int main() {
 		}
 
 		tr.drawText(currInfoText, fontShader, width - 200, 10, 200, 16);
+		glEnable(GL_DEPTH_TEST);
+
 		glfwSwapBuffers(window);
 	}
 

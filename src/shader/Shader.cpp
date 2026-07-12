@@ -75,15 +75,20 @@ void Shader::setPointLightCamera(PointLightCamera& camera) {
 }
 
 void Shader::setFarPlane(float farPlane) {
+	activate();
     glUniform1f(glGetUniformLocation(ID, "farPlane"), farPlane);
 }
 
-void Shader::setTexture(Texture& texture, std::string uniform, GLuint unit) {
+void Shader::setTexture(Texture& texture, GLuint unit) {
 	activate();
 
-	glUniform1i(glGetUniformLocation(ID, uniform.c_str()), unit);
-	glUniform1f(glGetUniformLocation(ID, "material.shininess"), 16); // TODO
+	glUniform1i(glGetUniformLocation(ID, texture.getUniformName().c_str()), unit);
 	texture.bind(unit);
+}
+
+void Shader::setShininess(float shininess) {
+	activate();
+	glUniform1f(glGetUniformLocation(ID, "material.shininess"), shininess);
 }
 
 void Shader::setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit) {

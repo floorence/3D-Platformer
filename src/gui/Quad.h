@@ -4,17 +4,23 @@
 #include"texture/Texture.h"
 #include"shader/Shader.h"
 
-enum class CoordinateSystem2D {
-    CENTER, // 0,0 is at the center (standard coordinate system)
-    TOP_LEFT // 0,0 is at the top left and w,h is at the bottom right
-};
-
 class Quad {
 public:
+    Quad() = default;
     Quad(Texture* texture);
 
-    void draw(Shader& shader, CoordinateSystem2D coordSystem, float x, float y, float w, float h);
-    // TODO: draw but it takes corners instead of width and height
+    void setTexture(Texture* texture);
+    /**
+     * @param x, y top left of quad
+     * @param w, h width and height of quad
+     * @param reversedYAxis true if y increases downward
+     */
+    void draw(Shader& shader, float x, float y, float w, float h, bool reversedYAxis);
+    /**
+     * @param xu, yu top left of quad
+     * @param xv, yv bottom right of quad
+     */
+    void draw(Shader& shader, float xu, float yu, float xv, float yv);
 private:
     Texture* tex = nullptr;
 };

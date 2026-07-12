@@ -30,7 +30,8 @@ public:
 	void setCamera(Camera& camera); // default
 	void setPointLightCamera(PointLightCamera& camera); // depth
 	void setFarPlane(float farPlane); // default
-	void setTexture(Texture& texture, std::string uniform, GLuint unit); // default, gui, and hdr
+	void setTexture(Texture& texture, GLuint unit); // default, gui, and hdr
+	void setShininess(float shininess); // default
 	void setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit); // default
 	void setProjection(glm::mat4 projection); // gui
 

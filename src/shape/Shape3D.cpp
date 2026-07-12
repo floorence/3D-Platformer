@@ -65,6 +65,7 @@ void Shape3D::draw(Camera& camera, Shader& shader) {
     if (isLightSource) {
         shader.setColor(color);
     } else {
+		shader.setShininess(16);
         shader.setColorTint(color, intensity);
     }
     mesh.draw(camera, shader);

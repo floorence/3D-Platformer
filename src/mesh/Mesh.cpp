@@ -43,7 +43,7 @@ void Mesh::draw(Camera& camera, Shader& shader) {
 	vao.bind();
 
 	for (unsigned int i = 0; i < textures.size(); i++) {
-		shader.setTexture(*textures[i], textures[i]->getUniformName(), i);
+		shader.setTexture(*textures[i], i);
 	}
 
 	shader.setCamera(camera);
@@ -58,8 +58,7 @@ void Mesh::drawGui(Shader& shader) {
 
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
-	// TODO: wait, we can just make setTexture take just the texture and call getUniformName on it
-	shader.setTexture(*textures[0], textures[0]->getUniformName(), 0);
+	shader.setTexture(*textures[0], 0);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 

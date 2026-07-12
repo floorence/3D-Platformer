@@ -1,6 +1,7 @@
 #ifndef LIGHT_CONTROLLER_H
 #define LIGHT_CONTROLLER_H
 
+#include "gui/Quad.h"
 #include "shape/Shape3D.h"
 
 class LightController {
@@ -33,6 +34,7 @@ private:
     GLuint hdrFboID = 0;
     Texture colorBufTexture;
     Shader hdrShader;
+    Quad hdrResult;
 
     // these are parameters for a best fit power regression model on the values that work well for specified ranges,
     // courtesy of https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
