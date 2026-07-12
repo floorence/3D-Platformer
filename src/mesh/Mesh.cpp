@@ -2,7 +2,7 @@
 #include<string>
 #include"util/Log.h"
 
-Mesh::Mesh(const std::vector<AssetTexture*>& textures) 
+Mesh::Mesh(const std::vector<Texture*>& textures) 
 	: Mesh() 
 {
 	setTextures(textures);
@@ -11,14 +11,14 @@ Mesh::Mesh(const std::vector<AssetTexture*>& textures)
 Mesh::Mesh(
 	const std::vector <Vertex>& vertices, 
 	const std::vector <GLuint>& indices, 
-	const std::vector<AssetTexture*>& textures
+	const std::vector<Texture*>& textures
 )
 	: Mesh(textures)
 {
 	setShapeData(vertices, indices);
 }
 
-void Mesh::setTextures(const std::vector<AssetTexture*>& textures) {
+void Mesh::setTextures(const std::vector<Texture*>& textures) {
 	this->textures = textures;
 }
 
@@ -43,7 +43,7 @@ void Mesh::draw(Camera& camera, Shader& shader) {
 	vao.bind();
 
 	for (unsigned int i = 0; i < textures.size(); i++) {
-		shader.setTexture(*textures[i], textures[i]->getUniformName().c_str(), i);
+		shader.setTexture(*textures[i], textures[i]->getUniformName(), i);
 	}
 
 	shader.setCamera(camera);
@@ -58,14 +58,16 @@ void Mesh::drawGui(Shader& shader) {
 
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
-	
-	shader.setTexture(*textures[0], "diffuse0", 0);
+	// TODO: wait, we can just make setTexture take just the texture and call getUniformName on it
+	shader.setTexture(*textures[0], textures[0]->getUniformName(), 0);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	depthShader.activate();
 	vao.bind();
+
+	// depth map does not have textures
 
 	depthShader.setPointLightCamera(camera);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);

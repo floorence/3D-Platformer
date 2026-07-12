@@ -8,6 +8,8 @@
 #include"stb/stb_image_write.h"
 
 FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
+	uniform = "diffuse0";
+
     std::ifstream file(ttfFile, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
         Log::err(TAG, "Failed to open font file.");

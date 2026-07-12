@@ -1,5 +1,7 @@
 #include "AssetTexture.h"
 
+AssetTexture::AssetTexture(std::string uniform): Texture(uniform) {}
+
 void AssetTexture::setTextureData(unsigned char* bytes, GLenum format, GLenum pixelType, int width, int height) {
 	bind();
 
@@ -18,14 +20,6 @@ void AssetTexture::setTextureData(unsigned char* bytes, GLenum format, GLenum pi
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	unbind();
-}
-
-std::string AssetTexture::getUniformName() {
-	if (type == TextureType::Diffuse) {
-		return "material.diffuse";
-	} else {
-		return "material.specular";
-	}
 }
 
 AssetTexture::AssetTexture(AssetTexture&& other) noexcept

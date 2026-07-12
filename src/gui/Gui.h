@@ -1,24 +1,16 @@
 #ifndef GUI_CLASS_H
 #define GUI_CLASS_H
 
-#include "shader/Shader.h"
-#include "texture/FontTexture.h"
+#include"Quad.h"
 #include "texture/ImageTexture.h"
 
-class Gui {
+// TODO
+class Gui: public Quad {
 public:
-    Gui(FontTexture* t, int windowW, int windowH);
-    Gui(ImageTexture* t, int windowW, int windowH);
-
-    void draw(int x, int y, int w, int h);
-    void drawText(const std::string& text, int x, int y, int w, int lineHeight); // texture in material has to be a FontTexture, otherwise weird things will happen probably
+    Gui(ImageTexture* t);
 private:
-    FontTexture* fontTex = nullptr;
     ImageTexture* imageTex = nullptr;
-    Shader shader;
     const std::string TAG = "Gui";
-
-    void configureShader(int windowW, int windowH);
 };
 
 #endif

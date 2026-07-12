@@ -1,6 +1,8 @@
 #include"Texture.h"
 
-Texture::Texture() {
+Texture::Texture(std::string uniform)
+	: uniform(uniform)
+{
 	glGenTextures(1, &ID);
 }
 
@@ -15,6 +17,10 @@ void Texture::bind(GLuint unit) {
 
 void Texture::unbind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+std::string Texture::getUniformName() {
+	return uniform;
 }
 
 Texture::~Texture() {

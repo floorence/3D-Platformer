@@ -10,8 +10,11 @@ public:
     void registerShape(Shape3D* shape);
     void registerShapes(std::vector<Shape3D*> shapes);
     void processLighting(Shader& shader);
-    void processShadows(Shader& shader);
-    void processHDR(Shader& shader);
+
+    // these functions must all be called in order each frame
+    void renderForShadows(Shader& shader);
+    void renderForHDR(Shader& shader, Shader& lightShader, Camera& camera);
+    void renderForReal();
 private:
     int windowWidth, windowHeight;
     std::vector<Shape3D*> lights;
@@ -28,7 +31,8 @@ private:
 
     // stuff for hdr
     GLuint hdrFboID = 0;
-    
+    Texture colorBufTexture;
+    Shader hdrShader;
 
     // these are parameters for a best fit power regression model on the values that work well for specified ranges,
     // courtesy of https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
@@ -38,8 +42,8 @@ private:
     const float QUADRATIC_COEFFICIENT = 87.39333;
     const float QUADRATIC_POWER = -2.03568;
 
-    void initDepthMap();
-    void initColorBuffer();
+    void prepareDepthMap();
+    void prepareHDR();
     /**
      * @param range the distance away from the light that it can (visibly) reach.
      *              note that most of the light falls in the first 20% of range.

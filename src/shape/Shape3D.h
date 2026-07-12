@@ -2,6 +2,7 @@
 #define SHAPE_3D_CLASS
 
 #include"mesh/Mesh.h"
+#include"texture/AssetTexture.h"
 
 class Shape3D {
 public:

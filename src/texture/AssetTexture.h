@@ -2,7 +2,6 @@
 #define TEXTURE_CLASS_H
 
 #include"Texture.h"
-#include <string>
 
 enum class TextureType {
 	Diffuse, Specular
@@ -12,8 +11,7 @@ class AssetTexture: public Texture {
 public:
 	TextureType type = TextureType::Diffuse;
 
-	AssetTexture() : Texture() {};
-	std::string getUniformName();
+	AssetTexture(std::string uniform = "");
 
 	virtual ~AssetTexture() = default;
 

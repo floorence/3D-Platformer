@@ -12,7 +12,7 @@
 #include"controller/LightController.h"
 #include"texture/FontTexture.h"
 #include"texture/ImageTexture.h"
-#include"gui/Gui.h"
+#include"gui/TextRenderer.h"
 #include"util/Log.h"
 #include"Player.h"
 
@@ -63,15 +63,15 @@ int main() {
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
-	// make gui
-	FontTexture guiDiffuse = FontTexture("assets/pixel_operator_short_dollar.ttf");
-	Gui gui(&guiDiffuse, width, height);
+	// make font renderer
+	FontTexture font = FontTexture("assets/pixel_operator_short_dollar.ttf");
+	TextRenderer tr(&font);
 
 	std::vector<Shape3D*> objects;
 
 	// make debug pyramid
 	AssetTexture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
-	AssetTexture planksSpecular = ImageTexture("assets/planks.png", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
+	AssetTexture planksSpecular = ImageTexture("assets/planks.png", TextureType::Specular, GL_UNSIGNED_BYTE, true);
 	DebugPyramid pyramid(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, 0.0f, 0.0f));
 	objects.push_back(&pyramid);
 
@@ -81,7 +81,7 @@ int main() {
 
 	// make rectangular prism
 	AssetTexture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
-	AssetTexture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Diffuse, GL_UNSIGNED_BYTE, true);
+	AssetTexture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-2.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
 	rect.setRotation(0, 0, 180);
 	objects.push_back(&rect);
@@ -102,7 +102,7 @@ int main() {
 	objects.push_back(&backWall);
 	objects.push_back(&frontWall);
 
-	RectangularPrism floorCube(&planksDiffuse, &planksSpecular, glm::vec3(-1.0f, -1.0f, -1.0f), 0.4f, 0.4f, 0.4f);
+	RectangularPrism floorCube(&planksDiffuse, &planksSpecular, glm::vec3(-1.0f, -0.95f, -1.0f), 0.4f, 0.4f, 0.4f);
 	objects.push_back(&floorCube);
 
 	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -0.8f, 0.0f), 0.2f, 0.2f, 0.2f, true);
@@ -117,6 +117,9 @@ int main() {
 	// make shaders and light controller
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
+	Shader fontShader("shader/gui.vert", "shader/font.frag");
+	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);	
+	fontShader.setProjection(guiProjection);
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
@@ -157,13 +160,13 @@ int main() {
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
 
 		player.handleKeyInputs(window, deltaTime);
-		lc.processShadows(shader);
+		lc.renderForShadows(shader);
 
 		for (const auto& shape : objects) {
 			shape->draw(player.camera, (shape->isLightSource) ? lightShader : shader);
 		}
 
-		gui.drawText(player.getDebugString(), 10, 10, 400, 20);
+		tr.drawText(player.getDebugString(), fontShader, 10, 10, 400, 20);
 
 		glfwPollEvents();
 
@@ -185,7 +188,7 @@ int main() {
 			totalRealFrameTime = std::pair(0.0f, 0);
 		}
 
-		gui.drawText(currInfoText, width - 200, 10, 200, 16);
+		tr.drawText(currInfoText, fontShader, width - 200, 10, 200, 16);
 		glfwSwapBuffers(window);
 	}
 

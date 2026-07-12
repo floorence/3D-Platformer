@@ -8,7 +8,7 @@ Shape3D::Shape3D(glm::vec3 position, bool isLightSource)
 Shape3D::Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource) 
     : Shape3D(position, isLightSource)
 {
-    std::vector<AssetTexture*> textures;
+    std::vector<Texture*> textures;
     if (diffuse != nullptr) textures.push_back(diffuse);
     if (specular != nullptr) textures.push_back(specular);
     mesh.setTextures(textures);

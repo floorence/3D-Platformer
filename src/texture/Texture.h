@@ -2,14 +2,18 @@
 #define TEXTURE_H
 
 #include"glad/glad.h"
+#include <string>
 
 // 2D texture
 class Texture {
 public:
-    Texture();
+    GLuint ID = 0;
+
+    Texture(std::string uniform);
     void bind();
 	void bind(GLuint unit); // bind texture to given unit
 	void unbind();
+    std::string getUniformName();
 
 	virtual ~Texture();
 
@@ -19,7 +23,7 @@ public:
     Texture(Texture&& other) noexcept;
     Texture& operator=(Texture&& other) noexcept;
 protected:
-    GLuint ID = 0;
+    std::string uniform = "";
 };
 
 #endif

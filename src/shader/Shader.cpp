@@ -78,19 +78,24 @@ void Shader::setFarPlane(float farPlane) {
     glUniform1f(glGetUniformLocation(ID, "farPlane"), farPlane);
 }
 
-void Shader::setTexture(Texture& texture, const char* uniform, GLuint unit) {
+void Shader::setTexture(Texture& texture, std::string uniform, GLuint unit) {
 	activate();
 
-	glUniform1i(glGetUniformLocation(ID, uniform), unit);
+	glUniform1i(glGetUniformLocation(ID, uniform.c_str()), unit);
 	glUniform1f(glGetUniformLocation(ID, "material.shininess"), 16);
 	texture.bind(unit);
 }
 
-void Shader::setCubeMapTexture(CubeMapTexture& texture, const char* uniform, GLuint unit) {
+void Shader::setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit) {
 	activate();
 
-	glUniform1i(glGetUniformLocation(ID, uniform), unit);
+	glUniform1i(glGetUniformLocation(ID, uniform.c_str()), unit);
 	texture.bind(unit);
+}
+
+void Shader::setProjection(glm::mat4 projection) {
+	activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
 
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {

@@ -6,15 +6,14 @@
 #include"camera/Camera.h"
 #include "camera/PointLightCamera.h"
 #include "shader/Shader.h"
-#include"texture/AssetTexture.h"
 
 class Mesh {
 public:
 	Mesh() = default;
-	Mesh(const std::vector<AssetTexture*>& textures);
-	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const std::vector<AssetTexture*>& textures);
+	Mesh(const std::vector<Texture*>& textures);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const std::vector<Texture*>& textures);
 
-	void setTextures(const std::vector<AssetTexture*>& textures);
+	void setTextures(const std::vector<Texture*>& textures);
 	void setShapeData(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices);
 
 	void draw(Camera& camera, Shader& shader);
@@ -25,7 +24,7 @@ private:
 	VBO vbo;
 	EBO ebo;
 	int drawCount = 0;
-	std::vector<AssetTexture*> textures;
+	std::vector<Texture*> textures;
 	const std::string TAG = "Mesh";
 };
 

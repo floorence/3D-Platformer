@@ -6,6 +6,7 @@
 
 ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType, bool convertToSpecular) {
 	type = texType;
+	uniform = (type == TextureType::Diffuse) ? "material.diffuse" : "material.specular";
 
 	int widthImg, heightImg, numColCh;
 	stbi_set_flip_vertically_on_load(true);
