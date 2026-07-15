@@ -1,6 +1,7 @@
 #ifndef LIGHT_CONTROLLER_H
 #define LIGHT_CONTROLLER_H
 
+#include "buffer/FBO.h"
 #include "gui/Quad.h"
 #include "shape/Shape3D.h"
 
@@ -25,13 +26,13 @@ private:
 
     // stuff for shadows
     const uint DEPTH_MAP_WIDTH = 1024, DEPTH_MAP_HEIGHT = 1024;
-    GLuint depthMapFboID = 0;
+    FBO depthMapFbo;
     CubeMapTexture depthMapTexture;
     Shader depthShader;
     PointLightCamera pointLightCam;
 
     // stuff for hdr
-    GLuint hdrFboID = 0;
+    FBO hdrFbo;
     Texture colorBufTexture;
     Shader hdrShader;
     Quad hdrResult;

@@ -47,8 +47,7 @@ void LightController::processLighting(Shader& shader) {
 }
 
 void LightController::renderForShadows(Shader& shader) {
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFboID);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // THIS NEEDS TO BE AFTER BIND!!!
+    depthMapFbo.bindAndClear();
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
     pointLightCam.position = lights[0]->position;
@@ -57,18 +56,16 @@ void LightController::renderForShadows(Shader& shader) {
         shape->drawToDepthMap(pointLightCam, depthShader);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    depthMapFbo.unbindAndClear();
 
     shader.setCubeMapTexture(depthMapTexture, "depthMap", 5);
     shader.setFarPlane(pointLightCam.farPlane);
 
     glViewport(0, 0, windowWidth, windowHeight);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void LightController::renderForHDR(Shader& shader, Shader& lightShader, Camera& camera) {
-    glBindFramebuffer(GL_FRAMEBUFFER, hdrFboID);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    hdrFbo.bindAndClear();
 
     for (const auto& shape: shapes) {
         shape->draw(camera, shader);
@@ -77,8 +74,7 @@ void LightController::renderForHDR(Shader& shader, Shader& lightShader, Camera& 
         light->draw(camera, lightShader);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    hdrFbo.unbindAndClear();
 }
 
 void LightController::renderForReal() {
@@ -89,41 +85,35 @@ void LightController::renderForReal() {
 }
     
 void LightController::prepareDepthMap() {
-    glGenFramebuffers(1, &depthMapFboID);
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFboID);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMapTexture.ID, 0);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        Log::err(TAG, "Depth framebuffer incomplete");
+    depthMapFbo.bind();
+    depthMapFbo.attachTextureCube(depthMapTexture.ID);
+    depthMapFbo.checkStatus();
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 
     pointLightCam.setPerspective(90.0f, 0.1f, 10.0f);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    depthMapFbo.unbind();
 }
 
 void LightController::prepareHDR() {
-    // configure floating point framebuffer
-    glGenFramebuffers(1, &hdrFboID);
     // create floating point color buffer
-
     colorBufTexture.bind();
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // create depth buffer (renderbuffer)
     // THIS IS NEEDED TO RESOLVE VERTICES!!! (texture only does colours)
-    GLuint rboDepth;
-    glGenRenderbuffers(1, &rboDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    GLuint rboID;
+    glGenRenderbuffers(1, &rboID);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboID);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
     // attach buffers
-    glBindFramebuffer(GL_FRAMEBUFFER, hdrFboID);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufTexture.ID, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        Log::err(TAG, "Framebuffer incomplete");
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    hdrFbo.bind();
+    hdrFbo.attachTexture2D(colorBufTexture.ID);
+    hdrFbo.attachRenderBuffer(rboID);
+    hdrFbo.checkStatus();
+    hdrFbo.unbind();
 }
 
 void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {

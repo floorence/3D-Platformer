@@ -6,8 +6,7 @@ EBO::EBO() {
 
 EBO::EBO(std::vector<GLuint>& indices) {
 	glGenBuffers(1, &ID);
-	bind();
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+	linkIndices(indices);
 }
 
 void EBO::linkIndices(const std::vector<GLuint>& indices) {
