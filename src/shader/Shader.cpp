@@ -103,6 +103,11 @@ void Shader::setProjection(glm::mat4 projection) {
 	glUniformMatrix4fv(glGetUniformLocation(ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
 
+void Shader::setExposure(float exposure) {
+	activate();
+	glUniform1f(glGetUniformLocation(ID, "exposure"), exposure);
+}
+
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
     Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
     activate();

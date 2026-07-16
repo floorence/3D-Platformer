@@ -2,6 +2,7 @@
 #include<stb/stb_image.h>
 #include"ImageTexture.h"
 #include"util/Log.h"
+#include "util/Utils.h"
 #include<fmt/format.h>
 
 ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType, bool convertToSpecular) {
@@ -26,7 +27,7 @@ ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelT
 			float gray = r; // image is black and white if texType == specular and convertToSpecular == false
 
 			if (convertToSpecular) {
-				gray = R_COEFFICIENT * r + G_COEFFICIENT * g + B_COEFFICIENT * b;
+				gray = Utils::getBrightness(r, g, b);
 
 				gray = pow(gray / 255.0f, GAMMA_CORRECT) * 255.0f;
 				gray = std::min(gray * BOOST_COEFFICIENT, 255.0f);

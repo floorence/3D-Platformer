@@ -51,7 +51,7 @@ FBO::FBO(FBO&& other) noexcept {
 
 FBO& FBO::operator=(FBO&& other) noexcept {
 	if (this != &other) {
-		glDeleteBuffers(1, &ID);
+		glDeleteFramebuffers(1, &ID);
 		ID = other.ID;
 		other.ID = 0;
 	}

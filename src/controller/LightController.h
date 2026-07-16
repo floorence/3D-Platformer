@@ -2,6 +2,7 @@
 #define LIGHT_CONTROLLER_H
 
 #include "buffer/FBO.h"
+#include "buffer/PBO.h"
 #include "gui/Quad.h"
 #include "shape/Shape3D.h"
 
@@ -16,6 +17,7 @@ public:
     // these functions must all be called in order each frame
     void renderForShadows(Shader& shader);
     void renderForHDR(Shader& shader, Shader& lightShader, Camera& camera);
+    void adjustBrightness(float deltaTime);
     void renderForReal();
 private:
     int windowWidth, windowHeight;
@@ -36,6 +38,12 @@ private:
     Texture colorBufTexture;
     Shader hdrShader;
     Quad hdrResult;
+    // average colour buffer
+    PBO pbos[2];
+    int pboIndex = 0;
+    float exposure = 1.0f;
+    float adaptationSpeed = 3.0f;
+    const float TARGET_BRIGHTNESS = 0.18f;
 
     // these are parameters for a best fit power regression model on the values that work well for specified ranges,
     // courtesy of https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation
@@ -47,6 +55,7 @@ private:
 
     void prepareDepthMap();
     void prepareHDR();
+    void prepareAvgColorBuffer();
     /**
      * @param range the distance away from the light that it can (visibly) reach.
      *              note that most of the light falls in the first 20% of range.

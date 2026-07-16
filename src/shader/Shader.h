@@ -26,20 +26,21 @@ public:
     Shader& operator=(Shader&& other) noexcept;
 
 	void activate();
-	void setModel(glm::mat4 model); // default
-	void setCamera(Camera& camera); // default
-	void setPointLightCamera(PointLightCamera& camera); // depth
-	void setFarPlane(float farPlane); // default
-	void setTexture(Texture& texture, GLuint unit); // default, gui, and hdr
-	void setShininess(float shininess); // default
-	void setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit); // default
-	void setProjection(glm::mat4 projection); // gui
+	void setModel(glm::mat4 model); // default.vert
+	void setCamera(Camera& camera); // default.vert
+	void setPointLightCamera(PointLightCamera& camera); // depth.geom, depth.frag
+	void setFarPlane(float farPlane); // default.frag
+	void setTexture(Texture& texture, GLuint unit); // default.frag, gui.frag, and hdr.frag
+	void setShininess(float shininess); // default.frag
+	void setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit); // default.frag
+	void setProjection(glm::mat4 projection); // gui.vert
+	void setExposure(float exposure); // hdr.frag
 
-    void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default
-    void setNumPointLights(int num); // default
+    void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
+    void setNumPointLights(int num); // default.frag
 
-	void setColor(glm::vec3 color); // light
-	void setColorTint(glm::vec3 color, float intensity); // default
+	void setColor(glm::vec3 color); // light.frag
+	void setColorTint(glm::vec3 color, float intensity); // default.frag
 private:
 	const std::string TAG = "Shader";
 	GLuint createShader(const char* source, ShaderType type);

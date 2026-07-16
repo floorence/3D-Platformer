@@ -2,8 +2,6 @@
 
 PBO::PBO() {
 	glGenBuffers(1, &ID);
-    bind();
-    glBufferData(GL_PIXEL_PACK_BUFFER, 4, nullptr, GL_STREAM_READ);
 }
 
 void PBO::bind() {
