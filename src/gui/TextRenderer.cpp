@@ -4,7 +4,7 @@
 
 TextRenderer::TextRenderer(FontTexture* t): fontTex(t) {}
 
-void TextRenderer::drawText(const std::string& text, Shader& shader, int x, int y, int w, int lineHeight) {
+void TextRenderer::drawText(const std::string& text, Shader& shader, int x, int y, int w, int lineHeight, glm::vec3 textColor) {
     if (fontTex == nullptr) {
         Log::err(TAG, "drawText() called when fontTex is null! not drawing anything.");
         return;
@@ -16,5 +16,6 @@ void TextRenderer::drawText(const std::string& text, Shader& shader, int x, int 
 	textures.push_back(fontTex);
 
     Mesh mesh(vertices, indices, textures);
+    shader.setTextColor(textColor);
     mesh.drawGui(shader);
 }

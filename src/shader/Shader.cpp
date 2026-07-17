@@ -108,6 +108,11 @@ void Shader::setExposure(float exposure) {
 	glUniform1f(glGetUniformLocation(ID, "exposure"), exposure);
 }
 
+void Shader::setTextColor(glm::vec3 textColor) {
+	activate();
+	glUniform3f(glGetUniformLocation(ID, "textColor"), textColor.x, textColor.y, textColor.z);
+}
+
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
     Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
     activate();

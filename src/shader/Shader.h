@@ -35,6 +35,7 @@ public:
 	void setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit); // default.frag
 	void setProjection(glm::mat4 projection); // gui.vert
 	void setExposure(float exposure); // hdr.frag
+	void setTextColor(glm::vec3 textColor); // font.frag
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag

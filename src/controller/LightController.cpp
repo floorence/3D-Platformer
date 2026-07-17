@@ -101,11 +101,23 @@ void LightController::adjustBrightness(float deltaTime) {
         
         //Log::log(TAG, fmt::format("average color r: {}, g: {}, b: {}, a: {}", r, g, b, a));
         float averageBrightness = Utils::getBrightness(r, g, b);
-        float newExposure = TARGET_BRIGHTNESS / log(averageBrightness);
-        //exposure = (newExposure - exposure) * (1.0f - exp(-deltaTime * adaptationSpeed));
+        float newExposure;
+        if (averageBrightness <= 2.0) {
+            newExposure = targetExposure;
+        } else {
+            newExposure = TARGET_BRIGHTNESS / log(averageBrightness);
+        }
+        targetExposure = newExposure;
+        if (targetExposure < exposure) {
+            exposure = std::max(exposure - adaptationSpeed * deltaTime, targetExposure);
+        } else {
+            exposure = std::min(exposure + adaptationSpeed * deltaTime, targetExposure);
+        }
         //Log::log(TAG, fmt::format("exposure: {}", exposure));
+        this->debugBrightness = averageBrightness;
+        this->debugExposure = newExposure;
 
-        hdrShader.setExposure(newExposure);
+        hdrShader.setExposure(exposure);
 
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
     } else {
@@ -127,6 +139,10 @@ void LightController::renderForReal() {
 	hdrShader.setProjection(glm::mat4(1.0f));
     hdrResult.setTexture(&colorBufTexture);
     hdrResult.draw(hdrShader, -1.0f, 1.0f, 1.0f, -1.0f);
+}
+
+std::string LightController::getDebugString() {
+    return fmt::format("average brightness: {:.3f}\nexposure: {:.3f}", debugBrightness, debugExposure);
 }
     
 void LightController::prepareDepthMap() {

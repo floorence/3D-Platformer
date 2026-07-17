@@ -19,6 +19,8 @@ public:
     void renderForHDR(Shader& shader, Shader& lightShader, Camera& camera);
     void adjustBrightness(float deltaTime);
     void renderForReal();
+
+    std::string getDebugString();
 private:
     int windowWidth, windowHeight;
     std::vector<Shape3D*> lights;
@@ -42,8 +44,13 @@ private:
     PBO pbos[2];
     int pboIndex = 0;
     float exposure = 1.0f;
-    float adaptationSpeed = 3.0f;
+    float targetExposure = 1.0f;
+    float adaptationSpeed = 0.2f; // exposure per second
     const float TARGET_BRIGHTNESS = 0.18f;
+
+    // debug vars
+    float debugBrightness;
+    float debugExposure;
 
     // these are parameters for a best fit power regression model on the values that work well for specified ranges,
     // courtesy of https://wiki.ogre3d.org/tiki-index.php?page=-Point+Light+Attenuation

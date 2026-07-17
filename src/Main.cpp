@@ -167,6 +167,7 @@ int main() {
 
 		glDisable(GL_DEPTH_TEST);
 		tr.drawText(player.getDebugString(), fontShader, 10, 10, 400, 20);
+		tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		glfwPollEvents();
 
