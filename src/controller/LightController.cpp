@@ -10,12 +10,16 @@ LightController::LightController(int windowWidth, int windowHeight)
       depthMapTexture(DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
       depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag"),
       pointLightCam(glm::vec3(0.0f), DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
-      colorBufTexture("hdrBuffer"),
-      hdrShader("shader/gui.vert", "shader/hdr.frag")
+      hdrTexture("hdrBuffer"),
+      bloomTexture("image"),
+      hdrBloomShader("shader/gui.vert", "shader/hdr_bloom.frag"),
+      blurTextures{{"image"}, {"image"}},
+      blurShader("shader/gui.vert", "shader/blur.frag")
 {
     prepareDepthMap();
-    prepareHDR();
+    prepareHdrAndBloom();
     prepareAvgColorBuffer();
+    prepareGaussianBlur();
 }
 
 void LightController::registerShape(Shape3D* shape) {
@@ -67,8 +71,8 @@ void LightController::renderForShadows(Shader& shader) {
     glViewport(0, 0, windowWidth, windowHeight);
 }
 
-void LightController::renderForHDR(Shader& shader, Shader& lightShader, Camera& camera) {
-    hdrFbo.bindAndClear();
+void LightController::renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera) {
+    hdrBloomFbo.bindAndClear();
 
     for (const auto& shape: shapes) {
         shape->draw(camera, shader);
@@ -77,11 +81,11 @@ void LightController::renderForHDR(Shader& shader, Shader& lightShader, Camera& 
         light->draw(camera, lightShader);
     }
 
-    hdrFbo.unbindAndClear();
+    hdrBloomFbo.unbindAndClear();
 }
 
 void LightController::adjustBrightness(float deltaTime) {
-    colorBufTexture.bind();
+    hdrTexture.bind();
     glGenerateMipmap(GL_TEXTURE_2D);
 
     int highestMipLevel = floor(log2(std::max(windowWidth, windowHeight)));
@@ -117,7 +121,7 @@ void LightController::adjustBrightness(float deltaTime) {
         this->debugBrightness = averageBrightness;
         this->debugExposure = newExposure;
 
-        hdrShader.setExposure(exposure);
+        hdrBloomShader.setExposure(exposure);
 
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
     } else {
@@ -134,11 +138,25 @@ void LightController::adjustBrightness(float deltaTime) {
     pbos[nextIndex].unbind();
 }
 
+void LightController::blurBrightAreas() {
+    bool horizontal = true;
+    for (int i = 0; i < blurAmount; i++) {
+        blurFbos[horizontal].bind();
+        blurShader.setBlurHorizontal(horizontal);
+        blurResult.setTexture((i == 0) ? &bloomTexture : &blurTextures[!horizontal]);
+        blurResult.draw(blurShader, -1.0f, 1.0f, 1.0f, -1.0f);
+        horizontal = !horizontal;
+    }
+    blurFbos[0].unbindAndClear();
+}
+
 void LightController::renderForReal() {
-    hdrShader.setTexture(colorBufTexture, 0);
-	hdrShader.setProjection(glm::mat4(1.0f));
-    hdrResult.setTexture(&colorBufTexture);
-    hdrResult.draw(hdrShader, -1.0f, 1.0f, 1.0f, -1.0f);
+    blurTextures[0].uniform = "bloomBlur";
+    hdrBloomShader.setTexture(hdrTexture, 0); // TODO not needed since mesh already sets the texture
+    hdrBloomShader.setTexture(blurTextures[0], 1);
+	hdrBloomShader.setProjection(glm::mat4(1.0f));
+    hdrBloomResult.setTexture(&hdrTexture);
+    hdrBloomResult.draw(hdrBloomShader, -1.0f, 1.0f, 1.0f, -1.0f);
 }
 
 std::string LightController::getDebugString() {
@@ -157,25 +175,27 @@ void LightController::prepareDepthMap() {
     depthMapFbo.unbind();
 }
 
-void LightController::prepareHDR() {
+void LightController::prepareHdrAndBloom() {
     // create floating point color buffer
-    colorBufTexture.bind();
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glGenerateMipmap(GL_TEXTURE_2D); // for getting average colour later
-    // create depth buffer (renderbuffer)
-    // THIS IS NEEDED TO RESOLVE VERTICES!!! (texture only does colours)
+    prepareFPTexture(hdrTexture);
+    prepareFPTexture(bloomTexture);
+    hdrTexture.bind();
+    glGenerateMipmap(GL_TEXTURE_2D); // for getting average colour later TODO: might not be needed here since its called every frame anyway
+    // create depth buffer (renderbuffer) THIS IS NEEDED TO RESOLVE DEPTHS!!! (texture only does colours)
     GLuint rboID;
     glGenRenderbuffers(1, &rboID);
     glBindRenderbuffer(GL_RENDERBUFFER, rboID);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
-    // attach buffers
-    hdrFbo.bind();
-    hdrFbo.attachTexture2D(colorBufTexture.ID);
-    hdrFbo.attachRenderBuffer(rboID);
-    hdrFbo.checkStatus();
-    hdrFbo.unbind();
+    // attach textures and buffer
+    hdrBloomFbo.bind();
+    hdrBloomFbo.attachTexture2D(hdrTexture.ID, 0);
+    hdrBloomFbo.attachTexture2D(bloomTexture.ID, 1);
+    hdrBloomFbo.attachRenderBuffer(rboID);
+    // configure fbo for 2 colour attachments
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments); 
+    hdrBloomFbo.checkStatus();
+    hdrBloomFbo.unbind();
 }
 
 void LightController::prepareAvgColorBuffer() {
@@ -184,6 +204,25 @@ void LightController::prepareAvgColorBuffer() {
         glBufferData(GL_PIXEL_PACK_BUFFER, sizeof(float) * 4, nullptr, GL_STREAM_READ); // 4 float = 1 pixel rgba float
         pbos[i].unbind();
     }
+}
+
+void LightController::prepareGaussianBlur() {
+    for (uint i = 0; i < 2; i++) {
+        prepareFPTexture(blurTextures[i]);
+        blurFbos[i].bind();
+        blurFbos[i].attachTexture2D(blurTextures[i].ID);
+    }
+}
+
+void LightController::prepareFPTexture(Texture& texture) {
+    texture.bind();
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL
+    );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {

@@ -16,8 +16,9 @@ public:
 
     // these functions must all be called in order each frame
     void renderForShadows(Shader& shader);
-    void renderForHDR(Shader& shader, Shader& lightShader, Camera& camera);
+    void renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera);
     void adjustBrightness(float deltaTime);
+    void blurBrightAreas();
     void renderForReal();
 
     std::string getDebugString();
@@ -35,11 +36,12 @@ private:
     Shader depthShader;
     PointLightCamera pointLightCam;
 
-    // stuff for hdr
-    FBO hdrFbo;
-    Texture colorBufTexture;
-    Shader hdrShader;
-    Quad hdrResult;
+    // stuff for hdr and bloom
+    FBO hdrBloomFbo;
+    Texture hdrTexture;
+    Texture bloomTexture;
+    Shader hdrBloomShader;
+    Quad hdrBloomResult;
     // average colour buffer
     PBO pbos[2];
     int pboIndex = 0;
@@ -47,6 +49,12 @@ private:
     float targetExposure = 1.0f;
     float adaptationSpeed = 0.2f; // exposure per second
     const float TARGET_BRIGHTNESS = 0.18f;
+    // gaussian blur
+    FBO blurFbos[2];
+    Texture blurTextures[2];
+    Shader blurShader;
+    Quad blurResult;
+    int blurAmount = 10;
 
     // debug vars
     float debugBrightness;
@@ -61,8 +69,11 @@ private:
     const float QUADRATIC_POWER = -2.03568;
 
     void prepareDepthMap();
-    void prepareHDR();
+    void prepareHdrAndBloom();
     void prepareAvgColorBuffer();
+    void prepareGaussianBlur();
+
+    void prepareFPTexture(Texture& texture); // FP = floating point
     /**
      * @param range the distance away from the light that it can (visibly) reach.
      *              note that most of the light falls in the first 20% of range.

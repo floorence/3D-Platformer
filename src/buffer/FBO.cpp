@@ -27,8 +27,8 @@ void FBO::attachTextureCube(GLuint textureID) {
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, textureID, 0);
 }
 
-void FBO::attachTexture2D(GLuint textureID) {
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
+void FBO::attachTexture2D(GLuint textureID, int attachment) {
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachment, GL_TEXTURE_2D, textureID, 0);
 }
 
 void FBO::attachRenderBuffer(GLuint rboID) {

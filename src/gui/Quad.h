@@ -23,6 +23,7 @@ public:
     void draw(Shader& shader, float xu, float yu, float xv, float yv);
 private:
     Texture* tex = nullptr;
+    // TODO: refactor to store mesh isntead of textures
 };
 
 #endif

@@ -82,7 +82,7 @@ void Shader::setFarPlane(float farPlane) {
 void Shader::setTexture(Texture& texture, GLuint unit) {
 	activate();
 
-	glUniform1i(glGetUniformLocation(ID, texture.getUniformName().c_str()), unit);
+	glUniform1i(glGetUniformLocation(ID, texture.uniform.c_str()), unit);
 	texture.bind(unit);
 }
 
@@ -111,6 +111,11 @@ void Shader::setExposure(float exposure) {
 void Shader::setTextColor(glm::vec3 textColor) {
 	activate();
 	glUniform3f(glGetUniformLocation(ID, "textColor"), textColor.x, textColor.y, textColor.z);
+}
+
+void Shader::setBlurHorizontal(bool horizontal) {
+	activate();
+	glUniform1i(glGetUniformLocation(ID, "horizontal"), horizontal);
 }
 
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {

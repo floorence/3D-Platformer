@@ -51,14 +51,13 @@ void Mesh::draw(Camera& camera, Shader& shader) {
 }
 
 void Mesh::drawGui(Shader& shader) {
-	if (textures.empty()) {
-		Log::err(TAG, "drawGui() called when textures is empty! not drawing anything.");
-		return;
-	}
-
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
-	shader.setTexture(*textures[0], 0);
+
+	for (unsigned int i = 0; i < textures.size(); i++) {
+		shader.setTexture(*textures[i], i);
+	}
+
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 

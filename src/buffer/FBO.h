@@ -22,7 +22,7 @@ public:
     void unbindAndClear();
 
     void attachTextureCube(GLuint textureID);
-    void attachTexture2D(GLuint textureID);
+    void attachTexture2D(GLuint textureID, int attachment = 0);
     void attachRenderBuffer(GLuint rboID);
 
     void checkStatus();

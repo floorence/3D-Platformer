@@ -19,10 +19,6 @@ void Texture::unbind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-std::string Texture::getUniformName() {
-	return uniform;
-}
-
 Texture::~Texture() {
 	glDeleteTextures(1, &ID);
 }

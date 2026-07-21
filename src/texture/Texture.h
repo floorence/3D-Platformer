@@ -8,12 +8,12 @@
 class Texture {
 public:
     GLuint ID = 0;
+    std::string uniform = "";
 
     Texture(std::string uniform);
     void bind();
 	void bind(GLuint unit); // bind texture to given unit
 	void unbind();
-    std::string getUniformName();
 
 	virtual ~Texture();
 
@@ -22,8 +22,6 @@ public:
 
     Texture(Texture&& other) noexcept;
     Texture& operator=(Texture&& other) noexcept;
-protected:
-    std::string uniform = "";
 };
 
 #endif

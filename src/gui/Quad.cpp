@@ -24,5 +24,6 @@ void Quad::draw(Shader& shader, float xu, float yu, float xv, float yv) {
     std::vector<Texture*> textures = {tex};
     
     Mesh mesh(vertices, indices, textures);
+    shader.setProjection(glm::mat4(1.0f)); // TODO!!!
     mesh.drawGui(shader);
 }

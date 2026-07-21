@@ -161,8 +161,9 @@ int main() {
 
 		player.handleKeyInputs(window, deltaTime);
 		lc.renderForShadows(shader);
-		lc.renderForHDR(shader, lightShader, player.camera);
+		lc.renderForHDRAndBloom(shader, lightShader, player.camera);
 		lc.adjustBrightness(deltaTime);
+		lc.blurBrightAreas();
 		lc.renderForReal();
 
 		glDisable(GL_DEPTH_TEST);
