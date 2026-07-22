@@ -20,7 +20,6 @@ public:
 
 	void linkIndices(const std::vector<GLuint>& indices);
 	void bind();
-	void unbind();
 };
 
 #endif

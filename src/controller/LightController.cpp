@@ -63,7 +63,7 @@ void LightController::renderForShadows(Shader& shader) {
         shape->drawToDepthMap(pointLightCam, depthShader);
     }
 
-    depthMapFbo.unbindAndClear();
+    Utils::unbindFboAndClear();
 
     shader.setCubeMapTexture(depthMapTexture, "depthMap", 5);
     shader.setFarPlane(pointLightCam.farPlane);
@@ -81,7 +81,7 @@ void LightController::renderForHDRAndBloom(Shader& shader, Shader& lightShader, 
         light->draw(camera, lightShader);
     }
 
-    hdrBloomFbo.unbindAndClear();
+    Utils::unbindFboAndClear();
 }
 
 void LightController::adjustBrightness(float deltaTime) {
@@ -135,7 +135,7 @@ void LightController::adjustBrightness(float deltaTime) {
     // when a PBO is bound, the last argument is byte offset inside the PBO, rather than a pointer to cpu memory, it returns immediately.
     glGetTexImage(GL_TEXTURE_2D, highestMipLevel, GL_RGBA, GL_FLOAT, 0);
 
-    pbos[nextIndex].unbind();
+    Utils::unbindPbo();
 }
 
 void LightController::blurBrightAreas() {
@@ -143,21 +143,17 @@ void LightController::blurBrightAreas() {
     for (int i = 0; i < blurAmount; i++) {
         blurFbos[horizontal].bind();
         blurShader.setBlurHorizontal(horizontal);
-        blurShader.setProjection(glm::mat4(1.0f));
         blurResult.setTexture((i == 0) ? &bloomTexture : &blurTextures[!horizontal]);
-        blurResult.draw(blurShader, -1.0f, 1.0f, 1.0f, -1.0f);
+        blurResult.draw(blurShader);
         horizontal = !horizontal;
     }
-    blurFbos[0].unbindAndClear();
+    Utils::unbindFboAndClear();
 }
 
 void LightController::renderForReal() {
     blurTextures[0].uniform = "bloomBlur";
-    hdrBloomShader.setTexture(hdrTexture, 0); // TODO not needed since mesh already sets the texture
-    hdrBloomShader.setTexture(blurTextures[0], 1);
-	hdrBloomShader.setProjection(glm::mat4(1.0f));
-    hdrBloomResult.setTexture(&hdrTexture);
-    hdrBloomResult.draw(hdrBloomShader, -1.0f, 1.0f, 1.0f, -1.0f);
+    hdrBloomResult.setTextures({&hdrTexture, &blurTextures[0]});
+    hdrBloomResult.draw(hdrBloomShader);
 }
 
 std::string LightController::getDebugString() {
@@ -173,7 +169,7 @@ void LightController::prepareDepthMap() {
 
     pointLightCam.setPerspective(90.0f, 0.1f, 10.0f);
 
-    depthMapFbo.unbind();
+    Utils::unbindFbo();
 }
 
 void LightController::prepareHdrAndBloom() {
@@ -181,7 +177,6 @@ void LightController::prepareHdrAndBloom() {
     prepareFPTexture(hdrTexture);
     prepareFPTexture(bloomTexture);
     hdrTexture.bind();
-    glGenerateMipmap(GL_TEXTURE_2D); // for getting average colour later TODO: might not be needed here since its called every frame anyway
     // create depth buffer (renderbuffer) THIS IS NEEDED TO RESOLVE DEPTHS!!! (texture only does colours)
     GLuint rboID;
     glGenRenderbuffers(1, &rboID);
@@ -196,15 +191,17 @@ void LightController::prepareHdrAndBloom() {
     unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
     glDrawBuffers(2, attachments); 
     hdrBloomFbo.checkStatus();
-    hdrBloomFbo.unbind();
+    Utils::unbindFbo();
+
+    hdrBloomResult.setBounds(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
 void LightController::prepareAvgColorBuffer() {
     for (int i = 0; i < 2; i++) {
         pbos[i].bind();
         glBufferData(GL_PIXEL_PACK_BUFFER, sizeof(float) * 4, nullptr, GL_STREAM_READ); // 4 float = 1 pixel rgba float
-        pbos[i].unbind();
     }
+    Utils::unbindPbo();
 }
 
 void LightController::prepareGaussianBlur() {
@@ -213,6 +210,8 @@ void LightController::prepareGaussianBlur() {
         blurFbos[i].bind();
         blurFbos[i].attachTexture2D(blurTextures[i].ID);
     }
+
+    blurResult.setBounds(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
 void LightController::prepareFPTexture(Texture& texture) {

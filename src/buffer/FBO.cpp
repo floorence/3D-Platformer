@@ -9,17 +9,8 @@ void FBO::bind() {
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
 }
 
-void FBO::unbind() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 void FBO::bindAndClear() {
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void FBO::unbindAndClear() {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

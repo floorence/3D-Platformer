@@ -17,7 +17,6 @@ public:
     PBO& operator=(PBO&& other) noexcept;
 
 	void bind();
-	void unbind();
 };
 
 #endif

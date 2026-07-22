@@ -1,6 +1,7 @@
 #ifndef QUAD_H
 #define QUAD_H
 
+#include "mesh/Mesh.h"
 #include"texture/Texture.h"
 #include"shader/Shader.h"
 
@@ -10,20 +11,22 @@ public:
     Quad(Texture* texture);
 
     void setTexture(Texture* texture);
+    void setTextures(std::vector<Texture*> textures);
     /**
      * @param x, y top left of quad
      * @param w, h width and height of quad
      * @param reversedYAxis true if y increases downward
      */
-    void draw(Shader& shader, float x, float y, float w, float h, bool reversedYAxis);
+    void setBounds(float x, float y, float w, float h, bool reversedYAxis);
     /**
      * @param xu, yu top left of quad
      * @param xv, yv bottom right of quad
      */
-    void draw(Shader& shader, float xu, float yu, float xv, float yv);
+    void setBounds(float xu, float yu, float xv, float yv);
+    
+    void draw(Shader& shader);
 private:
-    Texture* tex = nullptr;
-    // TODO: refactor to store mesh isntead of textures
+    Mesh mesh;
 };
 
 #endif

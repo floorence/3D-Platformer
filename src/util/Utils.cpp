@@ -13,3 +13,28 @@ void Utils::checkOpenGlErrors() {
         Log::err("checkOpenGlErrors", fmt::format("OpenGL Error Code: {:#x}", err));
     }
 }
+
+void Utils::unbindVao() {
+	glBindVertexArray(0);
+}
+
+void Utils::unbindVbo() {
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Utils::unbindEbo() {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void Utils::unbindFbo() {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Utils::unbindFboAndClear() {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Utils::unbindPbo() {
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+}

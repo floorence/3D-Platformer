@@ -8,10 +8,6 @@ void PBO::bind() {
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, ID);
 }
 
-void PBO::unbind() {
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-}
-
 PBO::~PBO() {
 	glDeleteBuffers(1, &ID);
 }

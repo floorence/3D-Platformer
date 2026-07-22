@@ -9,6 +9,13 @@ namespace Utils {
     /** @param r, g, b value of colour channel from 0-255 */
     float getBrightness(float r, float g, float b);
     void checkOpenGlErrors();
+
+    void unbindVao();
+    void unbindVbo();
+    void unbindEbo();
+    void unbindFbo();
+    void unbindFboAndClear();
+    void unbindPbo();
 };
 
 #endif

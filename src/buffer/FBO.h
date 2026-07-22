@@ -17,9 +17,7 @@ public:
     FBO& operator=(FBO&& other) noexcept;
 
 	void bind();
-	void unbind();
     void bindAndClear();
-    void unbindAndClear();
 
     void attachTextureCube(GLuint textureID);
     void attachTexture2D(GLuint textureID, int attachment = 0);

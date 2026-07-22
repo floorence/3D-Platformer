@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include<string>
 #include"util/Log.h"
+#include "util/Utils.h"
 
 Mesh::Mesh(const std::vector<Texture*>& textures) 
 	: Mesh() 
@@ -33,9 +34,9 @@ void Mesh::setShapeData(const std::vector <Vertex>& vertices, const std::vector 
 	vao.linkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
 	vao.linkAttrib(vbo, 2, 2, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
 
-	vao.unbind();
-	vbo.unbind();
-	ebo.unbind();
+	Utils::unbindVao();
+	Utils::unbindVbo();
+	Utils::unbindEbo();
 }
 
 void Mesh::draw(Camera& camera, Shader& shader) {

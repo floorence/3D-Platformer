@@ -47,6 +47,7 @@ private:
     int pboIndex = 0;
     float exposure = 1.0f;
     float targetExposure = 1.0f;
+    float adaptationDelay = 0.5f; // seconds
     float adaptationSpeed = 0.2f; // exposure per second
     const float TARGET_BRIGHTNESS = 0.18f;
     // gaussian blur

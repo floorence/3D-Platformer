@@ -34,7 +34,6 @@ public:
 
 	void linkVertices(const std::vector<Vertex>& vertices);
 	void bind();
-	void unbind();
 };
 
 #endif
