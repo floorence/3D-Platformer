@@ -72,8 +72,8 @@ int main() {
 	// make debug pyramid
 	AssetTexture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
 	AssetTexture planksSpecular = ImageTexture("assets/planks.png", TextureType::Specular, GL_UNSIGNED_BYTE, true);
-	DebugPyramid pyramid(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, 0.0f, 0.0f));
-	objects.push_back(&pyramid);
+	// DebugPyramid pyramid(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, 0.0f, 0.0f));
+	// objects.push_back(&pyramid);
 
 	// make sphere
 	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(2.0f, 0.0f, 0.0f), 0.2f);

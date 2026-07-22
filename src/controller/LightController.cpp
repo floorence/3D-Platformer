@@ -143,6 +143,7 @@ void LightController::blurBrightAreas() {
     for (int i = 0; i < blurAmount; i++) {
         blurFbos[horizontal].bind();
         blurShader.setBlurHorizontal(horizontal);
+        blurShader.setProjection(glm::mat4(1.0f));
         blurResult.setTexture((i == 0) ? &bloomTexture : &blurTextures[!horizontal]);
         blurResult.draw(blurShader, -1.0f, 1.0f, 1.0f, -1.0f);
         horizontal = !horizontal;
