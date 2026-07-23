@@ -6,17 +6,20 @@
 
 class Shape3D {
 public:
-    glm::vec3 position;
+    glm::vec3 position; // TODO should be readonly, use setPosition to set postion
     bool isLightSource = false;
 
     glm::vec3 color;
     float intensity; // will be interpreted differently based on isLightSource. see setColor()
     glm::vec3 direction = glm::vec3(0.0f); // 0 for point light, not 0 for spot light TODO
 
+    Shape3D() = default;
     Shape3D(glm::vec3 position, bool isLightSource);
     Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource);
     virtual ~Shape3D() = default;
 
+    void setTextures(AssetTexture* diffuse, AssetTexture* specular);
+    void setPosition(glm::vec3 position);
     /**
      * @param rotationX rotation around x axis in degrees
      * @param rotationY rotation around y axis in degrees

@@ -1,14 +1,15 @@
 refactor and clean up
 - optimize getting length of vectors
 - optimize: FontTexture::generateIndices only needs size of vertices. and it will be the same every time till the size is reached
-- having different glsl files that can be used with same c++ shader type is really confusing.
-- the unbind is the same for all buffers and stuff 
+- having different glsl files that can be used with same c++ shader type is really confusing. but having just one shader class is really convenient
 
 feature
 - softer shadows
 - multiple shadows, or clean up how it currently decides which light source casts shadows
-- implement way to apply solid colour tint to entire object
+- spotlight
+- maybe make brightness adjustment better?
 - way to only log some log levels
+- way to turn off some graphics features
 - test on different window aspect ratio
 - collision
 - gravity

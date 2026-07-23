@@ -22,8 +22,8 @@ const std::string TAG = "Main";
 
 Player* player_ptr;
 
-void mouseCallback(GLFWwindow*, double xpos, double ypos) {
-	player_ptr->handleMousePos(xpos, ypos);
+void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+	player_ptr->handleMousePos(window, xpos, ypos);
 }
 
 void keyCallback(GLFWwindow* window, int key, int, int action, int) {
@@ -131,6 +131,8 @@ int main() {
 	glEnable(GL_CULL_FACE); // enable face culling, mostly so that we can cull front faces for depth map rendering to avoid peter-panning
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	player.setTextures(&planksDiffuse, &planksSpecular);
+	lc.registerShape(&player.body);
 	player_ptr = &player;
 
 	float deltaTime = 0.0f;
@@ -161,14 +163,14 @@ int main() {
 
 		player.handleKeyInputs(window, deltaTime);
 		lc.renderForShadows(shader);
-		lc.renderForHDRAndBloom(shader, lightShader, player.camera);
+		lc.renderForHDRAndBloom(shader, lightShader, *player.getActiveCamera());
 		lc.adjustBrightness(deltaTime);
 		lc.blurBrightAreas();
 		lc.renderForReal();
 
 		glDisable(GL_DEPTH_TEST);
 		tr.drawText(player.getDebugString(), fontShader, 10, 10, 400, 20);
-		tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
+//		tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
 
 		glfwPollEvents();
 

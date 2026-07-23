@@ -13,7 +13,7 @@ public:
 
 	void applyForce(glm::vec3 f); // DOES NOT actually move the mass. call updatePosition to do so.
     void updatePosition(float dt);
-	std::string getDebugString();
+	virtual std::string getDebugString();
 
     virtual ~Mass() = default;
 protected:

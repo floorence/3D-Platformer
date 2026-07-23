@@ -14,6 +14,7 @@ public:
      * @param length size in z axis
      * @param height size in y axis
      */ 
+    RectangularPrism(glm::vec3 position, float width, float height, float length, bool isLightSource = false);
     RectangularPrism(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, 
                      float width, float height, float length, bool isLightSource = false);
     /**

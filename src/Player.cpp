@@ -1,14 +1,36 @@
 #include"Player.h"
+#include"util/Utils.h"
 
-Player::Player(glm::vec3 position, int width, int height) 
-    : camera(position, width, height)
+Player::Player(glm::vec3 position, int windowWidth, int windowHeight) 
+    : camera(position, windowWidth, windowHeight),
+	  thirdPersonCam(position, windowWidth, windowHeight),
+	  body(position, 0.1f, 0.1f, 0.1f)
 {
     this->position = position;
     camera.setPerspective(45.0f, 0.1f, 100.0f);
+    thirdPersonCam.setPerspective(45.0f, 0.1f, 100.0f);
 	mass = 1.0f;
 
-	lastX = camera.width / 2.0;
-	lastY = camera.height / 2.0;
+	lastX = camera.windowWidth / 2.0;
+	lastY = camera.windowHeight / 2.0;
+
+	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
+	syncCamerasAndBody();
+}
+
+void Player::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
+	body.setTextures(diffuse, specular);
+}
+
+Camera* Player::getActiveCamera() {
+	return (thirdPerson) ? &thirdPersonCam : &camera;
+}
+
+std::string Player::getDebugString() {
+	return fmt::format("position: {:.3f}, {:.3f}, {:.3f}\nthirdPerson: {:.3f}, {:.3f}, {:.3f}",
+        position.x, position.y, position.z,
+		thirdPersonCam.position.x, thirdPersonCam.position.y, thirdPersonCam.position.z
+	);
 }
 
 void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
@@ -41,8 +63,7 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	}
 
 	updatePosition(deltaTime);
-    camera.position = this->position;
-    camera.lookAt(orientation);
+	syncCamerasAndBody();
 }
 
 void Player::handleKeyInputs(GLFWwindow* window, int key, int action) {
@@ -56,21 +77,18 @@ void Player::handleKeyInputs(GLFWwindow* window, int key, int action) {
 	if (key == GLFW_KEY_E) {
 		if (action == GLFW_PRESS) handleFocusChange(window);
 	}
-}
-
-void Player::handleFocusChange(GLFWwindow* window) {
-	if (focused) {
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		focused = false;
-	} else {
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		firstClick = true;
-		focused = true;
+	if (key == GLFW_KEY_P) {
+		if (action == GLFW_PRESS) thirdPerson = !thirdPerson;
 	}
 }
 
-void Player::handleMousePos(double xpos, double ypos) {
+void Player::handleMousePos(GLFWwindow* window, double xpos, double ypos) {
 //	Log::log(TAG, Log::oss("handleMousePos: ", xpos, ", ", ypos));
+	glm::vec3* activeOrientation = &orientation;
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && thirdPerson) {
+		activeOrientation = &thirdPersonOrientation;
+	}
+
 	if (!focused) return;
 
 	if (firstClick) {
@@ -85,17 +103,42 @@ void Player::handleMousePos(double xpos, double ypos) {
 	lastX = xpos;
 	lastY = ypos;
 
-	float rotX = sensitivity * (float)(xOffset) / camera.width;
-	float rotY = sensitivity * (float)(yOffset) / camera.height;
+	float rotX = sensitivity * (float)(xOffset) / camera.windowWidth;
+	float rotY = sensitivity * (float)(yOffset) / camera.windowHeight;
 
 	// calculate upcoming vertical change in the orientation
-	glm::vec3 verticalOrientation = glm::rotate(orientation, glm::radians(-rotY), glm::normalize(glm::cross(orientation, camera.UP)));
+	glm::vec3 verticalOrientation = glm::rotate(*activeOrientation, glm::radians(-rotY), glm::normalize(glm::cross(*activeOrientation, Camera::UP)));
 
 	// decide whether or not the next vertical orientation is legal or not
-	if (std::abs(glm::angle(verticalOrientation, camera.UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
-		orientation = verticalOrientation;
+	if (std::abs(glm::angle(verticalOrientation, Camera::UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
+		*activeOrientation = verticalOrientation;
 	}
 
 	// rotate the orientation left and right
-	orientation = glm::rotate(orientation, glm::radians(-rotX), camera.UP);
+	*activeOrientation = glm::rotate(*activeOrientation, glm::radians(-rotX), Camera::UP);
+	// lookAt is already called every frame in syncCamerasAndBody()
 }
+
+void Player::handleFocusChange(GLFWwindow* window) {
+	if (focused) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		focused = false;
+	} else {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		firstClick = true;
+		focused = true;
+	}
+}
+
+void Player::syncCamerasAndBody() {
+	camera.position = this->position;
+	camera.lookAt(orientation);
+
+	glm::vec3 playerTo3rdPerson = Utils::setVectorLength(thirdPersonCam.position - camera.position, thirdPersonDist);
+	thirdPersonCam.position = camera.position + playerTo3rdPerson;
+	thirdPersonCam.lookAt(thirdPersonOrientation);
+
+	// TODO: rotate body based on orientation and when looking around in third person make player always be in the middle
+	body.setPosition(camera.position);
+}
+

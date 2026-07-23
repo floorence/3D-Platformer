@@ -35,7 +35,7 @@ void Mass::processVelocity() {
     float angleRadians = glm::angle(a, v); 
     float angleDegrees = glm::degrees(angleRadians); 
 
-    // if acceleration is near the same direction as velocity, it is increasing the magnitude of velocity; don't stop
+    // if acceleration has a component in the same direction as velocity, it is increasing the magnitude of velocity; don't stop
     if (angleDegrees < 90.0f) return;
 
 	if (glm::length(velocity) < STOPPING_SPEED) {

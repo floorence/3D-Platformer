@@ -38,3 +38,13 @@ void Utils::unbindFboAndClear() {
 void Utils::unbindPbo() {
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
+
+glm::vec3 Utils::clampVectorLength(glm::vec3 v, float maxLength) {
+    float len = glm::length(v);
+    return (len > maxLength) ? (v * (maxLength / len)) : v;
+}
+
+glm::vec3 Utils::setVectorLength(glm::vec3 v, float desiredLength) {
+    float len = glm::length(v);
+    return (len != desiredLength) ? (v * (desiredLength / len)) : v;
+}

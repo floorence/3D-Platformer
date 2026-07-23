@@ -1,12 +1,12 @@
 #include"Camera.h"
 #include"util/Log.h"
 
-Camera::Camera(glm::vec3 position, int width, int height)
-	: position(position), width(width), height(height) {}
+Camera::Camera(glm::vec3 position, int windowWidth, int windowHeight)
+	: position(position), windowWidth(windowWidth), windowHeight(windowHeight) {}
 
 void Camera::setPerspective(float FOVdeg, float nearPlane, float farPlane) {
 	// add perspective to the scene
-	projection = glm::perspective(glm::radians(FOVdeg), (float)width / height, nearPlane, farPlane);
+	projection = glm::perspective(glm::radians(FOVdeg), (float)windowWidth / windowHeight, nearPlane, farPlane);
 	this->farPlane = farPlane;
 }
 

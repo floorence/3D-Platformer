@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include"glm/glm.hpp"
+
 namespace Utils {
 	static constexpr float R_COEFFICIENT = 0.2126f;
 	static constexpr float G_COEFFICIENT = 0.7152f;
@@ -16,6 +18,9 @@ namespace Utils {
     void unbindFbo();
     void unbindFboAndClear();
     void unbindPbo();
+
+    glm::vec3 clampVectorLength(glm::vec3 v, float maxLength);
+    glm::vec3 setVectorLength(glm::vec3 v, float desiredLength);
 };
 
 #endif
