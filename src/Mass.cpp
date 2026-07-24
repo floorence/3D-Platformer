@@ -6,13 +6,17 @@ void Mass::applyForce(glm::vec3 f) {
     acceleration += f / mass;
 }
 
-void Mass::updatePosition(float dt) {
+glm::vec3 Mass::updatePosition(float dt) {
+    glm::vec3 initialPos = position;
+
     applyForce(getAirResistance());
     velocity += acceleration * dt;
     processVelocity();
     position += velocity * dt;
     prevAcceleration = acceleration;
 	acceleration = glm::vec3(0.0f);
+
+    return position - initialPos;
 }
 
 std::string Mass::getDebugString() {

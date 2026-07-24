@@ -12,7 +12,9 @@ public:
     glm::vec3 acceleration = glm::vec3(0.0f, 0.0f, 0.0f); // m/s^2
 
 	void applyForce(glm::vec3 f); // DOES NOT actually move the mass. call updatePosition to do so.
-    void updatePosition(float dt);
+
+	/** @return vector from initial to final position */
+    glm::vec3 updatePosition(float dt);
 	virtual std::string getDebugString();
 
     virtual ~Mass() = default;

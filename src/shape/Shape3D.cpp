@@ -1,5 +1,6 @@
 #include "Shape3D.h"
 #include "util/Log.h"
+#include <glm/geometric.hpp>
 
 Shape3D::Shape3D(glm::vec3 position, bool isLightSource) 
     : position(position),
@@ -59,6 +60,11 @@ void Shape3D::setRotation(float rotationX, float rotationY, float rotationZ) {
     
     invalidateShape();
     invalidateModel();
+}
+
+void Shape3D::setRotation(float angle, glm::vec3 axis) {
+    axis = glm::normalize(axis);
+    setRotation(angle * axis.x, angle * axis.y, angle * axis.z);
 }
     
 void Shape3D::setColor(glm::vec3 color, float intensity) {

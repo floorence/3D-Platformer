@@ -92,6 +92,7 @@ int main() {
 	RectangularPrism floor(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
 	objects.push_back(&floor);
 
+	/*
 	RectangularPrism rightWall(&floorDiffuse, &floorSpecular, glm::vec3(2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
 	RectangularPrism leftWall(&floorDiffuse, &floorSpecular, glm::vec3(-2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
 	RectangularPrism backWall(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, 1.3f, 2.5f), 5.0f, 5.0f, 0.1f);
@@ -101,6 +102,7 @@ int main() {
 	objects.push_back(&leftWall);
 	objects.push_back(&backWall);
 	objects.push_back(&frontWall);
+    */
 
 	RectangularPrism floorCube(&planksDiffuse, &planksSpecular, glm::vec3(-1.0f, -0.95f, -1.0f), 0.4f, 0.4f, 0.4f);
 	objects.push_back(&floorCube);

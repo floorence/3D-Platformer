@@ -41,7 +41,8 @@ private:
 	float thirdPersonDist = 1.0f; // distance from third person cam to player
 
 	void handleFocusChange(GLFWwindow* window);
-	void syncCamerasAndBody();
+	glm::vec3* getActiveOrientation();
+	void syncCamerasAndBody(glm::vec3 movement);
 };
 
 #endif

@@ -27,6 +27,11 @@ public:
      */
     void setRotation(float rotationX, float rotationY, float rotationZ);
     /**
+     * @param angle angle of rotation in degrees
+     * @param axis axis of rotation
+     */
+    void setRotation(float angle, glm::vec3 axis);
+    /**
      * @param color if isLightSource, will be the colour of the light. else, will be the tintColor of the shape
      * @param intensity if isLightSource, will be the range of the light. else, will be the intensity of the tint (0 - 1)
      */
