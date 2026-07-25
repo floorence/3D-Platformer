@@ -134,7 +134,7 @@ int main() {
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player.setTextures(&planksDiffuse, &planksSpecular);
-	lc.registerShape(&player.body);
+	lc.registerShapes(player.getShapes());
 	player_ptr = &player;
 
 	float deltaTime = 0.0f;

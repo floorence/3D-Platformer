@@ -13,7 +13,7 @@ feature
 - test on different window aspect ratio
 - collision
 - gravity
-- draw debug vectors
+- draw more debug vectors
 - third person perspective
 
 fix

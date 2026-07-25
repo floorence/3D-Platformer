@@ -62,6 +62,14 @@ void Mesh::drawGui(Shader& shader) {
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
+void Mesh::drawLine(Camera& camera, Shader& shader) {
+	shader.activate(); // bind shader to be able to access uniforms
+	vao.bind();
+
+	shader.setCamera(camera);
+	glDrawElements(GL_LINES, drawCount, GL_UNSIGNED_INT, 0);
+}
+
 void Mesh::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	depthShader.activate();
 	vao.bind();

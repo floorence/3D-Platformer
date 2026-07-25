@@ -13,6 +13,8 @@ public:
     float intensity; // will be interpreted differently based on isLightSource. see setColor()
     glm::vec3 direction = glm::vec3(0.0f); // 0 for point light, not 0 for spot light TODO
 
+    Shader* specialShader = nullptr; // optional special shader to use instead of default
+
     Shape3D() = default;
     Shape3D(glm::vec3 position, bool isLightSource);
     Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource);
@@ -36,10 +38,12 @@ public:
      * @param intensity if isLightSource, will be the range of the light. else, will be the intensity of the tint (0 - 1)
      */
     void setColor(glm::vec3 color, float intensity);
-    void draw(Camera& camera, Shader& shader);
+    virtual void draw(Camera& camera, Shader& shader);
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader);
 protected:
     float rotationX, rotationY, rotationZ;
+    glm::mat4 model = glm::mat4(1.0f); // shader uses model to place vertices around correct location in the world
+    Mesh mesh;
  
     /**
      * call this after updating rotation or any subclass fields used by generateVertices/Indices
@@ -50,12 +54,9 @@ protected:
      */
     void invalidateModel();
 private:
-    glm::mat4 model = glm::mat4(1.0f); // shader uses model to place vertices around correct location in the world
-
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
 
-    Mesh mesh;
     const std::string TAG = "Shape3D";
 
     virtual std::vector<Vertex> generateVertices() = 0;

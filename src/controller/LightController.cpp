@@ -73,12 +73,16 @@ void LightController::renderForShadows(Shader& shader) {
 
 void LightController::renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera) {
     hdrBloomFbo.bindAndClear();
-
+    Shader* activeShader = &shader;
     for (const auto& shape: shapes) {
-        shape->draw(camera, shader);
+        if (shape->specialShader != nullptr) activeShader = shape->specialShader;
+        shape->draw(camera, *activeShader);
     }
+
+    activeShader = &lightShader;
     for (const auto& light: lights) {
-        light->draw(camera, lightShader);
+        if (light->specialShader != nullptr) activeShader = light->specialShader;
+        light->draw(camera, *activeShader);
     }
 
     Utils::unbindFboAndClear();

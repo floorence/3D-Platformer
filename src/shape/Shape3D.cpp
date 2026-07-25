@@ -23,8 +23,10 @@ void Shape3D::invalidateShape() {
     if (rotationY) rotation = glm::rotate(rotation, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
     if (rotationZ) rotation = glm::rotate(rotation, glm::radians(rotationZ), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    for (auto& vertex: vertices) {
-        vertex.normal = glm::vec3(rotation * glm::vec4(vertex.normal, 1.0f));
+    if (rotationX || rotationY || rotationZ) {
+        for (auto& vertex: vertices) {
+            vertex.normal = glm::vec3(rotation * glm::vec4(vertex.normal, 1.0f));
+        }
     }
 
     mesh.setShapeData(        

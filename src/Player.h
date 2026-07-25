@@ -3,6 +3,7 @@
 
 #include"Mass.h"
 #include"camera/Camera.h"
+#include "shape/Line.h"
 #include "shape/RectangularPrism.h"
 
 class Player: public Mass {
@@ -10,12 +11,15 @@ public:
     Camera camera;
 	Camera thirdPersonCam;
 	RectangularPrism body;
+	Shader lineShader;
+	Line orientationLine;
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f);
 
     Player(glm::vec3 position, int windowWidth, int windowHeight);
 
 	void setTextures(AssetTexture* diffuse, AssetTexture* specular);
+	std::vector<Shape3D*> getShapes();
 	Camera* getActiveCamera();
 	std::string getDebugString() override;
 	

@@ -4,7 +4,8 @@
 Player::Player(glm::vec3 position, int windowWidth, int windowHeight) 
     : camera(position, windowWidth, windowHeight),
 	  thirdPersonCam(position, windowWidth, windowHeight),
-	  body(position, 0.1f, 0.1f, 0.1f)
+	  body(position, 0.1f, 0.1f, 0.1f),
+	  lineShader("shader/default.vert", "shader/flat.frag")
 {
     this->position = position;
     camera.setPerspective(45.0f, 0.1f, 100.0f);
@@ -14,12 +15,19 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	lastX = camera.windowWidth / 2.0;
 	lastY = camera.windowHeight / 2.0;
 
+	orientationLine.color = glm::vec3(1.0f, 0.0f, 0.69f);
+	orientationLine.specialShader = &lineShader;
+
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
 	syncCamerasAndBody(glm::vec3(0.0f));
 }
 
 void Player::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
 	body.setTextures(diffuse, specular);
+}
+
+std::vector<Shape3D*> Player::getShapes() {
+	return {&body, &orientationLine};
 }
 
 Camera* Player::getActiveCamera() {
@@ -146,14 +154,14 @@ void Player::syncCamerasAndBody(glm::vec3 movement) {
 	camera.position = this->position;
 	camera.lookAt(orientation);
 
-	// glm::vec3 playerTo3rdPerson = Utils::setVectorLength(thirdPersonCam.position - camera.position, thirdPersonDist);
-	// thirdPersonCam.position = camera.position + playerTo3rdPerson;
 	thirdPersonCam.position += movement;
 	thirdPersonOrientation = position - thirdPersonCam.position;
 	thirdPersonCam.lookAt(thirdPersonOrientation);
 
-	// TODO: rotate body based on orientation and when looking around in third person make player always be in the middle
-	float angle = glm::angle(Camera::FORWARD, orientation);
-	body.setPosition(camera.position);
-	body.setRotation(glm::degrees(angle), Camera::FORWARD);
+	float angle = glm::angle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)));
+	if (orientation.x > 0) angle = -angle;
+	body.setPosition(position);
+	body.setRotation(glm::degrees(angle), Camera::UP);
+
+	orientationLine.setCoordinates(position, position + orientation);
 }
