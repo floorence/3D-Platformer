@@ -100,7 +100,7 @@ void Player::handleKeyInputs(GLFWwindow* window, int key, int action) {
 	}
 }
 
-void Player::handleMousePos(GLFWwindow* window, double xpos, double ypos) {
+void Player::handleMousePos(GLFWwindow*, double xpos, double ypos) {
 	if (!focused) return;
 
 	if (firstClick) {
@@ -139,6 +139,15 @@ void Player::handleMousePos(GLFWwindow* window, double xpos, double ypos) {
 	// lookAt is already called every frame in syncCamerasAndBody()
 }
 
+void Player::handleMouseScroll(GLFWwindow*, double, double yoffset) {
+	// scroll down = zoom in. yoffset is positive when scroll down i think
+ 
+	if (focused && thirdPerson) {
+		thirdPersonDist = std::max(thirdPersonDist - (float)yoffset, MIN_THIRD_PERSON_DIST);
+		thirdPersonCam.position = position - Utils::setVectorLength(thirdPersonOrientation, thirdPersonDist);
+	}
+}
+
 void Player::handleFocusChange(GLFWwindow* window) {
 	if (focused) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -159,7 +168,7 @@ void Player::syncCamerasAndBody(glm::vec3 movement) {
 	thirdPersonCam.lookAt(thirdPersonOrientation);
 
 	float angle = glm::angle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)));
-	if (orientation.x > 0) angle = -angle;
+	if (orientation.x > 0.0f) angle = -angle;
 	body.setPosition(position);
 	body.setRotation(glm::degrees(angle), Camera::UP);
 

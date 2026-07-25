@@ -14,7 +14,6 @@ feature
 - collision
 - gravity
 - draw more debug vectors
-- third person perspective
 
 fix
 - shadow still peter panning smh

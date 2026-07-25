@@ -26,6 +26,10 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	player_ptr->handleMousePos(window, xpos, ypos);
 }
 
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+	player_ptr->handleMouseScroll(window, xoffset, yoffset);
+}
+
 void keyCallback(GLFWwindow* window, int key, int, int action, int) {
 	player_ptr->handleKeyInputs(window, key, action);
 }
@@ -130,7 +134,7 @@ int main() {
 	Log::log(TAG, "initial lighting processing completed");
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
-	glEnable(GL_CULL_FACE); // enable face culling, mostly so that we can cull front faces for depth map rendering to avoid peter-panning
+	glEnable(GL_CULL_FACE); // enable back face culling
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player.setTextures(&planksDiffuse, &planksSpecular);
@@ -148,6 +152,7 @@ int main() {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 	glfwSetKeyCallback(window, keyCallback);
 
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));

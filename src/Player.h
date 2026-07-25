@@ -27,6 +27,7 @@ public:
 	void handleKeyInputs(GLFWwindow* window, float deltaTime);
 	void handleKeyInputs(GLFWwindow* window, int key, int action);
 	void handleMousePos(GLFWwindow* window, double xpos, double ypos);
+	void handleMouseScroll(GLFWwindow* window, double xoffset, double yoffset);
 private:
 	const float MAX_SPEED_DEFAULT = 1.0f;
 	const float MAX_SPEED_SPRINTING = 2.0f;
@@ -43,6 +44,7 @@ private:
 
 	bool thirdPerson = false;
 	float thirdPersonDist = 1.0f; // distance from third person cam to player
+	const float MIN_THIRD_PERSON_DIST = 0.2f;
 
 	void handleFocusChange(GLFWwindow* window);
 	glm::vec3* getActiveOrientation();
