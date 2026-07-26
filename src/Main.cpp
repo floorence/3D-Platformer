@@ -6,6 +6,8 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<fmt/format.h>
 
+#include "controller/ClickController.h"
+#include "gui/Button.h"
 #include "shape/DebugPyramid.h"
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
@@ -21,6 +23,7 @@ const unsigned int height = 800;
 const std::string TAG = "Main";
 
 Player* player_ptr;
+ClickController* clickController_ptr;
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	player_ptr->handleMousePos(window, xpos, ypos);
@@ -32,6 +35,14 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 
 void keyCallback(GLFWwindow* window, int key, int, int action, int) {
 	player_ptr->handleKeyInputs(window, key, action);
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+		clickController_ptr->handleClick(xpos, ypos);
+    }
 }
 
 std::string formatPerformanceInfo(float frameTime, float realFrameTime) {
@@ -66,10 +77,6 @@ int main() {
 	// on linux, framebuffer size and window size are not always identical
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-
-	// make font renderer
-	FontTexture font = FontTexture("assets/pixel_operator_short_dollar.ttf");
-	TextRenderer tr(&font);
 
 	std::vector<Shape3D*> objects;
 
@@ -123,15 +130,27 @@ int main() {
 	// make shaders and light controller
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
-	Shader fontShader("shader/gui.vert", "shader/font.frag");
-	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);	
-	fontShader.setProjection(guiProjection);
+	Shader guiShader("shader/gui.vert", "shader/gui.frag");
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
 	lc.processLighting(shader);
 
 	Log::log(TAG, "initial lighting processing completed");
+
+	// make font renderer and gui
+	TextRenderer tr(width, height);
+
+	ClickController cc;
+	Button button(width - 80, height - 40, width - 10, height - 10);
+	button.text = "button";
+	button.color = glm::vec3(1.0f, 0.71f, 0.957f);
+	button.setOnClick([]() {
+		Log::log(TAG, "button clicked!");
+	});
+
+	cc.registerClickable(&button);
+	clickController_ptr = &cc;
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 	glEnable(GL_CULL_FACE); // enable back face culling
@@ -154,6 +173,7 @@ int main() {
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetScrollCallback(window, scrollCallback);
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
@@ -176,8 +196,9 @@ int main() {
 		lc.renderForReal();
 
 		glDisable(GL_DEPTH_TEST);
-		tr.drawText(player.getDebugString(), fontShader, 10, 10, 400, 20);
-//		tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
+		tr.drawText(player.getDebugString(), 10, 10, 400, 20);
+		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
+		button.draw(guiShader, &tr);
 
 		glfwPollEvents();
 
@@ -199,7 +220,7 @@ int main() {
 			totalRealFrameTime = std::pair(0.0f, 0);
 		}
 
-		tr.drawText(currInfoText, fontShader, width - 200, 10, 200, 16);
+		tr.drawText(currInfoText, width - 200, 10, 200, 16);
 		glEnable(GL_DEPTH_TEST);
 
 		glfwSwapBuffers(window);

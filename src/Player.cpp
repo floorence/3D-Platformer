@@ -5,7 +5,7 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
     : camera(position, windowWidth, windowHeight),
 	  thirdPersonCam(position, windowWidth, windowHeight),
 	  body(position, 0.1f, 0.1f, 0.1f),
-	  lineShader("shader/default.vert", "shader/flat.frag")
+	  lineShader("shader/default.vert", "shader/gui.frag") // we don't want the line affected by lighting
 {
     this->position = position;
     camera.setPerspective(45.0f, 0.1f, 100.0f);
@@ -15,7 +15,7 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	lastX = camera.windowWidth / 2.0;
 	lastY = camera.windowHeight / 2.0;
 
-	orientationLine.color = glm::vec3(1.0f, 0.0f, 0.69f);
+	orientationLine.color = glm::vec3(100.0f, 0.0f, 69.0f);
 	orientationLine.specialShader = &lineShader;
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);

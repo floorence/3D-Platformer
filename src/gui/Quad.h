@@ -7,8 +7,13 @@
 
 class Quad {
 public:
+    bool useColorInsteadOfTexture = false;
+    glm::vec3 color;
+
     Quad() = default;
     Quad(Texture* texture);
+
+    virtual ~Quad() = default;
 
     void setTexture(Texture* texture);
     void setTextures(std::vector<Texture*> textures);
@@ -25,6 +30,8 @@ public:
     void setBounds(float xu, float yu, float xv, float yv);
     
     void draw(Shader& shader);
+protected:
+    float xu, yu, xv, yv;
 private:
     Mesh mesh;
 };

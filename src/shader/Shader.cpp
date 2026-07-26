@@ -118,6 +118,11 @@ void Shader::setBlurHorizontal(bool horizontal) {
 	glUniform1i(glGetUniformLocation(ID, "horizontal"), horizontal);
 }
 
+void Shader::setColorOverride(bool override) {
+	activate();
+	glUniform1i(glGetUniformLocation(ID, "colorOverride"), override);
+}
+
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
     Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
     activate();
@@ -137,6 +142,7 @@ void Shader::setNumPointLights(int num) {
 }
 
 void Shader::setColor(glm::vec3 color) {
+	activate();
 	glUniform3f(glGetUniformLocation(ID, "color"), color.x, color.y, color.z);
 }
 

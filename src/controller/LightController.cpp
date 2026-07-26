@@ -197,6 +197,7 @@ void LightController::prepareHdrAndBloom() {
     hdrBloomFbo.checkStatus();
     Utils::unbindFbo();
 
+    hdrBloomShader.setProjection(glm::mat4(1.0f));
     hdrBloomResult.setBounds(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
@@ -215,6 +216,7 @@ void LightController::prepareGaussianBlur() {
         blurFbos[i].attachTexture2D(blurTextures[i].ID);
     }
 
+    blurShader.setProjection(glm::mat4(1.0f));
     blurResult.setBounds(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 

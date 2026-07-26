@@ -122,7 +122,7 @@ void main() {
 	vec3 viewDirection = normalize(camPos - crntPos);
     vec3 ambient = AMBIENT_LIGHT * vec3(texture(material.diffuse, texCoord));
 
-//	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
+    //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
 	vec3 result = vec3(0);
 
 	for (int i = 0; i < numPointLights; i++)
