@@ -8,6 +8,7 @@
 
 #include "controller/ClickController.h"
 #include "gui/Button.h"
+#include "gui/SettingsMenu.h"
 #include "shape/DebugPyramid.h"
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
@@ -17,6 +18,7 @@
 #include"gui/TextRenderer.h"
 #include"util/Log.h"
 #include"Player.h"
+#include "util/Utils.h"
 
 const unsigned int width = 800;
 const unsigned int height = 800;
@@ -131,6 +133,8 @@ int main() {
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
 	Shader guiShader("shader/gui.vert", "shader/gui.frag");
+	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
+	guiShader.setProjection(guiProjection);
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
@@ -142,15 +146,25 @@ int main() {
 	TextRenderer tr(width, height);
 
 	ClickController cc;
+	clickController_ptr = &cc;
+
+	SettingsMenu settingsMenu(100, 100, width - 100, height - 100);
+
 	Button button(width - 80, height - 40, width - 10, height - 10);
-	button.text = "button";
+	button.text = "settings";
 	button.color = glm::vec3(1.0f, 0.71f, 0.957f);
-	button.setOnClick([]() {
-		Log::log(TAG, "button clicked!");
+	button.setOnClick([&settingsMenu]() {
+		// button.color = glm::vec3(
+		// 	Utils::randomFloat(0, 1), 
+		// 	Utils::randomFloat(0, 1),
+		// 	Utils::randomFloat(0, 1)
+		// );
+		// Log::log(TAG, "button clicked!");
+		settingsMenu.isOpen = true;
 	});
 
 	cc.registerClickable(&button);
-	clickController_ptr = &cc;
+	cc.registerClickables(settingsMenu.getClickables());
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 	glEnable(GL_CULL_FACE); // enable back face culling
@@ -198,7 +212,9 @@ int main() {
 		glDisable(GL_DEPTH_TEST);
 		tr.drawText(player.getDebugString(), 10, 10, 400, 20);
 		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
-		button.draw(guiShader, &tr);
+		button.drawWithText(guiShader, tr);
+
+		if (settingsMenu.isOpen) settingsMenu.draw(guiShader, tr);
 
 		glfwPollEvents();
 

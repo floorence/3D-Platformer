@@ -11,7 +11,7 @@ public:
     LightController(int windowWidth, int windowHeight);
 
     void registerShape(Shape3D* shape);
-    void registerShapes(std::vector<Shape3D*> shapes);
+    void registerShapes(const std::vector<Shape3D*>& shapes);
     void processLighting(Shader& shader);
 
     // these functions must all be called in order each frame

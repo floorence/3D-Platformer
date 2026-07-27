@@ -48,3 +48,8 @@ glm::vec3 Utils::setVectorLength(glm::vec3 v, float desiredLength) {
     float len = glm::length(v);
     return (len != desiredLength) ? (v * (desiredLength / len)) : v;
 }
+
+float Utils::randomFloat(float from, float to) {
+    std::uniform_real_distribution<float> dist(from, to);
+    return dist(gen);
+}

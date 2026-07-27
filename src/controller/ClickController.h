@@ -7,6 +7,7 @@
 class ClickController {
 public:
     void registerClickable(Clickable* clickable);
+    void registerClickables(const std::vector<Clickable*>& clickables);
     void handleClick(float x, float y);
 private:
     std::vector<Clickable*> clickables;

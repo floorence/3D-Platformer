@@ -29,7 +29,7 @@ void LightController::registerShape(Shape3D* shape) {
         shapes.push_back(shape);
 }
 
-void LightController::registerShapes(std::vector<Shape3D*> shapes) {
+void LightController::registerShapes(const std::vector<Shape3D*>& shapes) {
     for (const auto& shape :shapes) {
         registerShape(shape);
     }

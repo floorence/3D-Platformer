@@ -18,6 +18,8 @@ public:
     void setTexture(Texture* texture);
     void setTextures(std::vector<Texture*> textures);
     /**
+     * @brief another way to set bounds using width and height instead of top left and bottom right corner.
+     *        internally calls setBounds(xu, yu, xv, yv)
      * @param x, y top left of quad
      * @param w, h width and height of quad
      * @param reversedYAxis true if y increases downward
@@ -27,9 +29,9 @@ public:
      * @param xu, yu top left of quad
      * @param xv, yv bottom right of quad
      */
-    void setBounds(float xu, float yu, float xv, float yv);
+    virtual void setBounds(float xu, float yu, float xv, float yv);
     
-    void draw(Shader& shader);
+    virtual void draw(Shader& shader);
 protected:
     float xu, yu, xv, yv;
 private:
