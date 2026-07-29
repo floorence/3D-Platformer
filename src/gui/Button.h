@@ -1,24 +1,24 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "gui/Clickable.h"
+#include "gui/GuiElement.h"
 #include "gui/Quad.h"
 #include "gui/TextRenderer.h"
-#include <functional>
 
-class Button: public Quad, public Clickable {
+class Button: public GuiElement {
 public:
     std::string text = "";
     float padding = 2.0f; // TODO
 
     Button() = default;
-    Button(float xu, float yu, float xv, float yv);
+    Button(float xu, float yu, float xv, float yv); // TODO: annoying to copy constructor for every guielement
 
-    void drawWithText(Shader& shader, TextRenderer& textRenderer);
-    void setOnClick(std::function<void()> callback);
-    bool dispatchClick(float x, float y) override;
+    void setBackgroundColor(glm::vec3 color);
+    void draw(Shader& shader, TextRenderer& textRenderer);
 private:
-    std::function<void()> onClickCallback;
+    Quad background;
+
+    void onBoundsChanged() override;
 };
 
 #endif

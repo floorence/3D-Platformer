@@ -152,15 +152,15 @@ int main() {
 
 	Button button(width - 80, height - 40, width - 10, height - 10);
 	button.text = "settings";
-	button.color = glm::vec3(1.0f, 0.71f, 0.957f);
+	button.setBackgroundColor(glm::vec3(1.0f, 0.71f, 0.957f));
 	button.setOnClick([&settingsMenu]() {
 		// button.color = glm::vec3(
 		// 	Utils::randomFloat(0, 1), 
 		// 	Utils::randomFloat(0, 1),
 		// 	Utils::randomFloat(0, 1)
 		// );
-		// Log::log(TAG, "button clicked!");
-		settingsMenu.isOpen = true;
+		Log::log(TAG, "button clicked!");
+		settingsMenu.isOpen = !settingsMenu.isOpen;
 	});
 
 	cc.registerClickable(&button);
@@ -212,7 +212,7 @@ int main() {
 		glDisable(GL_DEPTH_TEST);
 		tr.drawText(player.getDebugString(), 10, 10, 400, 20);
 		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
-		button.drawWithText(guiShader, tr);
+		button.draw(guiShader, tr);
 
 		if (settingsMenu.isOpen) settingsMenu.draw(guiShader, tr);
 

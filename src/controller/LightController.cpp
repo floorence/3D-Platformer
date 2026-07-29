@@ -198,7 +198,8 @@ void LightController::prepareHdrAndBloom() {
     Utils::unbindFbo();
 
     hdrBloomShader.setProjection(glm::mat4(1.0f));
-    hdrBloomResult.setBounds(-1.0f, 1.0f, 1.0f, -1.0f);
+    hdrBloomResult.reversedYAxis = true;
+    hdrBloomResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
 void LightController::prepareAvgColorBuffer() {
@@ -217,7 +218,8 @@ void LightController::prepareGaussianBlur() {
     }
 
     blurShader.setProjection(glm::mat4(1.0f));
-    blurResult.setBounds(-1.0f, 1.0f, 1.0f, -1.0f);
+    blurResult.reversedYAxis = true;
+    blurResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
 void LightController::prepareFPTexture(Texture& texture) {

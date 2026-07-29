@@ -1,14 +1,16 @@
 #include"SettingsMenu.h"
 
 SettingsMenu::SettingsMenu(float xu, float yu, float xv, float yv) {
-    setBounds(xu, yu, xv, yv);
-    useColorInsteadOfTexture = true;
-    color = glm::vec3(0.22f, 0.22f, 0.22f);
+    setCorners(xu, yu, xv, yv);
 
-    bloomStepper.setBounds(xu + padding, yu + padding, xu + padding + 100, yu + padding + 40);
+    background.setCorners(xu, yu, xv, yv);
+    background.useColorInsteadOfTexture = true;
+    background.color = glm::vec3(0.22f, 0.22f, 0.22f);
+
+    bloomStepper.setCorners(xu + padding, yu + padding, xu + padding + 100, yu + padding + 40);
     bloomStepper.setColors(glm::vec3(0.7f, 0.7f, 0.7f), textColor);
     bloomStepper.setCountAndMinMax(1, 0, 4);
-    vsyncToggle.setBounds(xu + padding, yu + padding + 40 + padding, xu + padding + 60, yu + padding + 40 + padding + 40);
+    vsyncToggle.setCorners(xu + padding, yu + padding + 40 + padding, xu + padding + 60, yu + padding + 40 + padding + 40);
     vsyncToggle.setColors(glm::vec3(0.47f, 0.47f, 0.47f), glm::vec3(0.7f, 0.7f, 0.7f));
 }
 
@@ -17,7 +19,7 @@ std::vector<Clickable*> SettingsMenu::getClickables() {
 }
 
 void SettingsMenu::draw(Shader& shader, TextRenderer& textRenderer) {
-    draw(shader);
+    background.draw(shader);
     bloomStepper.draw(shader, textRenderer);
     vsyncToggle.draw(shader);
 }

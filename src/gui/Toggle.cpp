@@ -2,12 +2,8 @@
 #include "util/Log.h"
 
 Toggle::Toggle(float xu, float yu, float xv, float yv) {
-    if (yv - yu >= xv - xu) {
-        Log::err("Toggle", "Toggle must be wider than it is tall! bounds not initialized.");
-        return;
-    }
-    setBounds(xu, yu, xv, yv);
-    useColorInsteadOfTexture = true;
+    setCorners(xu, yu, xv, yv);
+    outerRect.useColorInsteadOfTexture = true;
     innerSquare.useColorInsteadOfTexture = true;
 
     setOnClick([this]() {
@@ -26,26 +22,30 @@ void Toggle::setIsOn(bool on) {
 }
 
 void Toggle::setColors(glm::vec3 innerColor, glm::vec3 outerColor) {
-    color = outerColor;
+    outerRect.color = outerColor;
     innerSquare.color = innerColor;
 }
 
-void Toggle::setBounds(float xu, float yu, float xv, float yv) {
-    Quad::setBounds(xu, yu, xv, yv);
+void Toggle::onBoundsChanged() {
+    if (h >= w) {
+        Log::err("Toggle", "Toggle must be wider than it is tall! bounds were not fully initialized and bad things will happen.");
+        return;
+    }
+    outerRect.setBounds(x, y, w, h);
     updateInnerSquare();
 }
 
 void Toggle::draw(Shader& shader) {
-    Quad::draw(shader);
+    outerRect.draw(shader);
     innerSquare.draw(shader);
 }
 
 void Toggle::updateInnerSquare() {
-    float size = yv - yu - padding * 2;
+    float size = h - padding * 2;
     if (on) {
-        float start = xv - padding - size;
-        innerSquare.setBounds(start, yu + padding, start + size, yv - padding);
+        float start = x + w - padding - size;
+        innerSquare.setCorners(start, y + padding, start + size, y + h - padding);
     } else {
-        innerSquare.setBounds(xu + padding, yu + padding, xu + padding + size, yv - padding);
+        innerSquare.setCorners(x + padding, y + padding, x + padding + size, y + h - padding);
     }
 }

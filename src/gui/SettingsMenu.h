@@ -6,7 +6,7 @@
 #include "gui/TextRenderer.h"
 #include "gui/Toggle.h"
 
-class SettingsMenu: public Quad {
+class SettingsMenu: public Rect {
 public:
     bool isOpen = false;
 
@@ -20,12 +20,11 @@ private:
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
     float padding = 5.0f;
 
+    Quad background;
     std::string bloomDesc = "Bloom amount";
     Stepper bloomStepper;
     std::string vsyncDesc = "Vsync";
     Toggle vsyncToggle;
-
-    using Quad::draw;
 };
 
 #endif

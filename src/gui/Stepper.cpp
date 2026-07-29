@@ -3,7 +3,7 @@
 #include <string>
 
 Stepper::Stepper(float xu, float yu, float xv, float yv) {
-    setBounds(xu, yu, xv, yv);
+    setCorners(xu, yu, xv, yv);
 }
 
 bool Stepper::dispatchClick(float x, float y) {
@@ -14,25 +14,18 @@ int Stepper::getCount() {
     return count;
 }
 
-void Stepper::setBounds(float xu, float yu, float xv, float yv) {
-    float buttonSize = yv - yu;
-
-    decButton.useColorInsteadOfTexture = true;
-    decButton.setBounds(xu, yu, xu + buttonSize, yv);
+void Stepper::onBoundsChanged() {
+    decButton.setCorners(x, y, x + h, y + h);
     decButton.text = "-";
     decButton.setOnClick([this]() {
         if (count > min) count--;
     });
 
-    incButton.useColorInsteadOfTexture = true;
-    incButton.setBounds(xv - buttonSize, yu, xv, yv);
+    incButton.setCorners(x + w - h, y, x + w, y + h);
     incButton.text = "+";
     incButton.setOnClick([this]() {
         if (count < max) count++;
     });
-
-    textX = xu + buttonSize + 2.0f;
-    textY = yu + 2.0f;
 }
 
 void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
@@ -47,13 +40,13 @@ void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
 }
 
 void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {
-    decButton.color = buttonsColor;
-    incButton.color = buttonsColor;
+    decButton.setBackgroundColor(buttonsColor);
+    incButton.setBackgroundColor(buttonsColor);
     this->textColor = textColor;
 }
 
 void Stepper::draw(Shader& shader, TextRenderer& textRenderer) {
-    decButton.drawWithText(shader, textRenderer);
-    textRenderer.drawText(std::to_string(count), textX, textY, 30, 16); // TODO
-    incButton.drawWithText(shader, textRenderer);
+    decButton.draw(shader, textRenderer);
+    textRenderer.drawText(std::to_string(count), x + h + 2.0f, y + 2.0f, 30, 16); // TODO
+    incButton.draw(shader, textRenderer);
 }

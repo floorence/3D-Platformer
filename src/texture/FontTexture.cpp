@@ -49,8 +49,51 @@ FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
 	delete[] bitmap_pixels;
 }
 
-std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x, int y, int w, int lineHeight) {
+std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x, int y, int lineHeight, int maxWidth) {
 	std::vector<Vertex> vertices;
+	processTextRequest(text, x, y, lineHeight, maxWidth, &vertices, nullptr);
+
+	return vertices;
+}
+
+std::vector<GLuint> FontTexture::generateIndices(std::vector<Vertex>& vertices) {
+	std::vector<GLuint> indices;
+	for (uint i = 0; i < vertices.size(); i += 4 /* 4 vertices per quad */ ) {
+		indices.insert(indices.end(), {i, i + 2, i + 3, i, i + 3, i + 1});
+	}
+	return indices;
+}
+
+std::pair<float, float> FontTexture::getSize(const std::string& text, int lineHeight, int maxWidth) {
+	std::pair<float, float> sizeData;
+	processTextRequest(text, 0, 0, lineHeight, maxWidth, nullptr, &sizeData);
+
+	return sizeData;
+}
+
+int FontTexture::getHeightFromBaseline(char c, int charHeight, int lineHeight) {
+	if (c == 'g' || c == 'j' || c == 'p' || c == 'q' || c == 'y') { // delimiters
+		return charHeight - (charHeight / 4.0f);
+	} else if (c == '+' || c == '-' || c == '<' || c == '=' || c == '>' || c == '~') { // center vertically
+		return lineHeight / 2.0f - charHeight / 2.0f;
+	} else if (c == '\"' || c == '\'' || c == '*' || c == '^') { // top aligned
+		return lineHeight;
+	}
+	return charHeight; // bottom aligned
+}
+
+void FontTexture::processCharData(stbtt_bakedchar* cData) {
+	for (int i = 0; i < NUM_CHARS; i++) {
+		stbtt_bakedchar c = cData[i];
+		charData[i].x0 = (float)c.x0 / ATLAS_WIDTH;
+		charData[i].x1 = (float)c.x1 / ATLAS_WIDTH;
+		charData[i].y0 = (float)c.y0 / ATLAS_HEIGHT;
+		charData[i].y1 = (float)c.y1 / ATLAS_HEIGHT;
+		normalizedLineHeight = std::max(normalizedLineHeight, charData[i].y1 - charData[i].y0);
+	}
+}
+
+void FontTexture::processTextRequest(const std::string& text, int x, int y, int lineHeight, int maxWidth, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData) {
 	float scale = lineHeight / normalizedLineHeight;
 	float spacing = lineHeight / 10.0f;
 	float spaceWidth = lineHeight / 4.0f;
@@ -80,75 +123,49 @@ std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x
 		//Log::log(TAG, Log::oss(text[i], " c: ", text[i] - ' ', " width: ", width, " height: ", height));
 
 		// constrain width
-		if (currX + width > x + w) {
+		if (maxWidth > 0 && currX + width > x + maxWidth) {
 			currX = x;
 			currY += lineHeight;
 		}
 
-		if (text[i] == ' ') {
+		if (text[i] == ' ') { // TODO move this to where other special characters are??
 			currX += spaceWidth;
 			continue;
 		}
+		
+		if (vertexData != nullptr) {
+			int baselineHeight = getHeightFromBaseline(text[i], height, lineHeight);
 
-		int baselineHeight = getHeightFromBaseline(text[i], height, lineHeight);
+			// texCoords are normalized while actual vertex positions are not and follow window coordinates
+			Vertex topLeft = {
+				glm::vec3(currX, currY - baselineHeight, 0.0f),
+				glm::vec3(0.0f),
+				glm::vec2(c.x0, c.y0)
+			};
+			Vertex topRight = {
+				glm::vec3(currX + width, currY - baselineHeight, 0.0f),
+				glm::vec3(0.0f),
+				glm::vec2(c.x1, c.y0)
+			};
+			Vertex botLeft = {
+				glm::vec3(currX, currY - baselineHeight + height, 0.0f),
+				glm::vec3(0.0f),
+				glm::vec2(c.x0, c.y1)
+			};
+			Vertex botRight = {
+				glm::vec3(currX + width, currY - baselineHeight + height, 0.0f),
+				glm::vec3(0.0f),
+				glm::vec2(c.x1, c.y1)
+			};
 
-		Vertex topLeft = {
-			glm::vec3(currX, currY - baselineHeight, 0.0f),
-			glm::vec3(0.0f),
-			glm::vec2(c.x0, c.y0)
-		};
-		Vertex topRight = {
-			glm::vec3(currX + width, currY - baselineHeight, 0.0f),
-			glm::vec3(0.0f),
-			glm::vec2(c.x1, c.y0)
-		};
-		Vertex botLeft = {
-			glm::vec3(currX, currY - baselineHeight + height, 0.0f),
-			glm::vec3(0.0f),
-			glm::vec2(c.x0, c.y1)
-		};
-		Vertex botRight = {
-			glm::vec3(currX + width, currY - baselineHeight + height, 0.0f),
-			glm::vec3(0.0f),
-			glm::vec2(c.x1, c.y1)
-		};
+			vertexData->insert(vertexData->end(), {topLeft, topRight, botLeft, botRight});
+		}
 
-		vertices.insert(vertices.end(), {topLeft, topRight, botLeft, botRight});
-
-		currX += width + spacing;
-		// Log::log(TAG, Log::oss("\t topLeft: ", topLeft.to_string(), " topRight: ", topRight.to_string(), " botLeft: ", botLeft.to_string(), " botRight: ", botRight.to_string()));
-		// Log::log(TAG, Log::oss("\tcurrX: ", currX, " currY: ", currY));
+		currX += width + spacing; // TODO should add spacing at the start of every letter? so size calculation is more accurete
 	}
 	
-	return vertices;
-}
-
-std::vector<GLuint> FontTexture::generateIndices(std::vector<Vertex>& vertices) {
-	std::vector<GLuint> indices;
-	for (uint i = 0; i < vertices.size(); i += 4 /* 4 vertices per quad */ ) {
-		indices.insert(indices.end(), {i, i + 2, i + 3, i, i + 3, i + 1});
-	}
-	return indices;
-}
-
-int FontTexture::getHeightFromBaseline(char c, int charHeight, int lineHeight) {
-	if (c == 'g' || c == 'j' || c == 'p' || c == 'q' || c == 'y') { // delimiters
-		return charHeight - (charHeight / 4.0f);
-	} else if (c == '+' || c == '-' || c == '<' || c == '=' || c == '>' || c == '~') { // center vertically
-		return lineHeight / 2.0f - charHeight / 2.0f;
-	} else if (c == '\"' || c == '\'' || c == '*' || c == '^') { // top aligned
-		return lineHeight;
-	}
-	return charHeight; // bottom aligned
-}
-
-void FontTexture::processCharData(stbtt_bakedchar* cData) {
-	for (int i = 0; i < NUM_CHARS; i++) {
-		stbtt_bakedchar c = cData[i];
-		charData[i].x0 = (float)c.x0 / ATLAS_WIDTH;
-		charData[i].x1 = (float)c.x1 / ATLAS_WIDTH;
-		charData[i].y0 = (float)c.y0 / ATLAS_HEIGHT;
-		charData[i].y1 = (float)c.y1 / ATLAS_HEIGHT;
-		normalizedLineHeight = std::max(normalizedLineHeight, charData[i].y1 - charData[i].y0);
+	if (sizeData != nullptr) {
+		sizeData->first = currX - x;
+		sizeData->second = currY - y;
 	}
 }

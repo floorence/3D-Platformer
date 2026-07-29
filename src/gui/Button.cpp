@@ -2,23 +2,19 @@
 #include "util/Log.h"
 
 Button::Button(float xu, float yu, float xv, float yv) {
-    setBounds(xu, yu, xv, yv);
-    useColorInsteadOfTexture = true;
+    setCorners(xu, yu, xv, yv);
+    background.useColorInsteadOfTexture = true;
 }
 
-void Button::drawWithText(Shader& shader, TextRenderer& textRenderer) {
-    Quad::draw(shader);
-    textRenderer.drawText(text, xu + padding, yu + padding, xv - xu - padding, 16.0f); // TODO
+void Button::onBoundsChanged() {
+    background.setBounds(x, y, w, h);
 }
 
-void Button::setOnClick(std::function<void()> callback) {
-    onClickCallback = callback;
+void Button::setBackgroundColor(glm::vec3 color) {
+    background.color = color;
 }
 
-bool Button::dispatchClick(float x, float y) {
-    if (x > xu && x < xv && y > yu && y < yv) {
-        if (onClickCallback) onClickCallback(); 
-        return true;
-    }
-    return false;
+void Button::draw(Shader& shader, TextRenderer& textRenderer) {
+    background.draw(shader);
+    textRenderer.drawText(text, x + padding, y + padding, x + w - padding, 16.0f); // TODO
 }
