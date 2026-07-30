@@ -13,7 +13,7 @@ public:
     SettingsMenu(float xu, float yu, float xv, float yv);
 
     std::vector<Clickable*> getClickables();
-    void draw(Shader& shader, TextRenderer& textRenderer);
+    void draw(Shader& shader, Shader& fontShader);
 private:
     std::string settingsTitle = "Settings"; // TODO: this never changes, make a text gui element
     std::string graphicsSubtitle = "Graphics";

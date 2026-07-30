@@ -8,7 +8,7 @@ class Toggle: public GuiElement {
 public:
     float padding = 2.0f; // TODO
 
-    Toggle() = default;
+    Toggle();
     Toggle(float xu, float yu, float xv, float yv);
 
     bool getIsOn();

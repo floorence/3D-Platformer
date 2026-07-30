@@ -16,6 +16,7 @@
 #include"texture/FontTexture.h"
 #include"texture/ImageTexture.h"
 #include"gui/TextRenderer.h"
+#include "util/Globals.h"
 #include"util/Log.h"
 #include"Player.h"
 #include "util/Utils.h"
@@ -129,12 +130,13 @@ int main() {
 	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
 	// objects.push_back(&light);
 
-	// make shaders and light controller
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
 	Shader guiShader("shader/gui.vert", "shader/gui.frag");
+	Shader fontShader("shader/gui.vert", "shader/font.frag");
 	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
 	guiShader.setProjection(guiProjection);
+	fontShader.setProjection(guiProjection);
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
@@ -142,8 +144,19 @@ int main() {
 
 	Log::log(TAG, "initial lighting processing completed");
 
-	// make font renderer and gui
-	TextRenderer tr(width, height);
+	// make text
+	FontTexture fontTex("assets/pixel_operator_short_dollar.ttf");
+	Globals::Font = &fontTex;
+	// TextRenderer tr(width, height);
+	Text playerDebugText;
+	playerDebugText.setBounds(10, 10, 400, 200);
+	playerDebugText.setFontSize(20);
+	playerDebugText.setCenterText(false);
+
+	Text performanceText;
+	performanceText.setBounds(width - 200, 10, 200, 100);
+	performanceText.setFontSize(16);
+	performanceText.setCenterText(false);
 
 	ClickController cc;
 	clickController_ptr = &cc;
@@ -151,7 +164,7 @@ int main() {
 	SettingsMenu settingsMenu(100, 100, width - 100, height - 100);
 
 	Button button(width - 80, height - 40, width - 10, height - 10);
-	button.text = "settings";
+	button.setText("settings");
 	button.setBackgroundColor(glm::vec3(1.0f, 0.71f, 0.957f));
 	button.setOnClick([&settingsMenu]() {
 		// button.color = glm::vec3(
@@ -177,7 +190,6 @@ int main() {
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
 	float lastUpdatedInfoText = 0.0f;
-	std::string currInfoText = "";
 
 	// first: total frame time, second: number of frames. real frame time is the frame time if vsync wasn't on.
 	std::pair<float, int> totalFrameTime(0.0f, 0);
@@ -210,11 +222,12 @@ int main() {
 		lc.renderForReal();
 
 		glDisable(GL_DEPTH_TEST);
-		tr.drawText(player.getDebugString(), 10, 10, 400, 20);
+		playerDebugText.setText(player.getDebugString());
+		playerDebugText.draw(fontShader);
 		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
-		button.draw(guiShader, tr);
+		button.draw(guiShader, fontShader);
 
-		if (settingsMenu.isOpen) settingsMenu.draw(guiShader, tr);
+		if (settingsMenu.isOpen) settingsMenu.draw(guiShader, fontShader);
 
 		glfwPollEvents();
 
@@ -231,12 +244,12 @@ int main() {
 			float avgFrameTime = totalFrameTime.first / totalFrameTime.second;
 			float avgRealFrameTime = totalRealFrameTime.first / totalRealFrameTime.second;
 			
-			currInfoText = formatPerformanceInfo(avgFrameTime, avgRealFrameTime); 
+			performanceText.setText(formatPerformanceInfo(avgFrameTime, avgRealFrameTime)); 
 			totalFrameTime = std::pair(0.0f, 0);
 			totalRealFrameTime = std::pair(0.0f, 0);
 		}
 
-		tr.drawText(currInfoText, width - 200, 10, 200, 16);
+		performanceText.draw(fontShader);
 		glEnable(GL_DEPTH_TEST);
 
 		glfwSwapBuffers(window);

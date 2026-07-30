@@ -2,7 +2,11 @@
 #include "util/Log.h"
 #include <string>
 
-Stepper::Stepper(float xu, float yu, float xv, float yv) {
+Stepper::Stepper() {
+    countText.setFontSize(16);
+}
+
+Stepper::Stepper(float xu, float yu, float xv, float yv): Stepper() {
     setCorners(xu, yu, xv, yv);
 }
 
@@ -16,16 +20,18 @@ int Stepper::getCount() {
 
 void Stepper::onBoundsChanged() {
     decButton.setCorners(x, y, x + h, y + h);
-    decButton.text = "-";
+    decButton.setText("-");
     decButton.setOnClick([this]() {
         if (count > min) count--;
     });
 
     incButton.setCorners(x + w - h, y, x + w, y + h);
-    incButton.text = "+";
+    incButton.setText("+");
     incButton.setOnClick([this]() {
         if (count < max) count++;
     });
+
+    countText.setCorners(x + h, y, x + w - h, y + h);
 }
 
 void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
@@ -42,11 +48,12 @@ void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
 void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {
     decButton.setBackgroundColor(buttonsColor);
     incButton.setBackgroundColor(buttonsColor);
-    this->textColor = textColor;
+    countText.textColor = textColor;
 }
 
-void Stepper::draw(Shader& shader, TextRenderer& textRenderer) {
-    decButton.draw(shader, textRenderer);
-    textRenderer.drawText(std::to_string(count), x + h + 2.0f, y + 2.0f, 30, 16); // TODO
-    incButton.draw(shader, textRenderer);
+void Stepper::draw(Shader& shader, Shader& fontShader) {
+    decButton.draw(shader, fontShader);
+    countText.setText(std::to_string(count)); // TODO
+    countText.draw(fontShader);
+    incButton.draw(shader, fontShader);
 }

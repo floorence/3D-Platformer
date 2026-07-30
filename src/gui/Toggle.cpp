@@ -1,8 +1,7 @@
 #include"Toggle.h"
 #include "util/Log.h"
 
-Toggle::Toggle(float xu, float yu, float xv, float yv) {
-    setCorners(xu, yu, xv, yv);
+Toggle::Toggle() {
     outerRect.useColorInsteadOfTexture = true;
     innerSquare.useColorInsteadOfTexture = true;
 
@@ -10,6 +9,10 @@ Toggle::Toggle(float xu, float yu, float xv, float yv) {
         on = !on;
         setIsOn(on);
     });
+}
+
+Toggle::Toggle(float xu, float yu, float xv, float yv): Toggle() {
+    setCorners(xu, yu, xv, yv);
 }
 
 bool Toggle::getIsOn() {

@@ -11,8 +11,8 @@ TextRenderer::TextRenderer(int windowWidth, int windowHeight)
 	fontShader.setProjection(guiProjection);
 }
 
-void TextRenderer::drawText(const std::string& text, int x, int y, int w, int lineHeight, glm::vec3 textColor) {
-    std::vector<Vertex> vertices = fontTex.generateVertices(text, x, y, w, lineHeight);
+void TextRenderer::drawText(const std::string& text, int x, int y, int lineHeight, int maxWidth, glm::vec3 textColor) {
+    std::vector<Vertex> vertices = fontTex.generateVertices(text, x, y, lineHeight, maxWidth);
     std::vector<GLuint> indices = fontTex.generateIndices(vertices);
 
     Mesh mesh(vertices, indices, {&fontTex});

@@ -22,6 +22,7 @@ public:
 
     void centerHorizontally(float y, float w, float h, float start, float end);
     void centerVertically(float x, float w, float h, float start, float end);
+    void center(float w, float h, float startX, float endX, float startY, float endY);
 protected:
     float x, y, w, h;
 private:

@@ -18,8 +18,8 @@ std::vector<Clickable*> SettingsMenu::getClickables() {
     return {&bloomStepper, &vsyncToggle};
 }
 
-void SettingsMenu::draw(Shader& shader, TextRenderer& textRenderer) {
+void SettingsMenu::draw(Shader& shader, Shader& fontShader) {
     background.draw(shader);
-    bloomStepper.draw(shader, textRenderer);
+    bloomStepper.draw(shader, fontShader);
     vsyncToggle.draw(shader);
 }

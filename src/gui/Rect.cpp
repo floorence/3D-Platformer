@@ -29,3 +29,10 @@ void Rect::centerVertically(float x, float w, float h, float start, float end) {
     float middle = start + (end - start) / 2;
     setBounds(x, middle - h / 2, w, h);
 }
+
+void Rect::center(float w, float h, float startX, float endX, float startY, float endY) {
+    float middleX = startX + (endX - startX) / 2;
+    float middleY = startY + (endY - startY) / 2;
+
+    setBounds(middleX - w / 2, middleY - h / 2, w, h);
+}
