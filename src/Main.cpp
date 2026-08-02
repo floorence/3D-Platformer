@@ -15,7 +15,6 @@
 #include"controller/LightController.h"
 #include"texture/FontTexture.h"
 #include"texture/ImageTexture.h"
-#include"gui/TextRenderer.h"
 #include "util/Globals.h"
 #include"util/Log.h"
 #include"Player.h"
@@ -163,7 +162,8 @@ int main() {
 
 	SettingsMenu settingsMenu(100, 100, width - 100, height - 100);
 
-	Button button(width - 80, height - 40, width - 10, height - 10);
+	Button button;
+	button.setCorners(width - 80, height - 40, width - 10, height - 10);
 	button.setText("settings");
 	button.setBackgroundColor(glm::vec3(1.0f, 0.71f, 0.957f));
 	button.setOnClick([&settingsMenu]() {

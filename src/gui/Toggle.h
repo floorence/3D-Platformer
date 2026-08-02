@@ -6,10 +6,7 @@
 
 class Toggle: public GuiElement {
 public:
-    float padding = 2.0f; // TODO
-
     Toggle();
-    Toggle(float xu, float yu, float xv, float yv);
 
     bool getIsOn();
     void setIsOn(bool on);
@@ -17,6 +14,7 @@ public:
     void draw(Shader& shader);
 private:
     bool on = false;
+    float padding = 2.0f;
     Quad outerRect;
     Quad innerSquare;
 

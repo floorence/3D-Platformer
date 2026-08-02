@@ -14,7 +14,7 @@ Text::Text(std::string text): Text() {
 
 void Text::setText(std::string text) {
     this->text = text;
-    onBoundsChanged(); // TODO: investigate how am i able to call this here when it's private in Rect
+    onBoundsChanged();
 }
 
 void Text::setFontSize(int fontSize) {

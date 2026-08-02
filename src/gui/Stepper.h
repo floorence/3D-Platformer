@@ -7,7 +7,6 @@
 class Stepper: public GuiElement {
 public:
     Stepper();
-    Stepper(float xu, float yu, float xv, float yv);
 
     bool dispatchClick(float x, float y) override;
     int getCount();
@@ -22,6 +21,7 @@ private:
     int count = 0, min, max;
 
     void onBoundsChanged() override;
+    void onCountChanged();
 };
 
 #endif

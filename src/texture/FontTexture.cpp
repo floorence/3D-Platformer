@@ -75,7 +75,8 @@ int FontTexture::getHeightFromBaseline(char c, int charHeight, int lineHeight) {
 	if (c == 'g' || c == 'j' || c == 'p' || c == 'q' || c == 'y') { // delimiters
 		return charHeight - (charHeight / 4.0f);
 	} else if (c == '+' || c == '-' || c == '<' || c == '=' || c == '>' || c == '~') { // center vertically
-		return lineHeight / 2.0f - charHeight / 2.0f;
+//		Log::log(TAG, fmt::format("lineHeight: {}, charHeight: {}", lineHeight, charHeight));
+		return lineHeight / 2.0f + charHeight / 2.0f;
 	} else if (c == '\"' || c == '\'' || c == '*' || c == '^') { // top aligned
 		return lineHeight;
 	}
@@ -89,6 +90,8 @@ void FontTexture::processCharData(stbtt_bakedchar* cData) {
 		charData[i].x1 = (float)c.x1 / ATLAS_WIDTH;
 		charData[i].y0 = (float)c.y0 / ATLAS_HEIGHT;
 		charData[i].y1 = (float)c.y1 / ATLAS_HEIGHT;
+		// workaround for j being taller than the rest of the letters
+		if (i + '0' == 'j') continue;
 		normalizedLineHeight = std::max(normalizedLineHeight, charData[i].y1 - charData[i].y0);
 	}
 }
@@ -103,8 +106,11 @@ void FontTexture::processTextRequest(const std::string& text, int x, int y, int 
 	int currY = y + lineHeight;
 	for (unsigned long i = 0; i < text.size(); i++) {
 
-		// handle "special" characters (not ascii 32 - 127)
-		if (text[i] == '\n') {
+		// handle "special" characters
+		if (text[i] == ' ') {
+			currX += spaceWidth;
+			continue;
+		} else if (text[i] == '\n') {
 			currX = x;
 			currY += lineHeight;
 			continue;
@@ -119,20 +125,16 @@ void FontTexture::processTextRequest(const std::string& text, int x, int y, int 
 		NormalizedCharQuad c = charData[text[i] - ' '];
 		int width = (c.x1 - c.x0) * scale;
 		int height = (c.y1 - c.y0) * scale;
-
-		//Log::log(TAG, Log::oss(text[i], " c: ", text[i] - ' ', " width: ", width, " height: ", height));
+//		Log::log(TAG, fmt::format("lineHeight: {}, height: {}", lineHeight, height));
 
 		// constrain width
-		if (maxWidth > 0 && currX + width > x + maxWidth) {
+		if (maxWidth > 0 && currX + spacing + width > x + maxWidth) {
 			currX = x;
 			currY += lineHeight;
 		}
-
-		if (text[i] == ' ') { // TODO move this to where other special characters are??
-			currX += spaceWidth;
-			continue;
-		}
-		
+		// spacing at the start of every letter unless it's at the beginning of a line
+		if (currX != x) currX += spacing;
+	
 		if (vertexData != nullptr) {
 			int baselineHeight = getHeightFromBaseline(text[i], height, lineHeight);
 
@@ -161,7 +163,7 @@ void FontTexture::processTextRequest(const std::string& text, int x, int y, int 
 			vertexData->insert(vertexData->end(), {topLeft, topRight, botLeft, botRight});
 		}
 
-		currX += width + spacing; // TODO should add spacing at the start of every letter? so size calculation is more accurete
+		currX += width;
 	}
 	
 	if (sizeData != nullptr) {

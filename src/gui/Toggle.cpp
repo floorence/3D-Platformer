@@ -11,10 +11,6 @@ Toggle::Toggle() {
     });
 }
 
-Toggle::Toggle(float xu, float yu, float xv, float yv): Toggle() {
-    setCorners(xu, yu, xv, yv);
-}
-
 bool Toggle::getIsOn() {
     return on;
 }
@@ -34,6 +30,7 @@ void Toggle::onBoundsChanged() {
         Log::err("Toggle", "Toggle must be wider than it is tall! bounds were not fully initialized and bad things will happen.");
         return;
     }
+    padding = h / 10;
     outerRect.setBounds(x, y, w, h);
     updateInnerSquare();
 }

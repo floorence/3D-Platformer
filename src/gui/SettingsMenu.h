@@ -3,7 +3,6 @@
 
 #include "gui/Quad.h"
 #include "gui/Stepper.h"
-#include "gui/TextRenderer.h"
 #include "gui/Toggle.h"
 
 class SettingsMenu: public Rect {
@@ -15,15 +14,15 @@ public:
     std::vector<Clickable*> getClickables();
     void draw(Shader& shader, Shader& fontShader);
 private:
-    std::string settingsTitle = "Settings"; // TODO: this never changes, make a text gui element
-    std::string graphicsSubtitle = "Graphics";
+    Text settingsTitle = Text("Settings");
+    Text graphicsSubtitle = Text("Graphics");
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
     float padding = 5.0f;
 
     Quad background;
-    std::string bloomDesc = "Bloom amount";
+    Text bloomDesc = Text("Bloom amount");
     Stepper bloomStepper;
-    std::string vsyncDesc = "Vsync";
+    Text vsyncDesc = Text("Vsync");
     Toggle vsyncToggle;
 };
 

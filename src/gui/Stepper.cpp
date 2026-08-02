@@ -6,10 +6,6 @@ Stepper::Stepper() {
     countText.setFontSize(16);
 }
 
-Stepper::Stepper(float xu, float yu, float xv, float yv): Stepper() {
-    setCorners(xu, yu, xv, yv);
-}
-
 bool Stepper::dispatchClick(float x, float y) {
     return decButton.dispatchClick(x, y) || incButton.dispatchClick(x, y);
 }
@@ -22,16 +18,26 @@ void Stepper::onBoundsChanged() {
     decButton.setCorners(x, y, x + h, y + h);
     decButton.setText("-");
     decButton.setOnClick([this]() {
-        if (count > min) count--;
+        if (count > min) {
+            count--;
+            onCountChanged();
+        }
     });
 
     incButton.setCorners(x + w - h, y, x + w, y + h);
     incButton.setText("+");
     incButton.setOnClick([this]() {
-        if (count < max) count++;
+        if (count < max) {
+            count++;
+            onCountChanged();
+        }
     });
 
     countText.setCorners(x + h, y, x + w - h, y + h);
+}
+
+void Stepper::onCountChanged() {
+    countText.setText(std::to_string(count));
 }
 
 void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
@@ -43,6 +49,7 @@ void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
     } else {
         this->count = count;
     }
+    onCountChanged(); // technically we dont know that the count changed...
 }
 
 void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {
@@ -53,7 +60,6 @@ void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {
 
 void Stepper::draw(Shader& shader, Shader& fontShader) {
     decButton.draw(shader, fontShader);
-    countText.setText(std::to_string(count)); // TODO
     countText.draw(fontShader);
     incButton.draw(shader, fontShader);
 }

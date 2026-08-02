@@ -6,10 +6,6 @@ Button::Button() {
     text.setFontSize(16);
 }
 
-Button::Button(float xu, float yu, float xv, float yv): Button() {
-    setCorners(xu, yu, xv, yv);
-}
-
 void Button::onBoundsChanged() {
     background.setBounds(x, y, w, h);
     text.setBounds(x, y, w, h);
