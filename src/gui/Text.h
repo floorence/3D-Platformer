@@ -16,11 +16,15 @@ public:
     void setTextAndSize(std::string text, int fontSize);
     void setCenterText(bool centerText);
 
+    void setPosition(float x, float y);
+    void center(float startX, float endX, float startY, float endY);
+
     void draw(Shader& shader);
 private:
     std::string text;
     int fontSize;
-    bool centerText = true; // will be drawn in the top left corner if not centered
+    bool centerText = true; // whether or not the actual text will be in the center of the Rect. 
+                            // will be drawn in the top left corner of the Rect if not centered
 
     Mesh mesh;
 

@@ -26,6 +26,11 @@ void Toggle::setColors(glm::vec3 innerColor, glm::vec3 outerColor) {
 }
 
 void Toggle::onBoundsChanged() {
+    if (w < 0) {
+        w = h * 2;
+    } else {
+        h = w / 2;
+    }
     if (h >= w) {
         Log::err("Toggle", "Toggle must be wider than it is tall! bounds were not fully initialized and bad things will happen.");
         return;

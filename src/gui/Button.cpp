@@ -3,11 +3,18 @@
 
 Button::Button() {
     background.useColorInsteadOfTexture = true;
-    text.setFontSize(16);
 }
 
 void Button::onBoundsChanged() {
+    if (w < 0) {
+        w = h;
+    } else if (h < 0) {
+        h = w;
+    }
+
+    int fontSize = h * 2 / 3;
     background.setBounds(x, y, w, h);
+    text.setFontSize(fontSize);
     text.setBounds(x, y, w, h);
 }
 

@@ -1,4 +1,6 @@
 #include"Rect.h"
+#include "util/Log.h"
+#include <fmt/format.h>
 
 Rect::Rect(float x, float y, float w, float h, bool corners) {
     if (corners) {
@@ -9,6 +11,10 @@ Rect::Rect(float x, float y, float w, float h, bool corners) {
 }
 
 void Rect::setBounds(float x, float y, float w, float h) {
+    if (w < 0 && h < 0) {
+        Log::err("Rect", fmt::format("setBounds({}, {}, {}, {}), only one of width or height may be unbound! bounds not set.", x, y, w, h));
+        return;
+    }
     this->x = x;
     this->y = y;
     this->w = w;

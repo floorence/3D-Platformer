@@ -5,6 +5,7 @@
 #include "gui/Stepper.h"
 #include "gui/Toggle.h"
 
+
 class SettingsMenu: public Rect {
 public:
     bool isOpen = false;
@@ -24,6 +25,8 @@ private:
     Stepper bloomStepper;
     Text vsyncDesc = Text("Vsync");
     Toggle vsyncToggle;
+
+    void onBoundsChanged() override;
 };
 
 #endif

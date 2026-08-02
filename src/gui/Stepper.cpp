@@ -2,10 +2,6 @@
 #include "util/Log.h"
 #include <string>
 
-Stepper::Stepper() {
-    countText.setFontSize(16);
-}
-
 bool Stepper::dispatchClick(float x, float y) {
     return decButton.dispatchClick(x, y) || incButton.dispatchClick(x, y);
 }
@@ -15,7 +11,13 @@ int Stepper::getCount() {
 }
 
 void Stepper::onBoundsChanged() {
-    decButton.setCorners(x, y, x + h, y + h);
+    if (w < 0) {
+        w = 3 * h;
+    } else if (h < 0) {
+        h = w / 3;
+    }
+
+    decButton.setBounds(x, y, h, h);
     decButton.setText("-");
     decButton.setOnClick([this]() {
         if (count > min) {
@@ -24,7 +26,7 @@ void Stepper::onBoundsChanged() {
         }
     });
 
-    incButton.setCorners(x + w - h, y, x + w, y + h);
+    incButton.setBounds(x + w - h, y, h, h);
     incButton.setText("+");
     incButton.setOnClick([this]() {
         if (count < max) {
@@ -33,6 +35,8 @@ void Stepper::onBoundsChanged() {
         }
     });
 
+    int fontSize = h * 2 / 3;
+    countText.setFontSize(fontSize);
     countText.setCorners(x + h, y, x + w - h, y + h);
 }
 

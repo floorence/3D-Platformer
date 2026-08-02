@@ -6,7 +6,7 @@
 
 class Stepper: public GuiElement {
 public:
-    Stepper();
+    Stepper() = default;
 
     bool dispatchClick(float x, float y) override;
     int getCount();
