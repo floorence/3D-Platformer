@@ -160,7 +160,10 @@ int main() {
 	ClickController cc;
 	clickController_ptr = &cc;
 
-	SettingsMenu settingsMenu(100, 100, width - 100, height - 100);
+	SettingsController sc;
+	SettingsMenu settingsMenu(&sc);
+	settingsMenu.setCorners(100, 100, width - 100, height - 100);
+	sc.load();
 
 	Button button;
 	button.setCorners(width - 80, height - 40, width - 10, height - 10);

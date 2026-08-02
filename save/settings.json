@@ -1,0 +1,6 @@
+{
+    "graphics": {
+        "bloomAmount": 2,
+        "vsync": false
+    }
+}
