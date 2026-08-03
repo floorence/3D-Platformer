@@ -17,7 +17,7 @@ public:
     void setCenterText(bool centerText);
 
     void setPosition(float x, float y);
-    void center(float startX, float endX, float startY, float endY);
+    void center(float startX, float endX, float startY, float endY); // TODO: if font size or text is changed after it will not be centered anymore
 
     void draw(Shader& shader);
 private:

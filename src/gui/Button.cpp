@@ -12,7 +12,7 @@ void Button::onBoundsChanged() {
         h = w;
     }
 
-    int fontSize = h * 2 / 3;
+    int fontSize = h / 2; // TODO
     background.setBounds(x, y, w, h);
     text.setFontSize(fontSize);
     text.setBounds(x, y, w, h);

@@ -10,6 +10,7 @@ public:
 
     bool dispatchClick(float x, float y) override;
     int getCount();
+    void setCount(int count);
     void setCountAndMinMax(int count, int minCount, int maxCount);
     void setColors(glm::vec3 buttonsColor, glm::vec3 textColor);
     void draw(Shader& shader, Shader& fontShader);
@@ -21,7 +22,6 @@ private:
     int count = 0, min, max;
 
     void onBoundsChanged() override;
-    void onCountChanged();
 };
 
 #endif

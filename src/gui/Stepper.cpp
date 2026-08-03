@@ -21,8 +21,7 @@ void Stepper::onBoundsChanged() {
     decButton.setText("-");
     decButton.setOnClick([this]() {
         if (count > min) {
-            count--;
-            onCountChanged();
+            setCount(--count);
         }
     });
 
@@ -30,8 +29,7 @@ void Stepper::onBoundsChanged() {
     incButton.setText("+");
     incButton.setOnClick([this]() {
         if (count < max) {
-            count++;
-            onCountChanged();
+            setCount(++count);
         }
     });
 
@@ -40,7 +38,8 @@ void Stepper::onBoundsChanged() {
     countText.setCorners(x + h, y, x + w - h, y + h);
 }
 
-void Stepper::onCountChanged() {
+void Stepper::setCount(int count) {
+    this->count = count;
     countText.setText(std::to_string(count));
 }
 
@@ -49,11 +48,10 @@ void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
     max = maxCount;
     if (count < minCount || count > maxCount) {
         Log::err("Stepper", "setCountAndBounds() given count is outside of bounds! defaulting to min.");
-        this->count = minCount;
+        if (this->count != minCount) setCount(minCount);
     } else {
-        this->count = count;
+        if (this->count != count) setCount(count);
     }
-    onCountChanged(); // technically we dont know that the count changed...
 }
 
 void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {

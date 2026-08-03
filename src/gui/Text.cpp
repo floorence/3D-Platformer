@@ -43,9 +43,7 @@ void Text::center(float startX, float endX, float startY, float endY) {
         Log::warn("Text", "center() called when centerText is true which is redundant!");
     }
     std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
-    int x = startX + (endX - startX) / 2 - textSize.first / 2;
-    int y = startY + (endY - startY) / 2 - textSize.second / 2;
-    setBounds(x, y, textSize.first, textSize.second);
+    Rect::center(textSize.first, textSize.second, startX, endX, startY, endY);
 }
 
 void Text::onBoundsChanged() {

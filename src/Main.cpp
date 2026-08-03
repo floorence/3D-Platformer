@@ -163,6 +163,7 @@ int main() {
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
+	sc.registerListener(&settingsMenu);
 	sc.load();
 
 	Button button;
@@ -180,7 +181,7 @@ int main() {
 	});
 
 	cc.registerClickable(&button);
-	cc.registerClickables(settingsMenu.getClickables());
+	cc.registerClickable(&settingsMenu);
 
 	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 	glEnable(GL_CULL_FACE); // enable back face culling
