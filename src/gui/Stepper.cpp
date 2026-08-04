@@ -1,5 +1,6 @@
 #include"Stepper.h"
 #include "util/Log.h"
+#include <algorithm>
 #include <string>
 
 bool Stepper::dispatchClick(float x, float y) {
@@ -20,16 +21,16 @@ void Stepper::onBoundsChanged() {
     decButton.setBounds(x, y, h, h);
     decButton.setText("-");
     decButton.setOnClick([this]() {
-        if (count > min) {
-            setCount(--count);
+        if (count - stepAmount >= min) {
+            setCount(count - stepAmount);
         }
     });
 
     incButton.setBounds(x + w - h, y, h, h);
     incButton.setText("+");
     incButton.setOnClick([this]() {
-        if (count < max) {
-            setCount(++count);
+        if (count + stepAmount <= max) {
+            setCount(count + stepAmount);
         }
     });
 
@@ -43,15 +44,14 @@ void Stepper::setCount(int count) {
     countText.setText(std::to_string(count));
 }
 
-void Stepper::setCountAndMinMax(int count, int minCount, int maxCount) {
+void Stepper::setStepAmount(int amount) {
+    stepAmount = amount;
+}
+
+void Stepper::setMinMax(int minCount, int maxCount) {
     min = minCount;
     max = maxCount;
-    if (count < minCount || count > maxCount) {
-        Log::err("Stepper", "setCountAndBounds() given count is outside of bounds! defaulting to min.");
-        if (this->count != minCount) setCount(minCount);
-    } else {
-        if (this->count != count) setCount(count);
-    }
+    setCount(std::clamp(count, minCount, maxCount));
 }
 
 void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {

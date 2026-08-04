@@ -6,24 +6,28 @@ SettingsMenu::SettingsMenu(SettingsController* sc)
     background.useColorInsteadOfTexture = true;
     background.color = GREY_3;
 
-    settingsTitle.setCenterText(false);
+    headerBackground.useColorInsteadOfTexture = true;
+    headerBackground.color = GREY_5;
+
+    footerBackground.useColorInsteadOfTexture = true;
+    footerBackground.color = GREY_5;
 
     graphicsTab.setText("Graphics");
-    graphicsTab.setBackgroundColor(GREY_5);
+    graphicsTab.setBackgroundColor(GREY_4);
     graphicsTab.setOnClick([this]() {
         currentTab = SettingsTab::Graphics;
     });
 
     controlsTab.setText("Controls");
-    controlsTab.setBackgroundColor(GREY_5);
+    controlsTab.setBackgroundColor(GREY_4);
     controlsTab.setOnClick([this]() {
         currentTab = SettingsTab::Controls;
     });
 
-    bloomStepper.setColors(GREY_7, textColor);
-    bloomStepper.setCountAndMinMax(1, 0, 4);
+    bloomStepper.setColors(GREY_5, textColor);
+    bloomStepper.setMinMax(0, 4);
 
-    vsyncToggle.setColors(GREY_5, GREY_7);
+    vsyncToggle.setColors(GREY_4, GREY_5);
 
     closeButton.setText("x");
     closeButton.setBackgroundColor(GREY_7);
@@ -57,6 +61,8 @@ void SettingsMenu::onBoundsChanged() {
     float setting2Height = y + headerFooterHeight + settingHeight + padding * 2;
 
     background.setBounds(x, y, w, h);
+    headerBackground.setBounds(x, y, w, headerFooterHeight);
+    footerBackground.setBounds(x, y + h - headerFooterHeight, w, headerFooterHeight);
 
     settingsTitle.setFontSize(headerFooterHeight * 2/3);
     settingsTitle.center(x, x + w, y, y + headerFooterHeight);
@@ -110,6 +116,8 @@ Settings SettingsMenu::readSettings() {
 
 void SettingsMenu::draw(Shader& shader, Shader& fontShader) {
     background.draw(shader);
+    headerBackground.draw(shader);
+    footerBackground.draw(shader);
     settingsTitle.draw(fontShader);
     closeButton.draw(shader, fontShader);
     applyButton.draw(shader, fontShader);

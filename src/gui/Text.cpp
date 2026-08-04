@@ -12,6 +12,10 @@ Text::Text(std::string text): Text() {
     setText(text);
 }
 
+std::string Text::getText() {
+    return text;
+}
+
 void Text::setText(std::string text) {
     this->text = text;
     onBoundsChanged();
@@ -39,9 +43,6 @@ void Text::setPosition(float x, float y) {
 }
 
 void Text::center(float startX, float endX, float startY, float endY) {
-    if (centerText) {
-        Log::warn("Text", "center() called when centerText is true which is redundant!");
-    }
     std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
     Rect::center(textSize.first, textSize.second, startX, endX, startY, endY);
 }
@@ -49,20 +50,25 @@ void Text::center(float startX, float endX, float startY, float endY) {
 void Text::onBoundsChanged() {
     float textX = x;
     float textY = y;
+    bool singleChar = false;
 
     if (centerText) {
         std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
-        //Log::log("Text", fmt::format("onBoundsChanged() text: {} width: {} height: {}", text, textSize.first, textSize.second));
-        if (textSize.first < w) {
-            textX = x + w / 2 - textSize.first / 2;
+        float yBias = 0.0f;
+        if (text.size() == 1) {
+            // perfecty center a single character based on its specific width and height
+            singleChar = true;
+        } else {
+            // after doing default centering strategy, move text up to account for delimiters.
+            yBias = fontSize / 8.0f;
         }
-        if (textSize.second < h) {
-            textY = y + h / 2 - textSize.second / 2;
-        }
+        // Log::log("Text", fmt::format("onBoundsChanged() text: {} width: {} height: {}, yBias: {}", text, textSize.first, textSize.second, yBias));
+        textX = x + w / 2 - textSize.first / 2;
+        textY = y + h / 2 - textSize.second / 2 - yBias;
     }
     //Log::log("Text", fmt::format("x: {}, y: {}, w: {}, h: {}, textX: {}, textY: {}", x, y, w, h, textX, textY));
 
-    std::vector<Vertex> vertices = Globals::Font->generateVertices(text, textX, textY, fontSize, w);
+    std::vector<Vertex> vertices = Globals::Font->generateVertices(text, textX, textY, fontSize, w, singleChar);
     std::vector<GLuint> indices = Globals::Font->generateIndices(vertices);
 
     mesh.setShapeData(vertices, indices);

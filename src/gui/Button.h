@@ -17,6 +17,7 @@ private:
     Text text;
 
     void onBoundsChanged() override;
+    int deriveFontSize();
 };
 
 #endif

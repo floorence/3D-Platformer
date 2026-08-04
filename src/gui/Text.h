@@ -11,6 +11,7 @@ public:
     Text();
     Text(std::string text);
 
+    std::string getText();
     void setText(std::string text);
     void setFontSize(int fontSize);
     void setTextAndSize(std::string text, int fontSize);

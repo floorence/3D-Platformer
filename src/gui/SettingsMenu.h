@@ -28,6 +28,9 @@ private:
     float padding = 5.0f;
 
     Quad background;
+    Quad headerBackground;
+    Quad footerBackground;
+
     Text bloomDesc = Text("Bloom amount");
     Stepper bloomStepper;
     Text vsyncDesc = Text("Vsync");

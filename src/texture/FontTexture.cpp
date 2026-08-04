@@ -49,9 +49,9 @@ FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
 	delete[] bitmap_pixels;
 }
 
-std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x, int y, int lineHeight, int maxWidth) {
+std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x, int y, int lineHeight, int maxWidth, bool center) {
 	std::vector<Vertex> vertices;
-	processTextRequest(text, x, y, lineHeight, maxWidth, &vertices, nullptr);
+	processTextRequest(text, x, y, lineHeight, maxWidth, center, &vertices, nullptr);
 
 	return vertices;
 }
@@ -66,9 +66,17 @@ std::vector<GLuint> FontTexture::generateIndices(std::vector<Vertex>& vertices) 
 
 std::pair<float, float> FontTexture::getSize(const std::string& text, int lineHeight, int maxWidth) {
 	std::pair<float, float> sizeData;
-	processTextRequest(text, 0, 0, lineHeight, maxWidth, nullptr, &sizeData);
+	processTextRequest(text, 0, 0, lineHeight, maxWidth, false, nullptr, &sizeData);
 
 	return sizeData;
+}
+
+std::pair<float, float> FontTexture::getSizeOfChar(char c, int lineHeight) {
+	float scale = lineHeight / normalizedLineHeight;
+	NormalizedCharQuad ch = charData[c - ' '];
+	int width = (ch.x1 - ch.x0) * scale;
+	int height = (ch.y1 - ch.y0) * scale;
+	return {width, height};
 }
 
 int FontTexture::getHeightFromBaseline(char c, int charHeight, int lineHeight) {
@@ -96,7 +104,7 @@ void FontTexture::processCharData(stbtt_bakedchar* cData) {
 	}
 }
 
-void FontTexture::processTextRequest(const std::string& text, int x, int y, int lineHeight, int maxWidth, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData) {
+void FontTexture::processTextRequest(const std::string& text, int x, int y, int lineHeight, int maxWidth, bool center, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData) {
 	float scale = lineHeight / normalizedLineHeight;
 	float spacing = lineHeight / 10.0f;
 	float spaceWidth = lineHeight / 4.0f;
@@ -136,7 +144,12 @@ void FontTexture::processTextRequest(const std::string& text, int x, int y, int 
 		if (currX != x) currX += spacing;
 	
 		if (vertexData != nullptr) {
-			int baselineHeight = getHeightFromBaseline(text[i], height, lineHeight);
+			int baselineHeight;
+			if (center) {
+				baselineHeight = lineHeight / 2.0f + height / 2.0f;
+			} else {
+				baselineHeight = getHeightFromBaseline(text[i], height, lineHeight);
+			}
 
 			// texCoords are normalized while actual vertex positions are not and follow window coordinates
 			Vertex topLeft = {
