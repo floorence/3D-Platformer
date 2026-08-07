@@ -6,12 +6,16 @@ in vec2 texCoord;
 
 uniform sampler2D diffuse0;
 uniform vec3 color;
+uniform vec4 tintColor;
 uniform bool colorOverride;
 
 void main() {
+	vec3 result;
 	if (colorOverride) {
-		FragColor = vec4(color, 1.0);
+		result = color;
 	} else {
-		FragColor = texture(diffuse0, texCoord);
+		result = vec3(texture(diffuse0, texCoord));
 	}
+	result = mix(result, tintColor.rgb, tintColor.a);
+	FragColor = vec4(result, 1.0);
 }

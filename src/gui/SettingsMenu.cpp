@@ -51,9 +51,10 @@ SettingsMenu::SettingsMenu(SettingsController* sc)
 void SettingsMenu::onBoundsChanged() {
     float headerFooterHeight = h / 10;
     float tabHeight = h / 12;
-    float settingHeight = h / 15;
+    float settingHeight = h / 20;
     float sideBarWidth = w / 4;
     float buttonsHeight = headerFooterHeight * 2/3;
+    float padding = headerFooterHeight / 6;
 
     float endWithPadding = x + w - padding;
     float bottomWithPadding = y + h - padding;
@@ -83,7 +84,7 @@ void SettingsMenu::onBoundsChanged() {
     cancelButton.setBounds(endWithPadding - buttonsHeight * 4 - padding, bottomWithPadding - buttonsHeight, buttonsHeight * 2, buttonsHeight);
 }
 
-bool SettingsMenu::dispatchClick(float x, float y) {
+bool SettingsMenu::dispatchMouseEvent(float x, float y, MouseEvent event) {
     if (!isOpen) return false;
     std::vector<Clickable*> clickables = {&closeButton, &cancelButton, &applyButton, &graphicsTab, &controlsTab};
 
@@ -96,7 +97,7 @@ bool SettingsMenu::dispatchClick(float x, float y) {
             break;
     }
     for (auto& clickable: clickables) {
-        bool registeredClick = clickable->dispatchClick(x, y);
+        bool registeredClick = clickable->dispatchMouseEvent(x, y, event);
         if (registeredClick) return true;
     }
     return false;

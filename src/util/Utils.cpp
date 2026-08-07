@@ -7,6 +7,10 @@ float Utils::getBrightness(float r, float g, float b) {
     return R_COEFFICIENT * r + G_COEFFICIENT * g + B_COEFFICIENT * b;
 }
 
+float Utils::getBrightness(glm::vec3 color) {
+    return getBrightness(color.x, color.y, color.z);
+}
+
 void Utils::checkOpenGlErrors() {
     GLenum err;
     while((err = glGetError()) != GL_NO_ERROR) {

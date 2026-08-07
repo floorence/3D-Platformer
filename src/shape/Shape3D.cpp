@@ -3,8 +3,8 @@
 #include <glm/geometric.hpp>
 
 Shape3D::Shape3D(glm::vec3 position, bool isLightSource) 
-    : position(position),
-      isLightSource(isLightSource) {}
+    : isLightSource(isLightSource),
+      position(position) {}
 
 Shape3D::Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource) 
     : Shape3D(position, isLightSource)
@@ -43,6 +43,10 @@ void Shape3D::invalidateModel() {
     if (rotationZ) model = glm::rotate(model, glm::radians(rotationZ), glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
+glm::vec3 Shape3D::getPosition() {
+    return position;
+}
+
 void Shape3D::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
     std::vector<Texture*> textures;
     if (diffuse != nullptr) textures.push_back(diffuse);
@@ -68,22 +72,14 @@ void Shape3D::setRotation(float angle, glm::vec3 axis) {
     axis = glm::normalize(axis);
     setRotation(angle * axis.x, angle * axis.y, angle * axis.z);
 }
-    
-void Shape3D::setColor(glm::vec3 color, float intensity) {
-    if (isLightSource) {
-        if (intensity < 0) Log::warn(TAG, fmt::format("setColor() given light range {} is less than 0!", intensity));
-    }
-    this->color = color;
-    this->intensity = intensity;
-}
 
 void Shape3D::draw(Camera& camera, Shader& shader) {
     shader.setModel(model);
     if (isLightSource) {
         shader.setColor(color);
     } else {
-		shader.setShininess(16);
-        shader.setColorTint(color, intensity);
+		shader.setShininess(16); // TODO
+        shader.setColorTint(tintColor);
     }
     mesh.draw(camera, shader);
 }

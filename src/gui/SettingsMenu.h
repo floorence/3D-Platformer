@@ -18,23 +18,26 @@ public:
     SettingsMenu(SettingsController* sc);
 
     void draw(Shader& shader, Shader& fontShader);
-    bool dispatchClick(float x, float y) override;
+    bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
     void onSettingsChanged(const Settings& settings) override;
 private:
     Text settingsTitle = Text("Settings");
     Button graphicsTab;
     Button controlsTab;
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    float padding = 5.0f;
 
     Quad background;
     Quad headerBackground;
     Quad footerBackground;
 
+    // graphics
     Text bloomDesc = Text("Bloom amount");
     Stepper bloomStepper;
     Text vsyncDesc = Text("Vsync");
     Toggle vsyncToggle;
+
+    // controls
+
 
     Button closeButton;
     Button applyButton;

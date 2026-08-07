@@ -29,6 +29,7 @@ ClickController* clickController_ptr;
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	player_ptr->handleMousePos(window, xpos, ypos);
+	clickController_ptr->handleMousePos(xpos, ypos);
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -39,11 +40,11 @@ void keyCallback(GLFWwindow* window, int key, int, int action, int) {
 	player_ptr->handleKeyInputs(window, key, action);
 }
 
-void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-		clickController_ptr->handleClick(xpos, ypos);
+		clickController_ptr->handleMouseButton(xpos, ypos, action);
     }
 }
 
@@ -121,7 +122,7 @@ int main() {
 	objects.push_back(&floorCube);
 
 	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -0.8f, 0.0f), 0.2f, 0.2f, 0.2f, true);
-	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f), 7.0f);
+	floorLight.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	objects.push_back(&floorLight);
 
 	// make light cube

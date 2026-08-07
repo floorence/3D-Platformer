@@ -35,6 +35,9 @@ void Quad::draw(Shader& shader) {
     if (useColorInsteadOfTexture) {
         shader.setColor(color);
         shader.setColorOverride(true);
+    } else {
+        shader.setColorOverride(false);
     }
+    shader.setColorTint(tintColor);
     mesh.drawGui(shader);
 }

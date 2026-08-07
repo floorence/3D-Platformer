@@ -14,6 +14,8 @@ namespace Utils {
 
     /** @param r, g, b value of colour channel from 0-255 */
     float getBrightness(float r, float g, float b);
+    float getBrightness(glm::vec3 color);
+
     void checkOpenGlErrors();
 
     void unbindVao();

@@ -146,10 +146,8 @@ void Shader::setColor(glm::vec3 color) {
 	glUniform3f(glGetUniformLocation(ID, "color"), color.x, color.y, color.z);
 }
 
-void Shader::setColorTint(glm::vec3 color, float intensity) {
-	if (intensity < 0 || intensity > 1) Log::warn(TAG, fmt::format("setColorTint() given colour tint intensity {} is not between 0 and 1!", intensity));
-	glUniform3f(glGetUniformLocation(ID, "tintColor"), color.x, color.y, color.z);
-	glUniform1f(glGetUniformLocation(ID, "tintIntensity"), intensity);
+void Shader::setColorTint(glm::vec4 color) {
+	glUniform4f(glGetUniformLocation(ID, "tintColor"), color.x, color.y, color.z, color.a);
 }
 
 Shader::~Shader() {

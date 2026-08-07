@@ -10,6 +10,7 @@ class Quad: public Rect {
 public:
     bool useColorInsteadOfTexture = false;
     glm::vec3 color;
+    glm::vec4 tintColor;
     // true if y increases downward. it's true by default since that's how the gui shader is set up. 
     // it's only false for Quads that are drawn during lighting processing. see LightController.cpp
     bool reversedYAxis = true;

@@ -6,12 +6,14 @@
 
 class Shape3D {
 public:
-    glm::vec3 position; // TODO should be readonly, use setPosition to set postion
     bool isLightSource = false;
 
-    glm::vec3 color;
-    float intensity; // will be interpreted differently based on isLightSource. see setColor()
-    glm::vec3 direction = glm::vec3(0.0f); // 0 for point light, not 0 for spot light TODO
+    glm::vec3 color; // if isLightSource, will be the colour of the light. else, will not be used
+
+    // if !isLightSource, will be the tint colour of the light. else, will not be used
+    // higher alpha value will lead to stronger tint
+    glm::vec4 tintColor = glm::vec4(0.0f);  
+    glm::vec3 direction = glm::vec3(0.0f); // 0 for point light, not 0 for spot light
 
     Shader* specialShader = nullptr; // optional special shader to use instead of default
 
@@ -19,6 +21,8 @@ public:
     Shape3D(glm::vec3 position, bool isLightSource);
     Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource);
     virtual ~Shape3D() = default;
+
+    glm::vec3 getPosition();
 
     void setTextures(AssetTexture* diffuse, AssetTexture* specular);
     void setPosition(glm::vec3 position);
@@ -33,11 +37,7 @@ public:
      * @param axis axis of rotation
      */
     void setRotation(float angle, glm::vec3 axis);
-    /**
-     * @param color if isLightSource, will be the colour of the light. else, will be the tintColor of the shape
-     * @param intensity if isLightSource, will be the range of the light. else, will be the intensity of the tint (0 - 1)
-     */
-    void setColor(glm::vec3 color, float intensity);
+    
     virtual void draw(Camera& camera, Shader& shader);
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader);
 protected:
@@ -54,6 +54,8 @@ protected:
      */
     void invalidateModel();
 private:
+    glm::vec3 position;
+
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
 

@@ -43,7 +43,7 @@ public:
     void setNumPointLights(int num); // default.frag
 
 	void setColor(glm::vec3 color); // light.frag, gui.frag
-	void setColorTint(glm::vec3 color, float intensity); // default.frag
+	void setColorTint(glm::vec4 color); // default.frag, gui.frag
 private:
 	const std::string TAG = "Shader";
 	GLuint createShader(const char* source, ShaderType type);

@@ -8,7 +8,7 @@ class Stepper: public GuiElement {
 public:
     Stepper() = default;
 
-    bool dispatchClick(float x, float y) override;
+    bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
     int getCount();
     void setCount(int count);
     void setStepAmount(int amount);

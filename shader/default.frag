@@ -49,8 +49,7 @@ uniform Material material;
 uniform samplerCube depthMap;
 
 uniform int numPointLights;
-uniform vec3 tintColor;
-uniform float tintIntensity; // 0 to 1
+uniform vec4 tintColor;
 uniform vec3 camPos;
 uniform float farPlane;
 
@@ -129,7 +128,7 @@ void main() {
         result += calculatePointLight(pointLights[i], normal, crntPos, viewDirection);    
 
     result += ambient;
-	result = mix(result, tintColor, tintIntensity);
+	result = mix(result, tintColor.rgb, tintColor.a);
     
     FragColor = vec4(result, 1.0);
 

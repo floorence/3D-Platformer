@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <string>
 
-bool Stepper::dispatchClick(float x, float y) {
-    return decButton.dispatchClick(x, y) || incButton.dispatchClick(x, y);
+bool Stepper::dispatchMouseEvent(float x, float y, MouseEvent event) {
+    return decButton.dispatchMouseEvent(x, y, event) || incButton.dispatchMouseEvent(x, y, event);
 }
 
 int Stepper::getCount() {

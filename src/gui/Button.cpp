@@ -17,6 +17,14 @@ void Button::onBoundsChanged() {
     text.setBounds(x, y, w, h);
 }
 
+void Button::onHover() {
+    background.tintColor = glm::vec4(1.0f, 1.0f, 1.0f, 0.1f);
+}
+
+void Button::onHoverOff() {
+    background.tintColor = glm::vec4(0.0f);
+}
+
 int Button::deriveFontSize() {
     if (text.getText().size() == 1) { // text is being used as icon, make it bigger
         return h * 3/4;

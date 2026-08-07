@@ -40,11 +40,12 @@ void LightController::processLighting(Shader& shader) {
 
     for (const auto& light: lights) {
         float linear, quadratic;
-        calculateAttenuationCoefficients(light->intensity, &linear, &quadratic);
+        float intensity = Utils::getBrightness(light->color) / 10;
+        calculateAttenuationCoefficients(intensity, &linear, &quadratic);
         shader.registerLightSource(
             numPointLights,
             light->color,
-            light->position,
+            light->getPosition(),
             linear, quadratic
         );
         numPointLights++;
@@ -57,7 +58,7 @@ void LightController::renderForShadows(Shader& shader) {
     depthMapFbo.bindAndClear();
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
-    pointLightCam.position = lights[0]->position;
+    pointLightCam.position = lights[0]->getPosition();
     pointLightCam.generateTransforms();
     for (const auto& shape : shapes) {
         shape->drawToDepthMap(pointLightCam, depthShader);

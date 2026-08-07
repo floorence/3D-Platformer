@@ -8,9 +8,8 @@ Line::Line(glm::vec3 start, glm::vec3 end)
 }
 
 void Line::setCoordinates(glm::vec3 start, glm::vec3 end) {
-    position = start;
+    setPosition(start);
     this->end = end - start;
-    invalidateShape();
     invalidateModel();
 }
 

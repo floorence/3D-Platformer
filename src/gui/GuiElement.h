@@ -12,9 +12,13 @@ public:
     virtual ~GuiElement() = default;
 
     void setOnClick(std::function<void()> callback);
-    bool dispatchClick(float x, float y) override;
+    bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
+
+    virtual void onHover() {}; // default behaviour: do nothing
+    virtual void onHoverOff() {}; // default behaviour: do nothing
 private:
     std::function<void()> onClickCallback;
+    bool previousFrameHover = false;
 };
 
 #endif

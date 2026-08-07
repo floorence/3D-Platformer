@@ -12,6 +12,9 @@ public:
     void setText(std::string text);
     void setBackgroundColor(glm::vec3 color);
     void draw(Shader& shader, Shader& fontShader);
+
+    void onHover() override;
+    void onHoverOff() override;
 private:
     Quad background;
     Text text;
