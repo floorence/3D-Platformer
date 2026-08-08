@@ -16,6 +16,7 @@ void SettingsController::save(const Settings& settings) {
 
     j["graphics"]["bloomAmount"] = settings.graphics.bloomAmount;
     j["graphics"]["vsync"] = settings.graphics.vsync;
+    j["controls"]["sensitivity"] = settings.controls.sensitivity;
 
     notifyListeners(settings);
     std::ofstream("save/settings.json") << j.dump(4);
@@ -31,6 +32,7 @@ void SettingsController::load() {
 
         settings.graphics.bloomAmount = j["graphics"]["bloomAmount"];
         settings.graphics.vsync = j["graphics"]["vsync"];
+        settings.controls.sensitivity = j["controls"]["sensitivity"];
         
         notifyListeners(settings);
     }

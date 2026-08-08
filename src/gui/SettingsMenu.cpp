@@ -29,6 +29,11 @@ SettingsMenu::SettingsMenu(SettingsController* sc)
 
     vsyncToggle.setColors(GREY_4, GREY_5);
 
+    sensitivityStepper.setColors(GREY_5, textColor);
+    sensitivityStepper.setMinMax(10, 200);
+    sensitivityStepper.setStepAmount(10);
+    sensitivityStepper.setUnits("%");
+
     closeButton.setText("x");
     closeButton.setBackgroundColor(GREY_7);
     closeButton.setOnClick([this]() {
@@ -59,7 +64,8 @@ void SettingsMenu::onBoundsChanged() {
     float endWithPadding = x + w - padding;
     float bottomWithPadding = y + h - padding;
     float setting1Y = y + headerFooterHeight + padding;
-    float setting2Y = y + headerFooterHeight + settingHeight + padding * 2;
+    float setting2Y = setting1Y + settingHeight + padding;
+    float setting3Y = setting2Y + settingHeight + padding;
 
     background.setBounds(x, y, w, h);
     headerBackground.setBounds(x, y, w, headerFooterHeight);
@@ -71,13 +77,17 @@ void SettingsMenu::onBoundsChanged() {
     graphicsTab.setBounds(x, y + headerFooterHeight, sideBarWidth, tabHeight);
     controlsTab.setBounds(x, y + headerFooterHeight + tabHeight, sideBarWidth, tabHeight);
 
-    bloomDesc.setFontSize(settingHeight / 2); // you decreased settingHeight which caused the bug and were about to fix going on 2 lines using thisf ont size
-    bloomDesc.setPosition(x + sideBarWidth + padding, setting1Y);
+    bloomDesc.setFontSize(settingHeight * 2/3);
+    bloomDesc.centerVertically(x + sideBarWidth + padding, setting1Y, setting1Y + settingHeight);
     bloomStepper.setBounds(endWithPadding - settingHeight * 3, setting1Y, settingHeight * 3, settingHeight);
 
-    vsyncDesc.setFontSize(settingHeight / 2);
-    vsyncDesc.setPosition(x + sideBarWidth + padding, setting2Y);
+    vsyncDesc.setFontSize(settingHeight * 2/3);
+    vsyncDesc.centerVertically(x + sideBarWidth + padding, setting2Y, setting2Y + settingHeight);
     vsyncToggle.setBounds(endWithPadding - settingHeight * 2, setting2Y, settingHeight * 2, settingHeight);
+
+    sensitivityDesc.setFontSize(settingHeight * 2/3);
+    sensitivityDesc.centerVertically(x + sideBarWidth + padding, setting1Y, setting1Y + settingHeight);
+    sensitivityStepper.setBounds(endWithPadding - settingHeight * 4, setting1Y, settingHeight * 4, settingHeight);
 
     closeButton.setBounds(endWithPadding - buttonsHeight, y + padding, buttonsHeight, buttonsHeight);
     applyButton.setBounds(endWithPadding - buttonsHeight * 2, bottomWithPadding - buttonsHeight, buttonsHeight * 2, buttonsHeight);
@@ -93,7 +103,7 @@ bool SettingsMenu::dispatchMouseEvent(float x, float y, MouseEvent event) {
             clickables.insert(clickables.end(), {&bloomStepper, &vsyncToggle});
             break;
         case SettingsTab::Controls:
-            // TODO
+            clickables.insert(clickables.end(), {&sensitivityStepper});
             break;
     }
     for (auto& clickable: clickables) {
@@ -112,6 +122,7 @@ Settings SettingsMenu::readSettings() {
     Settings settings;
     settings.graphics.bloomAmount = bloomStepper.getCount();
     settings.graphics.vsync = vsyncToggle.getIsOn();
+    settings.controls.sensitivity = sensitivityStepper.getCount();
     return settings;
 }
 
@@ -134,6 +145,8 @@ void SettingsMenu::draw(Shader& shader, Shader& fontShader) {
             vsyncToggle.draw(shader);
             break;
         case SettingsTab::Controls:
+            sensitivityDesc.draw(fontShader);
+            sensitivityStepper.draw(shader, fontShader);
             break;
     }
 }

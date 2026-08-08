@@ -30,14 +30,15 @@ public:
 	void setCamera(Camera& camera); // default.vert
 	void setPointLightCamera(PointLightCamera& camera); // depth.geom, depth.frag
 	void setFarPlane(float farPlane); // default.frag
-	void setTexture(Texture& texture, GLuint unit); // default.frag, gui.frag, hdr.frag
+	void setTexture(Texture& texture, GLuint unit); // default.frag, gui.frag, hdr_bloom.frag
 	void setShininess(float shininess); // default.frag
 	void setCubeMapTexture(CubeMapTexture& texture, std::string uniform, GLuint unit); // default.frag
 	void setProjection(glm::mat4 projection); // gui.vert
-	void setExposure(float exposure); // hdr.frag
+	void setExposure(float exposure); // hdr_bloom.frag
 	void setTextColor(glm::vec3 textColor); // font.frag
 	void setBlurHorizontal(bool horizontal); // blur.frag
 	void setColorOverride(bool override); // gui.frag
+	void setBloomEnabled(bool bloomEnabled); // hdr_bloom.frag
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag

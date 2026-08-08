@@ -159,6 +159,10 @@ void Player::handleFocusChange(GLFWwindow* window) {
 	}
 }
 
+void Player::onSettingsChanged(const Settings& settings) {
+	sensitivity = settings.controls.sensitivity;
+}
+
 void Player::syncCamerasAndBody(glm::vec3 movement) {
 	camera.position = this->position;
 	camera.lookAt(orientation);

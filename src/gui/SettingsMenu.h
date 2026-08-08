@@ -37,7 +37,8 @@ private:
     Toggle vsyncToggle;
 
     // controls
-
+    Text sensitivityDesc = Text("Sensitivity");
+    Stepper sensitivityStepper;
 
     Button closeButton;
     Button applyButton;

@@ -47,6 +47,11 @@ void Text::center(float startX, float endX, float startY, float endY) {
     Rect::center(textSize.first, textSize.second, startX, endX, startY, endY);
 }
 
+void Text::centerVertically(float startX, float startY, float endY) {
+    std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
+    Rect::centerVertically(startX, textSize.first, textSize.second, startY, endY);
+}
+
 void Text::onBoundsChanged() {
     float textX = x;
     float textY = y;

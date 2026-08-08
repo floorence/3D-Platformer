@@ -13,7 +13,7 @@ void ClickController::registerClickables(const std::vector<Clickable*>& clickabl
 }
 
 void ClickController::handleMouseButton(float x, float y, int action) {
-    Log::log(TAG, fmt::format("handleMouseButton({}, {})", x, y, action));
+    // Log::log(TAG, fmt::format("handleMouseButton({}, {})", x, y, action));
     MouseEvent event;
     if (action == GLFW_PRESS) {
         event = MouseEvent::Down;

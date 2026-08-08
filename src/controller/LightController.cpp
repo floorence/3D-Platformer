@@ -106,7 +106,6 @@ void LightController::adjustBrightness(float deltaTime) {
         GLubyte r = src[0];
         GLubyte g = src[1];
         GLubyte b = src[2];
-        GLubyte a = src[3];
         
         //Log::log(TAG, fmt::format("average color r: {}, g: {}, b: {}, a: {}", r, g, b, a));
         float averageBrightness = Utils::getBrightness(r, g, b);
@@ -156,9 +155,19 @@ void LightController::blurBrightAreas() {
 }
 
 void LightController::renderForReal() {
+    // since blurAmount is always even we know blurTextures[0] was the last one drawn in blurBrightAreas
     blurTextures[0].uniform = "bloomBlur";
     hdrBloomResult.setTextures({&hdrTexture, &blurTextures[0]});
     hdrBloomResult.draw(hdrBloomShader);
+}
+
+void LightController::onSettingsChanged(const Settings& settings) {
+    blurAmount = settings.graphics.bloomAmount * 10;
+    if (blurAmount == 0) {
+        hdrBloomShader.setBloomEnabled(false);
+    } else {
+        hdrBloomShader.setBloomEnabled(true);
+    }
 }
 
 std::string LightController::getDebugString() {

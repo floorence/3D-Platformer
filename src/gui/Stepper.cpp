@@ -41,7 +41,7 @@ void Stepper::onBoundsChanged() {
 
 void Stepper::setCount(int count) {
     this->count = count;
-    countText.setText(std::to_string(count));
+    countText.setText(std::to_string(count) + units);
 }
 
 void Stepper::setStepAmount(int amount) {
@@ -52,6 +52,11 @@ void Stepper::setMinMax(int minCount, int maxCount) {
     min = minCount;
     max = maxCount;
     setCount(std::clamp(count, minCount, maxCount));
+}
+
+void Stepper::setUnits(std::string units) {
+    this->units = units;
+    countText.setText(std::to_string(count) + units);
 }
 
 void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {

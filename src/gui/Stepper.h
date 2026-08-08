@@ -13,12 +13,14 @@ public:
     void setCount(int count);
     void setStepAmount(int amount);
     void setMinMax(int minCount, int maxCount);
+    void setUnits(std::string units);
     void setColors(glm::vec3 buttonsColor, glm::vec3 textColor);
     void draw(Shader& shader, Shader& fontShader);
 private:
     Button decButton;
     Text countText;
     Button incButton;
+    std::string units = "";
 
     int count = 0, stepAmount = 1, min, max;
 

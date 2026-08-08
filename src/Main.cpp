@@ -61,6 +61,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	GLFWwindow* window = glfwCreateWindow(width, height, "window", NULL, NULL);
 
@@ -77,7 +78,7 @@ int main() {
 
 	Log::log(TAG, "opengl initialized");
 
-	// on linux, framebuffer size and window size are not always identical
+	// on some displays, framebuffer size and window size are not always the same
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
@@ -158,40 +159,32 @@ int main() {
 	performanceText.setFontSize(16);
 	performanceText.setCenterText(false);
 
-	ClickController cc;
-	clickController_ptr = &cc;
+	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	player.setTextures(&planksDiffuse, &planksSpecular);
+	lc.registerShapes(player.getShapes());
+	player_ptr = &player;
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
-	sc.registerListener(&settingsMenu);
+	sc.registerListeners({&settingsMenu, &lc, &player});
 	sc.load();
+
+	Log::log(TAG, "settings loaded from save");
 
 	Button button;
 	button.setCorners(width - 80, height - 40, width - 10, height - 10);
 	button.setText("settings");
 	button.setBackgroundColor(glm::vec3(1.0f, 0.71f, 0.957f));
 	button.setOnClick([&settingsMenu]() {
-		// button.color = glm::vec3(
-		// 	Utils::randomFloat(0, 1), 
-		// 	Utils::randomFloat(0, 1),
-		// 	Utils::randomFloat(0, 1)
-		// );
-		Log::log(TAG, "button clicked!");
 		settingsMenu.isOpen = !settingsMenu.isOpen;
 	});
 
+	ClickController cc;
+	clickController_ptr = &cc;
 	cc.registerClickable(&button);
 	cc.registerClickable(&settingsMenu);
-
-	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
-	glEnable(GL_CULL_FACE); // enable back face culling
-
-	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	player.setTextures(&planksDiffuse, &planksSpecular);
-	lc.registerShapes(player.getShapes());
-	player_ptr = &player;
-
+	
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
 	float lastUpdatedInfoText = 0.0f;
@@ -209,6 +202,8 @@ int main() {
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
 	glViewport(0, 0, fbWidth, fbHeight);
+	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
+	glEnable(GL_CULL_FACE); // enable back face culling
 
 	Log::log(TAG, "everything is set up; starting main game loop");
 

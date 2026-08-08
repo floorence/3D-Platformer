@@ -3,10 +3,11 @@
 
 #include"Mass.h"
 #include"camera/Camera.h"
+#include "controller/SettingsListener.h"
 #include "shape/Line.h"
 #include "shape/RectangularPrism.h"
 
-class Player: public Mass {
+class Player: public Mass, public SettingsListener {
 public:
     Camera camera;
 	Camera thirdPersonCam;
@@ -28,6 +29,8 @@ public:
 	void handleKeyInputs(GLFWwindow* window, int key, int action);
 	void handleMousePos(GLFWwindow* window, double xpos, double ypos);
 	void handleMouseScroll(GLFWwindow* window, double xoffset, double yoffset);
+
+    void onSettingsChanged(const Settings& settings) override;
 private:
 	const float MAX_SPEED_DEFAULT = 1.0f;
 	const float MAX_SPEED_SPRINTING = 2.0f;

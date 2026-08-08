@@ -3,10 +3,11 @@
 
 #include "buffer/FBO.h"
 #include "buffer/PBO.h"
+#include "controller/SettingsListener.h"
 #include "gui/Quad.h"
 #include "shape/Shape3D.h"
 
-class LightController {
+class LightController: public SettingsListener {
 public:
     LightController(int windowWidth, int windowHeight);
 
@@ -21,6 +22,7 @@ public:
     void blurBrightAreas();
     void renderForReal();
 
+    void onSettingsChanged(const Settings& settings) override;
     std::string getDebugString();
 private:
     int windowWidth, windowHeight;
