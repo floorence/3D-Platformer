@@ -58,8 +58,8 @@ void SettingsMenu::onBoundsChanged() {
 
     float endWithPadding = x + w - padding;
     float bottomWithPadding = y + h - padding;
-    float setting1Height = y + headerFooterHeight + padding;
-    float setting2Height = y + headerFooterHeight + settingHeight + padding * 2;
+    float setting1Y = y + headerFooterHeight + padding;
+    float setting2Y = y + headerFooterHeight + settingHeight + padding * 2;
 
     background.setBounds(x, y, w, h);
     headerBackground.setBounds(x, y, w, headerFooterHeight);
@@ -71,13 +71,13 @@ void SettingsMenu::onBoundsChanged() {
     graphicsTab.setBounds(x, y + headerFooterHeight, sideBarWidth, tabHeight);
     controlsTab.setBounds(x, y + headerFooterHeight + tabHeight, sideBarWidth, tabHeight);
 
-    bloomDesc.setFontSize(settingHeight / 2);
-    bloomDesc.setPosition(x + sideBarWidth + padding, setting1Height);
-    bloomStepper.setBounds(endWithPadding - settingHeight * 3, setting1Height, settingHeight * 3, settingHeight);
+    bloomDesc.setFontSize(settingHeight / 2); // you decreased settingHeight which caused the bug and were about to fix going on 2 lines using thisf ont size
+    bloomDesc.setPosition(x + sideBarWidth + padding, setting1Y);
+    bloomStepper.setBounds(endWithPadding - settingHeight * 3, setting1Y, settingHeight * 3, settingHeight);
 
     vsyncDesc.setFontSize(settingHeight / 2);
-    vsyncDesc.setPosition(x + sideBarWidth + padding, setting2Height);
-    vsyncToggle.setBounds(endWithPadding - settingHeight * 2, setting2Height, settingHeight * 2, settingHeight);
+    vsyncDesc.setPosition(x + sideBarWidth + padding, setting2Y);
+    vsyncToggle.setBounds(endWithPadding - settingHeight * 2, setting2Y, settingHeight * 2, settingHeight);
 
     closeButton.setBounds(endWithPadding - buttonsHeight, y + padding, buttonsHeight, buttonsHeight);
     applyButton.setBounds(endWithPadding - buttonsHeight * 2, bottomWithPadding - buttonsHeight, buttonsHeight * 2, buttonsHeight);
@@ -98,7 +98,7 @@ bool SettingsMenu::dispatchMouseEvent(float x, float y, MouseEvent event) {
     }
     for (auto& clickable: clickables) {
         bool registeredClick = clickable->dispatchMouseEvent(x, y, event);
-        if (registeredClick) return true;
+        if (event != MouseEvent::Hover && registeredClick) return true;
     }
     return false;
 }

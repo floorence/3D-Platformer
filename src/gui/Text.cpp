@@ -54,17 +54,17 @@ void Text::onBoundsChanged() {
 
     if (centerText) {
         std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
-        float yBias = 0.0f;
+        float yOffset = 0.0f;
         if (text.size() == 1) {
             // perfecty center a single character based on its specific width and height
             singleChar = true;
         } else {
             // after doing default centering strategy, move text up to account for delimiters.
-            yBias = fontSize / 8.0f;
+            yOffset = fontSize / 8.0f;
         }
         // Log::log("Text", fmt::format("onBoundsChanged() text: {} width: {} height: {}, yBias: {}", text, textSize.first, textSize.second, yBias));
         textX = x + w / 2 - textSize.first / 2;
-        textY = y + h / 2 - textSize.second / 2 - yBias;
+        textY = y + h / 2 - textSize.second / 2 - yOffset;
     }
     //Log::log("Text", fmt::format("x: {}, y: {}, w: {}, h: {}, textX: {}, textY: {}", x, y, w, h, textX, textY));
 

@@ -24,7 +24,7 @@ public:
 	 * @param maxWidth optional maximum width of the text to be drawn, will go on new lines if text is too long
 	 * @param center whether or not each character should be centered vertically within its quad, no matter the character
 	 */
-	std::vector<Vertex> generateVertices(const std::string& text, int x, int y, int lineHeight, int maxWidth = -1, bool center = false);
+	std::vector<Vertex> generateVertices(const std::string& text, float x, float y, float lineHeight, float maxWidth = -1, bool center = false);
 	std::vector<GLuint> generateIndices(std::vector<Vertex>& vertices);
 
 	/**
@@ -32,14 +32,15 @@ public:
 	 *        (in which case the x component will always be less than or equal to maxWidth)
 	 * @return size of the text; first = width, second = height
 	 */
-	std::pair<float, float> getSize(const std::string& text, int lineHeight, int maxWidth = -1);
+	std::pair<float, float> getSize(const std::string& text, float lineHeight, float maxWidth = -1);
 	/** @return specific width and height of char */
-	std::pair<float, float> getSizeOfChar(char c, int lineHeight);
+	std::pair<float, float> getSizeOfChar(char c, float lineHeight);
 private:
 	//constants
 	static constexpr int NUM_CHARS = 96;
 	static constexpr int ATLAS_WIDTH = 96;
 	static constexpr int ATLAS_HEIGHT = 96;
+	const float OVERFLOW_ALLOWANCE = 0.001; // account for floating point precision error
 
 	/** 
 	 * font height given to stbtt_BakeFontBitmap; bakefontbitmap seems to use this value as an upper bound (?) 
@@ -51,10 +52,11 @@ private:
 	float normalizedLineHeight = 0.0f; // height of tallest char as if texture atlas width and height was 1
     const std::string TAG = "FontTexture";
 
-	int getHeightFromBaseline(char c, int charHeight, int lineHeight);
+	float getHeightFromBaseline(char c, float charHeight, float lineHeight);
+	void scaleCharQuad(NormalizedCharQuad c, float scale, float* width, float* height);
 	void processCharData(stbtt_bakedchar* cData);
 	/** slightly scuffed workaround to have generateVertices and getSize be able to use the same function */
-	void processTextRequest(const std::string& text, int x, int y, int lineHeight, int maxWidth, bool center, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData);
+	void processTextRequest(const std::string& text, float x, float y, float lineHeight, float maxWidth, bool center, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData);
 };
 
 #endif

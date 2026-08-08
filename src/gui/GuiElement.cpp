@@ -1,4 +1,6 @@
 #include"GuiElement.h"
+#include "util/Log.h"
+#include <fmt/color.h>
 
 GuiElement::GuiElement(float x, float y, float w, float h, bool corners): Rect(x, y, w, h, corners) {}
 

@@ -1,5 +1,6 @@
 #include"Button.h"
 #include "util/Log.h"
+#include <fmt/color.h>
 
 Button::Button() {
     background.useColorInsteadOfTexture = true;
@@ -18,10 +19,12 @@ void Button::onBoundsChanged() {
 }
 
 void Button::onHover() {
+    // Log::log("Button", fmt::format("{} onHover()", text.getText()));
     background.tintColor = glm::vec4(1.0f, 1.0f, 1.0f, 0.1f);
 }
 
 void Button::onHoverOff() {
+    // Log::log("Button", fmt::format("{} onHoverOff()", text.getText()));
     background.tintColor = glm::vec4(0.0f);
 }
 

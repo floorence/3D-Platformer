@@ -49,7 +49,7 @@ FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
 	delete[] bitmap_pixels;
 }
 
-std::vector<Vertex> FontTexture::generateVertices(const std::string& text, int x, int y, int lineHeight, int maxWidth, bool center) {
+std::vector<Vertex> FontTexture::generateVertices(const std::string& text, float x, float y, float lineHeight, float maxWidth, bool center) {
 	std::vector<Vertex> vertices;
 	processTextRequest(text, x, y, lineHeight, maxWidth, center, &vertices, nullptr);
 
@@ -64,22 +64,22 @@ std::vector<GLuint> FontTexture::generateIndices(std::vector<Vertex>& vertices) 
 	return indices;
 }
 
-std::pair<float, float> FontTexture::getSize(const std::string& text, int lineHeight, int maxWidth) {
+std::pair<float, float> FontTexture::getSize(const std::string& text, float lineHeight, float maxWidth) {
 	std::pair<float, float> sizeData;
 	processTextRequest(text, 0, 0, lineHeight, maxWidth, false, nullptr, &sizeData);
 
 	return sizeData;
 }
 
-std::pair<float, float> FontTexture::getSizeOfChar(char c, int lineHeight) {
+std::pair<float, float> FontTexture::getSizeOfChar(char c, float lineHeight) {
 	float scale = lineHeight / normalizedLineHeight;
 	NormalizedCharQuad ch = charData[c - ' '];
-	int width = (ch.x1 - ch.x0) * scale;
-	int height = (ch.y1 - ch.y0) * scale;
+	float width, height;
+	scaleCharQuad(ch, scale, &width, &height);
 	return {width, height};
 }
 
-int FontTexture::getHeightFromBaseline(char c, int charHeight, int lineHeight) {
+float FontTexture::getHeightFromBaseline(char c, float charHeight, float lineHeight) {
 	if (c == 'g' || c == 'j' || c == 'p' || c == 'q' || c == 'y') { // delimiters
 		return charHeight - (charHeight / 4.0f);
 	} else if (c == '+' || c == '-' || c == '<' || c == '=' || c == '>' || c == '~') { // center vertically
@@ -89,6 +89,11 @@ int FontTexture::getHeightFromBaseline(char c, int charHeight, int lineHeight) {
 		return lineHeight;
 	}
 	return charHeight; // bottom aligned
+}
+
+void FontTexture::scaleCharQuad(NormalizedCharQuad c, float scale, float* width, float* height) {
+	*width = (c.x1 - c.x0) * scale;
+	*height = (c.y1 - c.y0) * scale;
 }
 
 void FontTexture::processCharData(stbtt_bakedchar* cData) {
@@ -104,14 +109,14 @@ void FontTexture::processCharData(stbtt_bakedchar* cData) {
 	}
 }
 
-void FontTexture::processTextRequest(const std::string& text, int x, int y, int lineHeight, int maxWidth, bool center, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData) {
+void FontTexture::processTextRequest(const std::string& text, float x, float y, float lineHeight, float maxWidth, bool center, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData) {
 	float scale = lineHeight / normalizedLineHeight;
 	float spacing = lineHeight / 10.0f;
 	float spaceWidth = lineHeight / 4.0f;
 	float tabWidth = lineHeight * 2;
 	// current x and y of the BOTTOM LEFT of the character
-	int currX = x;
-	int currY = y + lineHeight;
+	float currX = x;
+	float currY = y + lineHeight;
 	for (unsigned long i = 0; i < text.size(); i++) {
 
 		// handle "special" characters
@@ -131,12 +136,13 @@ void FontTexture::processTextRequest(const std::string& text, int x, int y, int 
 		}
 
 		NormalizedCharQuad c = charData[text[i] - ' '];
-		int width = (c.x1 - c.x0) * scale;
-		int height = (c.y1 - c.y0) * scale;
+		float width, height;
+		scaleCharQuad(c, scale, &width, &height);
 //		Log::log(TAG, fmt::format("lineHeight: {}, height: {}", lineHeight, height));
 
 		// constrain width
-		if (maxWidth > 0 && currX + spacing + width > x + maxWidth) {
+		if (maxWidth > 0 && currX + spacing + width > x + maxWidth + OVERFLOW_ALLOWANCE) {
+			//Log::log(TAG, fmt::format("{}, {}", currX + spacing + width, x + maxWidth));
 			currX = x;
 			currY += lineHeight;
 		}
@@ -144,7 +150,7 @@ void FontTexture::processTextRequest(const std::string& text, int x, int y, int 
 		if (currX != x) currX += spacing;
 	
 		if (vertexData != nullptr) {
-			int baselineHeight;
+			float baselineHeight;
 			if (center) {
 				baselineHeight = lineHeight / 2.0f + height / 2.0f;
 			} else {
