@@ -3,14 +3,15 @@
 
 #include "gui/Button.h"
 #include "gui/Clickable.h"
+#include "gui/IntGuiElement.h"
 
-class Stepper: public GuiElement {
+class Stepper: public IntGuiElement {
 public:
     Stepper() = default;
 
     bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
-    int getCount();
-    void setCount(int count);
+    int getData() override;
+    void setData(int data) override;
     void setStepAmount(int amount);
     void setMinMax(int minCount, int maxCount);
     void setUnits(std::string units);

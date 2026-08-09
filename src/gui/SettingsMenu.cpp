@@ -114,15 +114,15 @@ bool SettingsMenu::dispatchMouseEvent(float x, float y, MouseEvent event) {
 }
 
 void SettingsMenu::onSettingsChanged(const Settings& settings) {
-    bloomStepper.setCount(settings.graphics.bloomAmount);
-    vsyncToggle.setIsOn(settings.graphics.vsync);
+    bloomStepper.setData(settings.graphics.bloomAmount);
+    vsyncToggle.setData(settings.graphics.vsync);
 }
 
 Settings SettingsMenu::readSettings() {
     Settings settings;
-    settings.graphics.bloomAmount = bloomStepper.getCount();
-    settings.graphics.vsync = vsyncToggle.getIsOn();
-    settings.controls.sensitivity = sensitivityStepper.getCount();
+    settings.graphics.bloomAmount = bloomStepper.getData();
+    settings.graphics.vsync = vsyncToggle.getData();
+    settings.controls.sensitivity = sensitivityStepper.getData();
     return settings;
 }
 

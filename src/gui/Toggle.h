@@ -1,15 +1,15 @@
 #ifndef TOGGLE_H
 #define TOGGLE_H
 
-#include "gui/Button.h"
+#include "gui/IntGuiElement.h"
 #include "gui/Quad.h"
 
-class Toggle: public GuiElement {
+class Toggle: public IntGuiElement {
 public:
     Toggle();
 
-    bool getIsOn();
-    void setIsOn(bool on);
+    int getData() override;
+    void setData(int data) override;
     void setColors(glm::vec3 innerColor, glm::vec3 outerColor);
     void draw() override;
 private:

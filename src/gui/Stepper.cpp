@@ -7,7 +7,7 @@ bool Stepper::dispatchMouseEvent(float x, float y, MouseEvent event) {
     return decButton.dispatchMouseEvent(x, y, event) || incButton.dispatchMouseEvent(x, y, event);
 }
 
-int Stepper::getCount() {
+int Stepper::getData() {
     return count;
 }
 
@@ -22,7 +22,7 @@ void Stepper::onBoundsChanged() {
     decButton.setText("-");
     decButton.setOnClick([this]() {
         if (count - stepAmount >= min) {
-            setCount(count - stepAmount);
+            setData(count - stepAmount);
         }
     });
 
@@ -30,7 +30,7 @@ void Stepper::onBoundsChanged() {
     incButton.setText("+");
     incButton.setOnClick([this]() {
         if (count + stepAmount <= max) {
-            setCount(count + stepAmount);
+            setData(count + stepAmount);
         }
     });
 
@@ -39,8 +39,8 @@ void Stepper::onBoundsChanged() {
     countText.setCorners(x + h, y, x + w - h, y + h);
 }
 
-void Stepper::setCount(int count) {
-    this->count = count;
+void Stepper::setData(int data) {
+    this->count = data;
     countText.setText(std::to_string(count) + units);
 }
 
@@ -51,7 +51,7 @@ void Stepper::setStepAmount(int amount) {
 void Stepper::setMinMax(int minCount, int maxCount) {
     min = minCount;
     max = maxCount;
-    setCount(std::clamp(count, minCount, maxCount));
+    setData(std::clamp(count, minCount, maxCount));
 }
 
 void Stepper::setUnits(std::string units) {

@@ -7,16 +7,16 @@ Toggle::Toggle() {
 
     setOnClick([this]() {
         on = !on;
-        setIsOn(on);
+        setData(on);
     });
 }
 
-bool Toggle::getIsOn() {
+int Toggle::getData() {
     return on;
 }
 
-void Toggle::setIsOn(bool on) {
-    this->on = on;
+void Toggle::setData(int data) {
+    this->on = data;
     updateInnerSquare();
 }
 
