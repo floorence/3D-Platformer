@@ -65,8 +65,8 @@ void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {
     countText.textColor = textColor;
 }
 
-void Stepper::draw(Shader& shader, Shader& fontShader) {
-    decButton.draw(shader, fontShader);
-    countText.draw(fontShader);
-    incButton.draw(shader, fontShader);
+void Stepper::draw() {
+    decButton.draw();
+    countText.draw();
+    incButton.draw();
 }

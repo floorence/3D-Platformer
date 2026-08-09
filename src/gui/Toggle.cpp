@@ -40,9 +40,9 @@ void Toggle::onBoundsChanged() {
     updateInnerSquare();
 }
 
-void Toggle::draw(Shader& shader) {
-    outerRect.draw(shader);
-    innerSquare.draw(shader);
+void Toggle::draw() {
+    outerRect.draw();
+    innerSquare.draw();
 }
 
 void Toggle::updateInnerSquare() {

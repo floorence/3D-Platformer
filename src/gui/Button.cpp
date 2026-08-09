@@ -45,7 +45,7 @@ void Button::setBackgroundColor(glm::vec3 color) {
     background.color = color;
 }
 
-void Button::draw(Shader& shader, Shader& fontShader) {
-    background.draw(shader);
-    text.draw(fontShader);
+void Button::draw() {
+    background.draw();
+    text.draw();
 }

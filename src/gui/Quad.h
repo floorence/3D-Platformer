@@ -5,6 +5,7 @@
 #include "mesh/Mesh.h"
 #include"texture/Texture.h"
 #include"shader/Shader.h"
+#include "util/Globals.h"
 
 class Quad: public Rect {
 public:
@@ -19,9 +20,7 @@ public:
     Quad(Texture* texture);
     Quad(float x, float y, float w, float h, bool corners = false);
 
-    virtual ~Quad() = default;
-
-    virtual void draw(Shader& shader);
+    void draw(Shader& shader = *Globals::GuiShader);
 
     // Textures; if none is set and useColorInsteadOfTexture = true then the quad will be transparent
 

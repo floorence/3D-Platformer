@@ -126,27 +126,27 @@ Settings SettingsMenu::readSettings() {
     return settings;
 }
 
-void SettingsMenu::draw(Shader& shader, Shader& fontShader) {
-    background.draw(shader);
-    headerBackground.draw(shader);
-    footerBackground.draw(shader);
-    settingsTitle.draw(fontShader);
-    closeButton.draw(shader, fontShader);
-    applyButton.draw(shader, fontShader);
-    cancelButton.draw(shader, fontShader);
-    graphicsTab.draw(shader, fontShader);
-    controlsTab.draw(shader, fontShader);
+void SettingsMenu::draw() {
+    background.draw();
+    headerBackground.draw();
+    footerBackground.draw();
+    settingsTitle.draw();
+    closeButton.draw();
+    applyButton.draw();
+    cancelButton.draw();
+    graphicsTab.draw();
+    controlsTab.draw();
 
     switch (currentTab) {
         case SettingsTab::Graphics:
-            bloomDesc.draw(fontShader);
-            bloomStepper.draw(shader, fontShader);
-            vsyncDesc.draw(fontShader);
-            vsyncToggle.draw(shader);
+            bloomDesc.draw();
+            bloomStepper.draw();
+            vsyncDesc.draw();
+            vsyncToggle.draw();
             break;
         case SettingsTab::Controls:
-            sensitivityDesc.draw(fontShader);
-            sensitivityStepper.draw(shader, fontShader);
+            sensitivityDesc.draw();
+            sensitivityStepper.draw();
             break;
     }
 }

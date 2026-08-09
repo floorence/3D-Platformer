@@ -138,6 +138,8 @@ int main() {
 	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
 	guiShader.setProjection(guiProjection);
 	fontShader.setProjection(guiProjection);
+	Globals::GuiShader = &guiShader;
+	Globals::FontShader = &fontShader;
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
@@ -223,11 +225,11 @@ int main() {
 
 		glDisable(GL_DEPTH_TEST);
 		playerDebugText.setText(player.getDebugString());
-		playerDebugText.draw(fontShader);
+		playerDebugText.draw();
 		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
-		button.draw(guiShader, fontShader);
+		button.draw();
 
-		if (settingsMenu.isOpen) settingsMenu.draw(guiShader, fontShader);
+		if (settingsMenu.isOpen) settingsMenu.draw();
 
 		glfwPollEvents();
 
@@ -249,7 +251,7 @@ int main() {
 			totalRealFrameTime = std::pair(0.0f, 0);
 		}
 
-		performanceText.draw(fontShader);
+		performanceText.draw();
 		glEnable(GL_DEPTH_TEST);
 
 		glfwSwapBuffers(window);

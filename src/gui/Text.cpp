@@ -79,7 +79,7 @@ void Text::onBoundsChanged() {
     mesh.setShapeData(vertices, indices);
 }
 
-void Text::draw(Shader& shader) {
-    shader.setTextColor(textColor);
-    mesh.drawGui(shader);
+void Text::draw() {
+    Globals::FontShader->setTextColor(textColor);
+    mesh.drawGui(*Globals::FontShader);
 }

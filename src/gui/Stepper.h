@@ -15,7 +15,7 @@ public:
     void setMinMax(int minCount, int maxCount);
     void setUnits(std::string units);
     void setColors(glm::vec3 buttonsColor, glm::vec3 textColor);
-    void draw(Shader& shader, Shader& fontShader);
+    void draw() override;
 private:
     Button decButton;
     Text countText;

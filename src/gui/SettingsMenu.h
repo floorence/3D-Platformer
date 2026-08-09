@@ -17,7 +17,7 @@ public:
 
     SettingsMenu(SettingsController* sc);
 
-    void draw(Shader& shader, Shader& fontShader);
+    void draw();
     bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
     void onSettingsChanged(const Settings& settings) override;
 private:
