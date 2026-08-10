@@ -3,12 +3,16 @@
 
 #include "controller/SettingsController.h"
 #include "controller/SettingsListener.h"
+#include "gui/IntGuiElement.h"
 #include "gui/Quad.h"
 #include "gui/Stepper.h"
 #include "gui/Toggle.h"
+#include <memory>
 
-enum class SettingsTab {
-    Graphics, Controls
+struct SettingGui {
+    int index; // index of setting within category; starts at 0
+    std::unique_ptr<Text> description; // pointer cause Text is not copyable  because it uses Mesh so i cant copy local variable to class scoped vector
+    std::unique_ptr<IntGuiElement> guiElement; // pointer because same reason as above and because IntGuiElement is abstract
 };
 
 class SettingsMenu: public Rect, public SettingsListener, public Clickable {
@@ -22,27 +26,18 @@ public:
     void onSettingsChanged(const Settings& settings) override;
 private:
     Text settingsTitle = Text("Settings");
-    Button graphicsTab;
-    Button controlsTab;
-    glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
-
     Quad background;
     Quad headerBackground;
     Quad footerBackground;
 
-    // graphics
-    Text bloomDesc = Text("Bloom amount");
-    Stepper bloomStepper;
-    Text vsyncDesc = Text("Vsync");
-    Toggle vsyncToggle;
-
-    // controls
-    Text sensitivityDesc = Text("Sensitivity");
-    Stepper sensitivityStepper;
-
     Button closeButton;
     Button applyButton;
     Button cancelButton;
+
+    glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    std::vector<Button> categoryButtons;
+    std::vector<SettingGui> settingGuiData; // TODO implement the end alighnemt so no need to hard code positions
 
     const glm::vec3 GREY_1 = glm::vec3(0.1f, 0.1f, 0.1f);
     const glm::vec3 GREY_2 = glm::vec3(0.2f, 0.2f, 0.2f);
@@ -53,7 +48,11 @@ private:
     const glm::vec3 GREY_7 = glm::vec3(0.7f, 0.7f, 0.7f);
 
     SettingsController* sc;
-    SettingsTab currentTab = SettingsTab::Graphics;
+    std::string currentTab = "Graphics";
+
+    void initializeUI(const Settings& settings);
+    void initPersistentUI();
+    void initGuiElementsFor(Setting& setting, int index);
 
     void onBoundsChanged() override;
     Settings readSettings();

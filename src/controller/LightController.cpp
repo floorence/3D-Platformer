@@ -162,7 +162,7 @@ void LightController::renderForReal() {
 }
 
 void LightController::onSettingsChanged(const Settings& settings) {
-    blurAmount = settings.graphics.bloomAmount * 10;
+    blurAmount = settings.graphics.bloomAmount.value * 10;
     if (blurAmount == 0) {
         hdrBloomShader.setBloomEnabled(false);
     } else {

@@ -160,7 +160,7 @@ void Player::handleFocusChange(GLFWwindow* window) {
 }
 
 void Player::onSettingsChanged(const Settings& settings) {
-	sensitivity = settings.controls.sensitivity;
+	sensitivity = settings.controls.sensitivity.value;
 }
 
 void Player::syncCamerasAndBody(glm::vec3 movement) {

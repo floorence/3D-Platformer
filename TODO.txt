@@ -9,7 +9,6 @@ feature
 - spotlight
 - maybe make brightness adjustment better?
 - way to only log some log levels
-- way to turn off some graphics features
 - test on different window aspect ratio
 - collision
 - gravity
@@ -17,3 +16,4 @@ feature
 
 fix
 - shadow still peter panning smh
+- turning off bloom makes sky darker ???
