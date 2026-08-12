@@ -3,6 +3,22 @@
 #include <algorithm>
 #include <string>
 
+Stepper::Stepper() {
+    decButton.setText("-");
+    incButton.setText("+");
+
+    decButton.setOnClick([this]() {
+        if (count - stepAmount >= min) {
+            setData(count - stepAmount);
+        }
+    });
+    incButton.setOnClick([this]() {
+        if (count + stepAmount <= max) {
+            setData(count + stepAmount);
+        }
+    });
+}
+
 bool Stepper::dispatchMouseEvent(float x, float y, MouseEvent event) {
     return decButton.dispatchMouseEvent(x, y, event) || incButton.dispatchMouseEvent(x, y, event);
 }
@@ -19,20 +35,7 @@ void Stepper::onBoundsChanged() {
     }
 
     decButton.setBounds(x, y, h, h);
-    decButton.setText("-");
-    decButton.setOnClick([this]() {
-        if (count - stepAmount >= min) {
-            setData(count - stepAmount);
-        }
-    });
-
     incButton.setBounds(x + w - h, y, h, h);
-    incButton.setText("+");
-    incButton.setOnClick([this]() {
-        if (count + stepAmount <= max) {
-            setData(count + stepAmount);
-        }
-    });
 
     int fontSize = h * 2 / 3;
     countText.setFontSize(fontSize);

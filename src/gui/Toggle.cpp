@@ -28,7 +28,7 @@ void Toggle::setColors(glm::vec3 innerColor, glm::vec3 outerColor) {
 void Toggle::onBoundsChanged() {
     if (w < 0) {
         w = h * 2;
-    } else {
+    } else if (h < 0) {
         h = w / 2;
     }
     if (h >= w) {

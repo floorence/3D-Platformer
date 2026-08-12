@@ -1,0 +1,9 @@
+{
+    "Controls": {
+        "Sensitivity": 100
+    },
+    "Graphics": {
+        "Bloom Amount": 1,
+        "Vsync": 1
+    }
+}

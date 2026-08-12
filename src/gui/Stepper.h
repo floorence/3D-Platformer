@@ -7,7 +7,7 @@
 
 class Stepper: public IntGuiElement {
 public:
-    Stepper() = default;
+    Stepper();
 
     bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
     int getData() override;

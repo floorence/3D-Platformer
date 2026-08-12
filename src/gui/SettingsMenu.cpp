@@ -1,6 +1,10 @@
 #include"SettingsMenu.h"
 #include "controller/Settings.h"
 #include "gui/IntGuiElement.h"
+#include "gui/Stepper.h"
+#include "gui/Toggle.h"
+#include "util/Log.h"
+#include <fmt/format.h>
 #include <memory>
 
 SettingsMenu::SettingsMenu(SettingsController* sc)
@@ -12,20 +16,19 @@ SettingsMenu::SettingsMenu(SettingsController* sc)
 void SettingsMenu::initializeUI(const Settings& settings) {
     initPersistentUI();
 
-    for (auto& category: settings.children) {
+    for (uint i = 0; i < settings.children.size(); i++) {
         Button categoryButton;
-        std::string categoryName = category->name;
+        std::string categoryName = settings.children[i]->name;
         categoryButton.setText(categoryName);
         categoryButton.setBackgroundColor(GREY_4);
-        categoryButton.setOnClick([this, categoryName]() {
-            currentTab = categoryName;
+        categoryButton.setOnClick([this, categoryName, i]() {
+            currentTab = i;
         });
         categoryButtons.push_back(std::move(categoryButton));
+        settingGuiData.push_back(std::vector<SettingGui>());
 
-        int i = 0;
-        for (auto& setting: category->getChildren()) {
+        for (auto& setting: settings.children[i]->getChildren()) {
             initGuiElementsFor(*setting, i);
-            i++;
         }
     }
 }
@@ -59,25 +62,28 @@ void SettingsMenu::initPersistentUI() {
     });
 }
 
-void SettingsMenu::initGuiElementsFor(Setting& setting, int index) {
+void SettingsMenu::initGuiElementsFor(Setting& setting, int categoryNum) {
+    Log::log(TAG, fmt::format("initGuiElementsFor({}, {})", setting.name, categoryNum));
     SettingGui settingGui;
     
-    settingGui.index = index;
     settingGui.description = std::make_unique<Text>(Text(setting.name));
 
     switch (setting.guiRepresentation) {
         case SettingGuiElement::Stepper: {
-            Stepper stepper;
-            stepper.setColors(GREY_5, textColor);
-            stepper.setMinMax(setting.minValue, setting.maxValue);
-            stepper.setStepAmount((setting.maxValue - setting.minValue > 50) ? 10 : 1); // TODO
-            settingGui.guiElement = std::make_unique<Stepper>(std::move(stepper));
+            auto stepper = std::make_unique<Stepper>();
+
+            stepper->setColors(GREY_5, textColor);
+            stepper->setMinMax(setting.minValue, setting.maxValue);            
+            stepper->setStepAmount((setting.maxValue - setting.minValue > 50) ? 10 : 1); // TODO
+
+            settingGui.guiElement = std::move(stepper);
             break;
         }
         case SettingGuiElement::Toggle: {
-            Toggle toggle;
-            toggle.setColors(GREY_4, GREY_5);
-            settingGui.guiElement = std::make_unique<Toggle>(std::move(toggle));
+            auto toggle = std::make_unique<Toggle>();
+            
+            toggle->setColors(GREY_4, GREY_5);
+            settingGui.guiElement = std::move(toggle);
             break;
         }
         case SettingGuiElement::CycleButton: {
@@ -86,7 +92,7 @@ void SettingsMenu::initGuiElementsFor(Setting& setting, int index) {
         }
     }
 
-    settingGuiData.push_back(std::move(settingGui));
+    settingGuiData[categoryNum].push_back(std::move(settingGui));
 }
 
 void SettingsMenu::onBoundsChanged() {
@@ -117,21 +123,23 @@ void SettingsMenu::onBoundsChanged() {
     }
 
     for (uint i = 0; i < settingGuiData.size(); i++) {
-        float settingY = setting1Y + (settingHeight + padding) * settingGuiData[i].index;
+        for (uint j = 0; j < settingGuiData[i].size(); j++) {
+            float settingY = setting1Y + (settingHeight + padding) * j;
 
-        settingGuiData[i].description->setFontSize(settingHeight * 2/3);
-        settingGuiData[i].description->centerVertically(
-            x + sideBarWidth + padding, 
-            settingY, 
-            settingY + settingHeight
-        );
+            settingGuiData[i][j].description->setFontSize(settingHeight * 2/3);
+            settingGuiData[i][j].description->centerVertically(
+                x + sideBarWidth + padding, 
+                settingY, 
+                settingY + settingHeight
+            );
 
-        settingGuiData[i].guiElement->setBounds(
-            endWithPadding - settingHeight * 4, // TODO
-            settingY,
-            settingHeight * 4, // TODO
-            settingHeight
-        );
+            settingGuiData[i][j].guiElement->setBounds(
+                endWithPadding - settingHeight * 4, // TODO
+                settingY,
+                settingHeight * 4, // TODO
+                settingHeight
+            );
+        }
     }
 }
 
@@ -142,13 +150,9 @@ bool SettingsMenu::dispatchMouseEvent(float x, float y, MouseEvent event) {
         clickables.push_back(&button);
     }
 
-    /*
-    if (currentTab == "Graphics") {
-        clickables.insert(clickables.end(), );
-    } else if (currentTab == "Controls") {
-        clickables.insert(clickables.end(), {&sensitivityStepper});
+    for (auto& settingGui: settingGuiData[currentTab]) {
+        clickables.push_back(settingGui.guiElement.get());
     }
-    */
 
     for (auto& clickable: clickables) {
         bool registeredClick = clickable->dispatchMouseEvent(x, y, event);
@@ -158,21 +162,30 @@ bool SettingsMenu::dispatchMouseEvent(float x, float y, MouseEvent event) {
 }
 
 void SettingsMenu::onSettingsChanged(const Settings& settings) {
-    /*
-    bloomStepper.setData(settings.graphics.bloomAmount);
-    vsyncToggle.setData(settings.graphics.vsync);
-    sensitivityStepper.setData(settings.controls.sensitivity);
-    */
-    initializeUI(settings);
+    Log::log(TAG, "onSettingsChanged");
+
+    for (uint i = 0; i < settings.children.size(); i++) {
+        SettingsCategory* category = settings.children[i];
+
+        for (uint j = 0; j < category->getChildren().size(); j++) {
+            Setting* setting = category->getChildren()[j];
+            settingGuiData[i][j].guiElement->setData(setting->value);
+        }
+    }
 }
 
 Settings SettingsMenu::readSettings() {
     Settings settings;
-    /*
-    settings.graphics.bloomAmount = bloomStepper.getData();
-    settings.graphics.vsync = vsyncToggle.getData();
-    settings.controls.sensitivity = sensitivityStepper.getData();
-    */
+
+    for (uint i = 0; i < settings.children.size(); i++) {
+        SettingsCategory* category = settings.children[i];
+
+        for (uint j = 0; j < category->getChildren().size(); j++) {
+            Setting* setting = category->getChildren()[j];
+            setting->value = settingGuiData[i][j].guiElement->getData();
+        }
+    }
+
     return settings;
 }
 
@@ -189,18 +202,8 @@ void SettingsMenu::draw() {
         button.draw();
     }
 
-    /*
-    switch (currentTab) {
-        case SettingsCategory::Graphics:
-            bloomDesc.draw();
-            bloomStepper.draw();
-            vsyncDesc.draw();
-            vsyncToggle.draw();
-            break;
-        case SettingsCategory::Controls:
-            sensitivityDesc.draw();
-            sensitivityStepper.draw();
-            break;
+    for (auto& settingGui: settingGuiData[currentTab]) {
+        settingGui.description->draw();
+        settingGui.guiElement->draw();
     }
-    */
 }
