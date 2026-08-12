@@ -7,12 +7,6 @@ Button::Button() {
 }
 
 void Button::onBoundsChanged() {
-    if (w < 0) {
-        w = h;
-    } else if (h < 0) {
-        h = w;
-    }
-
     background.setBounds(x, y, w, h);
     text.setFontSize(deriveFontSize());
     text.setBounds(x, y, w, h);

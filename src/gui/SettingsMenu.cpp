@@ -133,10 +133,10 @@ void SettingsMenu::onBoundsChanged() {
                 settingY + settingHeight
             );
 
-            settingGuiData[i][j].guiElement->setBounds(
-                endWithPadding - settingHeight * 4, // TODO
+            settingGuiData[i][j].guiElement->setBoundsEnd(
+                endWithPadding,
                 settingY,
-                settingHeight * 4, // TODO
+                -1,
                 settingHeight
             );
         }

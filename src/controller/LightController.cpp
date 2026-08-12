@@ -208,7 +208,7 @@ void LightController::prepareHdrAndBloom() {
     Utils::unbindFbo();
 
     hdrBloomShader.setProjection(glm::mat4(1.0f));
-    hdrBloomResult.reversedYAxis = true;
+    hdrBloomResult.disableDimensionsProcessing = true;
     hdrBloomResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 
@@ -228,7 +228,7 @@ void LightController::prepareGaussianBlur() {
     }
 
     blurShader.setProjection(glm::mat4(1.0f));
-    blurResult.reversedYAxis = true;
+    blurResult.disableDimensionsProcessing = true;
     blurResult.setCorners(-1.0f, 1.0f, 1.0f, -1.0f);
 }
 

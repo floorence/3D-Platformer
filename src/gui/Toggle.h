@@ -20,6 +20,8 @@ private:
 
     void updateInnerSquare();
     void onBoundsChanged() override;
+    float getUnboundWidth(float h) override { return h * 2; };
+    float getUnboundHeight(float w) override { return w / 2; };
 };
 
 #endif

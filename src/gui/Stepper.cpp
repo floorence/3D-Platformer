@@ -28,12 +28,6 @@ int Stepper::getData() {
 }
 
 void Stepper::onBoundsChanged() {
-    if (w < 0) {
-        w = 3 * h;
-    } else if (h < 0) {
-        h = w / 3;
-    }
-
     decButton.setBounds(x, y, h, h);
     incButton.setBounds(x + w - h, y, h, h);
 

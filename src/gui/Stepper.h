@@ -26,6 +26,8 @@ private:
     int count = 0, stepAmount = 1, min, max;
 
     void onBoundsChanged() override;
+    float getUnboundWidth(float h) override { return h * 4; };
+    float getUnboundHeight(float w) override { return w / 4; };
 };
 
 #endif

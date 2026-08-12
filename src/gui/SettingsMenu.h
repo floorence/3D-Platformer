@@ -36,7 +36,7 @@ private:
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
     std::vector<Button> categoryButtons;
-    std::vector<std::vector<SettingGui>> settingGuiData; // TODO implement the end alighnemt so no need to hard code positions
+    std::vector<std::vector<SettingGui>> settingGuiData;
 
     const glm::vec3 GREY_1 = glm::vec3(0.1f, 0.1f, 0.1f);
     const glm::vec3 GREY_2 = glm::vec3(0.2f, 0.2f, 0.2f);
