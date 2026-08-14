@@ -10,10 +10,10 @@
 SettingsMenu::SettingsMenu(SettingsController* sc)
     : sc(sc) 
 {
-    initializeUI(Settings {});
+    initialize(Settings {});
 }
 
-void SettingsMenu::initializeUI(const Settings& settings) {
+void SettingsMenu::initialize(const Settings& settings) {
     initPersistentUI();
 
     for (uint i = 0; i < settings.children.size(); i++) {

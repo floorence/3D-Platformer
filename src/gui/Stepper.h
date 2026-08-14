@@ -24,10 +24,11 @@ private:
     std::string units = "";
 
     int count = 0, stepAmount = 1, min, max;
+    const float TEXT_TO_BUTTONS_MARGIN = 10.0f;
 
     void onBoundsChanged() override;
-    float getUnboundWidth(float h) override { return h * 4; };
-    float getUnboundHeight(float w) override { return w / 4; };
+    float getUnboundWidth(float h) override;
+    float getUnboundHeight(float w) override;
 };
 
 #endif

@@ -50,7 +50,7 @@ private:
     SettingsController* sc;
     int currentTab = 0;
 
-    void initializeUI(const Settings& settings);
+    void initialize(const Settings& settings);
     void initPersistentUI();
     void initGuiElementsFor(Setting& setting, int categoryNum);
 

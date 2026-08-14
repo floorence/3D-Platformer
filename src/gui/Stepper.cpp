@@ -1,4 +1,6 @@
 #include"Stepper.h"
+#include "texture/FontTexture.h"
+#include "util/Globals.h"
 #include "util/Log.h"
 #include <algorithm>
 #include <string>
@@ -8,11 +10,13 @@ Stepper::Stepper() {
     incButton.setText("+");
 
     decButton.setOnClick([this]() {
+        // Log::log("Stepper", "decButton onClick");
         if (count - stepAmount >= min) {
             setData(count - stepAmount);
         }
     });
     incButton.setOnClick([this]() {
+        // Log::log("Stepper", "incButton onClick");
         if (count + stepAmount <= max) {
             setData(count + stepAmount);
         }
@@ -33,7 +37,16 @@ void Stepper::onBoundsChanged() {
 
     int fontSize = h * 2 / 3;
     countText.setFontSize(fontSize);
-    countText.setCorners(x + h, y, x + w - h, y + h);
+    countText.centerVertically(x + h, w - h - h, -1, y, y + h);
+}
+
+float Stepper::getUnboundWidth(float h) {
+    std::pair<float, float> textSize = Globals::Font->getSize(std::to_string(max), h * 2 / 3);
+    return (h + TEXT_TO_BUTTONS_MARGIN) * 2 + textSize.first;
+}
+
+float Stepper::getUnboundHeight(float w) {
+    return w / 4;
 }
 
 void Stepper::setData(int data) {

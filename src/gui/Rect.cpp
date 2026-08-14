@@ -11,11 +11,11 @@ Rect::Rect(float x, float y, float w, float h, bool corners) {
 }
 
 void Rect::setBounds(float x, float y, float w, float h) {
-    auto [width, height] = processDimensions(w, h);
+    auto [width, height] = disableDimensionsProcessing ? std::pair(w, h) : processDimensions(w, h);
     this->x = x;
     this->y = y;
-    this->w = disableDimensionsProcessing ? w : width;
-    this->h = disableDimensionsProcessing ? h : height;
+    this->w = width;
+    this->h = height;
     onBoundsChanged();
 }
 

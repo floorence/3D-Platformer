@@ -6,15 +6,11 @@
 
 /*
   Places to change to add a new setting
-  1. this file: add setting to corresponding struct
+  1. this file: add setting to corresponding struct with default value, min/max values if applicable, and gui representation.
+     don't forget to register setting in getChildren() of corresponding struct as well
   2. save/settings.json: add initial value of setting otherwise first load will cause crash
-  3. SettingsController.cpp: handle new setting in save and load functions
-  4. SettingsMenu.h: add gui elements for your setting
-  5. SettingsMenu.cpp: intialize the gui elements, size them accordingly in onBoundsChanged, handle them in
-     dispatchMouseEvent, onSettingsChanged, readSettings, and draw
-  6. in the class that your setting affects, extend SettingsListener and register it in main if not already, 
+  3. in the class that your setting affects, extend SettingsListener and register it in main if not already, 
      and implement onSettingsChanged
-  TODO: wow that's a lot, maybe i should make a settings ui generator based off the structs
 */
 
 enum class SettingGuiElement {
