@@ -49,7 +49,7 @@ void Rect::center(float w, float h, float startX, float endX, float startY, floa
 }
 
 std::pair<float, float> Rect::processDimensions(float w, float h) {
-    if (w < 0 && h < 0) {
+    if (!enableUnboundWidthAndHeight && w < 0 && h < 0) {
         Log::err("Rect", fmt::format("processDimensions({}, {}), only one of width or height may be unbound! setting both width and height to 0.", w, h));
         return {0, 0};
     }

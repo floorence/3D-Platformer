@@ -18,7 +18,7 @@ void Quad::setTextures(std::vector<Texture*> textures) {
 
 void Quad::onBoundsChanged() {
     float xv = x + w;
-    float yv = reversedYAxis ? y + h : y - h;
+    float yv = y + h;
 
     std::vector<Vertex> vertices = {
         Vertex {glm::vec3(x, y, 0.0f), glm::vec3(0.0f), glm::vec2(0.0f, 1.0f)},

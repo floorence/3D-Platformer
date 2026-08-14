@@ -2,9 +2,12 @@
 #define RECT_H
 
 #include <string>
+
 class Rect {
 public:
     // set to true if dimensions are expected to be negative for some reason. ONLY FOR LIGHTCONTROLLER QUADS!
+    // LightController quads are drawn with special shaders that follow default opengl axes, but Rect and Quad 
+    // assumes reversed y axis, leading to negative height
     bool disableDimensionsProcessing = false;
     // TODO: add way to change only one at a time
 
@@ -31,6 +34,8 @@ public:
     void center(float w, float h, float startX, float endX, float startY, float endY);
 protected:
     float x, y, w, h;
+    // set to true if subclass can handle unbound width and height at the same time
+    bool enableUnboundWidthAndHeight = false;
 private:
     std::string TAG = "Rect";
 

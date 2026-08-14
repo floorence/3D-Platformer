@@ -112,7 +112,7 @@ void SettingsMenu::onBoundsChanged() {
     footerBackground.setBounds(x, y + h - headerFooterHeight, w, headerFooterHeight);
 
     settingsTitle.setFontSize(headerFooterHeight * 2/3);
-    settingsTitle.center(x, x + w, y, y + headerFooterHeight);
+    settingsTitle.center(-1, -1, x, x + w, y, y + headerFooterHeight);
 
     closeButton.setBounds(endWithPadding - buttonsHeight, y + padding, buttonsHeight, buttonsHeight);
     applyButton.setBounds(endWithPadding - buttonsHeight * 2, bottomWithPadding - buttonsHeight, buttonsHeight * 2, buttonsHeight);
@@ -129,6 +129,7 @@ void SettingsMenu::onBoundsChanged() {
             settingGuiData[i][j].description->setFontSize(settingHeight * 2/3);
             settingGuiData[i][j].description->centerVertically(
                 x + sideBarWidth + padding, 
+                -1, -1,
                 settingY, 
                 settingY + settingHeight
             );

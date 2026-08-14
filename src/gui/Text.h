@@ -17,9 +17,7 @@ public:
     void setTextAndSize(std::string text, int fontSize);
     void setCenterText(bool centerText);
 
-    void setPosition(float x, float y);
-    void center(float startX, float endX, float startY, float endY); // TODO: if font size or text is changed after it will not be centered anymore
-    void centerVertically(float startX, float startY, float endY);
+    // TODO: if font size or text is changed after Rect centering it will not be centered anymore
 
     void draw();
 private:
@@ -31,6 +29,9 @@ private:
     Mesh mesh;
 
     void onBoundsChanged() override;
+    float getUnboundWidth(float h) override;
+    float getUnboundHeight(float w) override;
+    void updateTextSize();
 };
 
 #endif
