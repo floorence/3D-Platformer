@@ -5,25 +5,22 @@
 #include "mesh/Mesh.h"
 #include"texture/Texture.h"
 #include"shader/Shader.h"
+#include "util/Globals.h"
 
+// assumes y increases downward, since that's how the gui shader is set up. 
 class Quad: public Rect {
 public:
     bool useColorInsteadOfTexture = false;
     glm::vec3 color;
-    glm::vec4 tintColor;
-    // true if y increases downward. it's true by default since that's how the gui shader is set up. 
-    // it's only false for Quads that are drawn during lighting processing. see LightController.cpp
-    bool reversedYAxis = true;
+    glm::vec4 tintColor = glm::vec4(0.0f);
 
     Quad() = default;
     Quad(Texture* texture);
     Quad(float x, float y, float w, float h, bool corners = false);
 
-    virtual ~Quad() = default;
+    void draw(Shader& shader = *Globals::GuiShader);
 
-    virtual void draw(Shader& shader);
-
-    // Textures; if none is set and useColorInsteadOfTexture = true then the quad will be transparent
+    // Textures; if none is set and useColorInsteadOfTexture = false then the quad will be transparent
 
     void setTexture(Texture* texture);
     void setTextures(std::vector<Texture*> textures);

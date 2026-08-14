@@ -1,46 +1,56 @@
 #include"Stepper.h"
+#include "texture/FontTexture.h"
+#include "util/Globals.h"
 #include "util/Log.h"
 #include <algorithm>
 #include <string>
+
+Stepper::Stepper() {
+    decButton.setText("-");
+    incButton.setText("+");
+
+    decButton.setOnClick([this]() {
+        // Log::log("Stepper", "decButton onClick");
+        if (count - stepAmount >= min) {
+            setData(count - stepAmount);
+        }
+    });
+    incButton.setOnClick([this]() {
+        // Log::log("Stepper", "incButton onClick");
+        if (count + stepAmount <= max) {
+            setData(count + stepAmount);
+        }
+    });
+}
 
 bool Stepper::dispatchMouseEvent(float x, float y, MouseEvent event) {
     return decButton.dispatchMouseEvent(x, y, event) || incButton.dispatchMouseEvent(x, y, event);
 }
 
-int Stepper::getCount() {
+int Stepper::getData() {
     return count;
 }
 
 void Stepper::onBoundsChanged() {
-    if (w < 0) {
-        w = 3 * h;
-    } else if (h < 0) {
-        h = w / 3;
-    }
-
     decButton.setBounds(x, y, h, h);
-    decButton.setText("-");
-    decButton.setOnClick([this]() {
-        if (count - stepAmount >= min) {
-            setCount(count - stepAmount);
-        }
-    });
-
     incButton.setBounds(x + w - h, y, h, h);
-    incButton.setText("+");
-    incButton.setOnClick([this]() {
-        if (count + stepAmount <= max) {
-            setCount(count + stepAmount);
-        }
-    });
 
     int fontSize = h * 2 / 3;
     countText.setFontSize(fontSize);
-    countText.setCorners(x + h, y, x + w - h, y + h);
+    countText.centerVertically(x + h, w - h - h, -1, y, y + h);
 }
 
-void Stepper::setCount(int count) {
-    this->count = count;
+float Stepper::getUnboundWidth(float h) {
+    std::pair<float, float> textSize = Globals::Font->getSize(std::to_string(max), h * 2 / 3);
+    return (h + TEXT_TO_BUTTONS_MARGIN) * 2 + textSize.first;
+}
+
+float Stepper::getUnboundHeight(float w) {
+    return w / 4;
+}
+
+void Stepper::setData(int data) {
+    this->count = data;
     countText.setText(std::to_string(count) + units);
 }
 
@@ -51,7 +61,7 @@ void Stepper::setStepAmount(int amount) {
 void Stepper::setMinMax(int minCount, int maxCount) {
     min = minCount;
     max = maxCount;
-    setCount(std::clamp(count, minCount, maxCount));
+    setData(std::clamp(count, minCount, maxCount));
 }
 
 void Stepper::setUnits(std::string units) {
@@ -65,8 +75,8 @@ void Stepper::setColors(glm::vec3 buttonsColor, glm::vec3 textColor) {
     countText.textColor = textColor;
 }
 
-void Stepper::draw(Shader& shader, Shader& fontShader) {
-    decButton.draw(shader, fontShader);
-    countText.draw(fontShader);
-    incButton.draw(shader, fontShader);
+void Stepper::draw() {
+    decButton.draw();
+    countText.draw();
+    incButton.draw();
 }

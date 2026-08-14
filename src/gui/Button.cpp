@@ -7,12 +7,6 @@ Button::Button() {
 }
 
 void Button::onBoundsChanged() {
-    if (w < 0) {
-        w = h;
-    } else if (h < 0) {
-        h = w;
-    }
-
     background.setBounds(x, y, w, h);
     text.setFontSize(deriveFontSize());
     text.setBounds(x, y, w, h);
@@ -45,7 +39,7 @@ void Button::setBackgroundColor(glm::vec3 color) {
     background.color = color;
 }
 
-void Button::draw(Shader& shader, Shader& fontShader) {
-    background.draw(shader);
-    text.draw(fontShader);
+void Button::draw() {
+    background.draw();
+    text.draw();
 }

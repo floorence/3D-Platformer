@@ -14,9 +14,11 @@ void SettingsController::registerListeners(std::vector<SettingsListener*> listen
 void SettingsController::save(const Settings& settings) {
     json j;
 
-    j["graphics"]["bloomAmount"] = settings.graphics.bloomAmount;
-    j["graphics"]["vsync"] = settings.graphics.vsync;
-    j["controls"]["sensitivity"] = settings.controls.sensitivity;
+    for (auto& category: settings.children) {
+        for (auto& setting: category->getChildren()) {
+            j[category->name][setting->name] = setting->value;
+        }
+    }
 
     notifyListeners(settings);
     std::ofstream("save/settings.json") << j.dump(4);
@@ -30,10 +32,12 @@ void SettingsController::load() {
         file >> j;
         Settings settings;
 
-        settings.graphics.bloomAmount = j["graphics"]["bloomAmount"];
-        settings.graphics.vsync = j["graphics"]["vsync"];
-        settings.controls.sensitivity = j["controls"]["sensitivity"];
-        
+        for (auto& category: settings.children) {
+            for (auto& setting: category->getChildren()) {
+                setting->value = j[category->name][setting->name];
+            }
+        }
+       
         notifyListeners(settings);
     }
 }

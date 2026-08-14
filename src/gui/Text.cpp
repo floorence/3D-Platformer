@@ -5,6 +5,7 @@
 #include <fmt/format.h>
 
 Text::Text() {
+    enableUnboundWidthAndHeight = true;
     mesh.setTextures({Globals::Font});
 }
 
@@ -37,21 +38,6 @@ void Text::setCenterText(bool centerText) {
     onBoundsChanged();
 }
 
-void Text::setPosition(float x, float y) {
-    std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
-    setBounds(x, y, textSize.first, textSize.second);
-}
-
-void Text::center(float startX, float endX, float startY, float endY) {
-    std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
-    Rect::center(textSize.first, textSize.second, startX, endX, startY, endY);
-}
-
-void Text::centerVertically(float startX, float startY, float endY) {
-    std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
-    Rect::centerVertically(startX, textSize.first, textSize.second, startY, endY);
-}
-
 void Text::onBoundsChanged() {
     float textX = x;
     float textY = y;
@@ -79,7 +65,17 @@ void Text::onBoundsChanged() {
     mesh.setShapeData(vertices, indices);
 }
 
-void Text::draw(Shader& shader) {
-    shader.setTextColor(textColor);
-    mesh.drawGui(shader);
+float Text::getUnboundWidth(float) {
+    std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize);
+    return textSize.first;
+}
+
+float Text::getUnboundHeight(float w) {
+    std::pair<float, float> textSize = Globals::Font->getSize(text, fontSize, w);
+    return textSize.second;
+}
+
+void Text::draw() {
+    Globals::FontShader->setTextColor(textColor);
+    mesh.drawGui(*Globals::FontShader);
 }

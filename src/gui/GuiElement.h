@@ -14,6 +14,7 @@ public:
     void setOnClick(std::function<void()> callback);
     bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
 
+    virtual void draw() = 0;
     virtual void onHover() {}; // default behaviour: do nothing
     virtual void onHoverOff() {}; // default behaviour: do nothing
 private:

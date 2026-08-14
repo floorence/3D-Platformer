@@ -1,9 +1,9 @@
 {
-    "controls": {
-        "sensitivity": 100
+    "Controls": {
+        "Sensitivity": 100
     },
-    "graphics": {
-        "bloomAmount": 1,
-        "vsync": false
+    "Graphics": {
+        "Bloom Amount": 1,
+        "Vsync": 1
     }
 }
