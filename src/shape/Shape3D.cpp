@@ -75,6 +75,7 @@ void Shape3D::setRotation(float angle, glm::vec3 axis) {
 
 void Shape3D::draw(Camera& camera, Shader& shader) {
     shader.setModel(model);
+    shader.setUseColor(useColorInsteadOfTexture);
     if (isLightSource) {
         shader.setColor(color);
     } else {

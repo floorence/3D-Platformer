@@ -7,6 +7,7 @@
 class Drawable3D {
 public:
     Shader* specialShader = nullptr; // optional special shader to use instead of default
+    bool useColorInsteadOfTexture = false;
 
     virtual ~Drawable3D() = default;
     virtual void draw(Camera& camera, Shader& shader) = 0;

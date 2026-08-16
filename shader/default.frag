@@ -42,6 +42,8 @@ struct SpotLight {
 in vec3 crntPos;
 in vec3 normal;
 in vec2 texCoord;
+in vec3 color;
+uniform bool useColor;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLight;
@@ -69,7 +71,7 @@ bool isInShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
     return shadow;
 }
 
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
+vec3 calculatePointLight(PointLight light, vec3 texColor, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     // diffuse intensity
     float diff = max(dot(normal, lightDir), 0.0);
@@ -80,7 +82,7 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
     // combine results with texture
-    vec3 diffuse = diff * vec3(texture(material.diffuse, texCoord));
+    vec3 diffuse = diff * texColor;
     // specular texture only has red channel but needs to be grey
     vec3 specTex = vec3(texture(material.specular, texCoord));
     vec3 greySpecTex = vec3(specTex.r);
@@ -119,13 +121,14 @@ vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
 void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
-    vec3 ambient = AMBIENT_LIGHT * vec3(texture(material.diffuse, texCoord));
+    vec3 texColor = useColor ? color : vec3(texture(material.diffuse, texCoord));
+    vec3 ambient = AMBIENT_LIGHT * texColor;
 
     //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
 	vec3 result = vec3(0);
 
 	for (int i = 0; i < numPointLights; i++)
-        result += calculatePointLight(pointLights[i], normal, crntPos, viewDirection);    
+        result += calculatePointLight(pointLights[i], texColor, normal, crntPos, viewDirection);    
 
     result += ambient;
 	result = mix(result, tintColor.rgb, tintColor.a);

@@ -7,6 +7,11 @@
 
 Model::Model(std::string path) {
     loadModel(path);
+    useColorInsteadOfTexture = true;
+
+    float scale = 1.0f / 200.0f;
+    glm::vec3 scaleFactors = glm::vec3(scale, scale, scale); 
+    model = glm::scale(model, scaleFactors);
 }
 
 void Model::loadModel(std::string path) {
@@ -42,7 +47,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     // walk through each of the mesh's vertices
     for (uint i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
-        glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+        glm::vec3 vector; 
         // positions
         vector.x = mesh->mVertices[i].x;
         vector.y = mesh->mVertices[i].y;
@@ -63,8 +68,15 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             vec.x = mesh->mTextureCoords[0][i].x; 
             vec.y = mesh->mTextureCoords[0][i].y;
             vertex.texUV = vec;
-        } else {
-            vertex.texUV = glm::vec2(0.0f, 0.0f);
+        }        
+        // colours
+        if (mesh->mColors[0]) {
+            vertex.color = {
+                mesh->mColors[0][i].r,
+                mesh->mColors[0][i].g,
+                mesh->mColors[0][i].b
+            };
+            Log::log(TAG, fmt::format("vertex.color = {}, {}, {}", vertex.color.r, vertex.color.g, vertex.color.b));
         }
 
         vertices.push_back(vertex);
@@ -118,7 +130,8 @@ TextureType Model::aiToTextureType(aiTextureType type) {
 }
 
 void Model::draw(Camera& camera, Shader& shader) {
-    shader.setModel(glm::mat4(1.0f));
+    shader.setUseColor(useColorInsteadOfTexture);
+    shader.setModel(model);
     shader.setShininess(16); // TODO
     for (auto& mesh: meshes) {
         mesh.draw(camera, shader);
@@ -126,7 +139,7 @@ void Model::draw(Camera& camera, Shader& shader) {
 }
 
 void Model::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
-    depthShader.setModel(glm::mat4(1.0f));
+    depthShader.setModel(model);
     for (auto& mesh: meshes) {
         mesh.drawToDepthMap(camera, depthShader);
     }

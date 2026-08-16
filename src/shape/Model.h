@@ -23,6 +23,7 @@ private:
     std::vector<std::unique_ptr<Texture>> textures;
     std::vector<Mesh> meshes;
     std::string directory;
+    glm::mat4 model = glm::mat4(1.0f);
     
     const std::string TAG = "Model";
 

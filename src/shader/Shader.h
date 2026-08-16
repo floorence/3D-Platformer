@@ -37,8 +37,8 @@ public:
 	void setExposure(float exposure); // hdr_bloom.frag
 	void setTextColor(glm::vec3 textColor); // font.frag
 	void setBlurHorizontal(bool horizontal); // blur.frag
-	void setColorOverride(bool override); // gui.frag
 	void setBloomEnabled(bool bloomEnabled); // hdr_bloom.frag
+	void setUseColor(bool useColorInsteadOfTexture); // default.frag, gui.frag
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag

@@ -7,11 +7,11 @@ in vec2 texCoord;
 uniform sampler2D diffuse0;
 uniform vec3 color;
 uniform vec4 tintColor;
-uniform bool colorOverride;
+uniform bool useColor;
 
 void main() {
 	vec3 result;
-	if (colorOverride) {
+	if (useColor) {
 		result = color;
 	} else {
 		result = vec3(texture(diffuse0, texCoord));

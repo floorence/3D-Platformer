@@ -34,9 +34,9 @@ void Quad::onBoundsChanged() {
 void Quad::draw(Shader& shader) {
     if (useColorInsteadOfTexture) {
         shader.setColor(color);
-        shader.setColorOverride(true);
+        shader.setUseColor(true);
     } else {
-        shader.setColorOverride(false);
+        shader.setUseColor(false);
     }
     shader.setColorTint(tintColor);
     mesh.drawGui(shader);

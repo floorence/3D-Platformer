@@ -118,14 +118,14 @@ void Shader::setBlurHorizontal(bool horizontal) {
 	glUniform1i(glGetUniformLocation(ID, "horizontal"), horizontal);
 }
 
-void Shader::setColorOverride(bool override) {
-	activate();
-	glUniform1i(glGetUniformLocation(ID, "colorOverride"), override);
-}
-
 void Shader::setBloomEnabled(bool bloomEnabled) {
 	activate();
 	glUniform1i(glGetUniformLocation(ID, "bloomEnabled"), bloomEnabled);
+}
+
+void Shader::setUseColor(bool useColorInsteadOfTexture) {
+	activate();
+	glUniform1i(glGetUniformLocation(ID, "useColor"), useColorInsteadOfTexture);
 }
 
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
