@@ -2,9 +2,10 @@
 #define SHAPE_3D_CLASS
 
 #include"mesh/Mesh.h"
+#include "shape/Drawable3D.h"
 #include"texture/AssetTexture.h"
 
-class Shape3D {
+class Shape3D: public Drawable3D {
 public:
     bool isLightSource = false;
 
@@ -14,8 +15,6 @@ public:
     // higher alpha value will lead to stronger tint
     glm::vec4 tintColor = glm::vec4(0.0f);  
     glm::vec3 direction = glm::vec3(0.0f); // 0 for point light, not 0 for spot light
-
-    Shader* specialShader = nullptr; // optional special shader to use instead of default
 
     Shape3D() = default;
     Shape3D(glm::vec3 position, bool isLightSource);
@@ -38,8 +37,8 @@ public:
      */
     void setRotation(float angle, glm::vec3 axis);
     
-    virtual void draw(Camera& camera, Shader& shader);
-    void drawToDepthMap(PointLightCamera& camera, Shader& depthShader);
+    virtual void draw(Camera& camera, Shader& shader) override;
+    void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 protected:
     float rotationX, rotationY, rotationZ;
     glm::mat4 model = glm::mat4(1.0f); // shader uses model to place vertices around correct location in the world

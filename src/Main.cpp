@@ -9,6 +9,7 @@
 #include "controller/ClickController.h"
 #include "gui/Button.h"
 #include "gui/SettingsMenu.h"
+#include "shape/Model.h"
 #include "shape/DebugPyramid.h"
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
@@ -126,6 +127,8 @@ int main() {
 	floorLight.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	objects.push_back(&floorLight);
 
+	Model spaceship("assets/models/spaceship/spaceship.obj");
+
 	// make light cube
 	// RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
 	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
@@ -143,6 +146,7 @@ int main() {
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
+	lc.registerDrawable(&spaceship);
 	lc.processLighting(shader);
 
 	Log::log(TAG, "initial lighting processing completed");

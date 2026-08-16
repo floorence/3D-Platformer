@@ -35,6 +35,10 @@ void LightController::registerShapes(const std::vector<Shape3D*>& shapes) {
     }
 }
 
+void LightController::registerDrawable(Drawable3D* drawable) {
+    shapes.push_back(drawable);
+}
+
 void LightController::processLighting(Shader& shader) {
     int numPointLights = 0;
 

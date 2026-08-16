@@ -4,7 +4,8 @@ project(Platformer)
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
-find_package(fmt)
+find_package(fmt REQUIRED)
+find_package(assimp REQUIRED)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -28,6 +29,7 @@ target_link_libraries(Platformer PRIVATE
     OpenGL::GL
     glfw
     fmt::fmt
+    assimp::assimp
 )
 
 target_compile_options(Platformer PRIVATE

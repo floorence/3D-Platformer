@@ -13,6 +13,7 @@ public:
 
     void registerShape(Shape3D* shape);
     void registerShapes(const std::vector<Shape3D*>& shapes);
+    void registerDrawable(Drawable3D* drawable);
     void processLighting(Shader& shader);
 
     // these functions must all be called in order each frame
@@ -27,7 +28,7 @@ public:
 private:
     int windowWidth, windowHeight;
     std::vector<Shape3D*> lights;
-    std::vector<Shape3D*> shapes;
+    std::vector<Drawable3D*> shapes;
 
     const std::string TAG = "LightController";
 
