@@ -137,11 +137,15 @@ vec3 getColorFromSource() {
     }
 }
 
+float getBrightness(vec3 color) {
+    return dot(color, vec3(0.2126, 0.7152, 0.0722));
+}
+
 void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
     vec3 texColor = getColorFromSource();
-    vec3 specColor = (colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : texColor;
+    vec3 specColor = (colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : vec3(getBrightness(texColor));
     vec3 ambient = AMBIENT_LIGHT * texColor;
 
     //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
@@ -161,7 +165,7 @@ void main() {
     // FragColor = vec4(vec3(depth), 1.0);
 
     // check whether fragment output is higher than threshold, if so output as brightness color
-    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    float brightness = getBrightness(FragColor.rgb);
     if (brightness > 50.0) {
 		// bright bloom blur texture is NOT tone mapped in hdr_bloom.frag, must map to 0-1 here, otherwise blurred areas will be too bright and not look blurred
 		float maxColorChannel = max(max(FragColor.r, FragColor.g), FragColor.b);

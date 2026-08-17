@@ -13,6 +13,7 @@ Model::Model(std::string path) {
     model = glm::scale(model, scaleFactors);
 }
 
+// function adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h loadModel()
 void Model::loadModel(std::string path) {
     Assimp::Importer import;
     const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);	
@@ -26,6 +27,7 @@ void Model::loadModel(std::string path) {
     processNode(scene->mRootNode, scene);
 }
 
+// function adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h processNode()
 void Model::processNode(aiNode *node, const aiScene *scene) {
     // process all the node's meshes (if any)
     for (uint i = 0; i < node->mNumMeshes; i++) {
@@ -38,52 +40,52 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
     }
 }
 
+// function adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h processMesh()
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture*> textures;
 
-    // walk through each of the mesh's vertices
     for (uint i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
-        glm::vec3 vector; 
         // positions
-        vector.x = mesh->mVertices[i].x;
-        vector.y = mesh->mVertices[i].y;
-        vector.z = mesh->mVertices[i].z;
-        vertex.position = vector;
+        vertex.position = {
+            mesh->mVertices[i].x,
+            mesh->mVertices[i].y,
+            mesh->mVertices[i].z
+        };
         // normals
         if (mesh->HasNormals()) {
-            vector.x = mesh->mNormals[i].x;
-            vector.y = mesh->mNormals[i].y;
-            vector.z = mesh->mNormals[i].z;
-            vertex.normal = vector;
+            vertex.normal = {
+                mesh->mNormals[i].x,
+                mesh->mNormals[i].y,
+                mesh->mNormals[i].z
+            };
         }
         // texture coordinates
+        // a vertex can contain up to 8 different texture coordinates. since that's weird, only take the first set (0)
         if (mesh->mTextureCoords[0]) {
-            glm::vec2 vec;
-            // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
-            // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-            vec.x = mesh->mTextureCoords[0][i].x; 
-            vec.y = mesh->mTextureCoords[0][i].y;
-            vertex.texUV = vec;
+            vertex.texUV = {
+                mesh->mTextureCoords[0][i].x,
+                mesh->mTextureCoords[0][i].y
+            };
         }        
-        // colours
+        // colours, idk if a vertex can contain more than one but that'd be weird so only take the first set (0)
         if (mesh->mColors[0]) {
             vertex.color = {
                 mesh->mColors[0][i].r,
                 mesh->mColors[0][i].g,
                 mesh->mColors[0][i].b
             };
-            Log::log(TAG, fmt::format("vertex.color = {}, {}, {}", vertex.color.r, vertex.color.g, vertex.color.b));
+            // Log::log(TAG, fmt::format("vertex.color = {}, {}, {}", vertex.color.r, vertex.color.g, vertex.color.b));
         }
 
         vertices.push_back(vertex);
     }
-    // now walk through each of the mesh's faces and retrieve the corresponding vertex indices.
+    // indices from mesh faces
     for (uint i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
-        // retrieve all indices of the face and store them in the indices vector
+
         for (uint j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);        
     }
@@ -103,7 +105,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         aiColor3D aiColor;
         if (material->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS) {
             color = {aiColor.r, aiColor.g, aiColor.b};
-            Log::log(TAG, fmt::format("color: {}, {}, {}", color.r, color.g, color.b));
+            // Log::log(TAG, fmt::format("color: {}, {}, {}", color.r, color.g, color.b));
         } else {
             Log::warn(TAG, "processMesh() found a mesh without textures or material colours!");
         }
@@ -113,19 +115,32 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     }
 }
 
+// function adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h loadMaterialTextures()
 std::vector<Texture*> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type) {
     std::vector<Texture*> textures;
-    // TODO: weird stuff might happen if there's more than one texture per type, since shader only supports that
+    // if there's more than one texture per type, the last texture that is created will be the one that's used
     for (uint i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
-        auto texture = std::make_unique<ImageTexture>(
-            (directory + std::string(str.C_Str())).c_str(),
-            aiToTextureType(type)
-        );
-        // texture.path = str;
-        textures.push_back(texture.get());
-        this->textures.push_back(std::move(texture));
+        std::string path = (directory + std::string(str.C_Str()));
+        // check if texture was loaded before and if so, continue to next iteration
+        bool skip = false;
+        for (uint j = 0; j < this->textures.size(); j++) {
+            if (std::strcmp(this->textures[j]->getPath().c_str(), str.C_Str()) == 0) {
+                textures.push_back(this->textures[j].get());
+                skip = true;
+                break;
+            }
+        }
+
+        if (!skip) {
+            auto texture = std::make_unique<ImageTexture>(
+                path.c_str(),
+                aiToTextureType(type)
+            );
+            textures.push_back(texture.get());
+            this->textures.push_back(std::move(texture));
+        }
     }
     return textures;
 }

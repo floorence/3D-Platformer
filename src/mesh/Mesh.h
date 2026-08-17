@@ -8,6 +8,7 @@
 #include "shader/Shader.h"
 
 struct Material {
+	ColorSource colorSource = ColorSource::Texture;
 	glm::vec3 color = glm::vec3(1.0f);
 	std::vector<Texture*> textures;
 };
@@ -15,9 +16,7 @@ struct Material {
 class Mesh {
 public:
 	Mesh() = default;
-	Mesh(const std::vector<Texture*>& textures);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const std::vector<Texture*>& textures);
-	Mesh(const glm::vec3 color);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const glm::vec3 color);
 
 	glm::vec3 getColor();
@@ -35,7 +34,6 @@ private:
 	EBO ebo;
 	int drawCount = 0;
 
-	ColorSource colorSource = ColorSource::Texture;
 	Material material;
 
 	const std::string TAG = "Mesh";

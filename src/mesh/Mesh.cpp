@@ -3,31 +3,17 @@
 #include"util/Log.h"
 #include "util/Utils.h"
 
-Mesh::Mesh(const std::vector<Texture*>& textures) 
-	: Mesh() 
-{
-	setTextures(textures);
-}
-
 Mesh::Mesh(
 	const std::vector <Vertex>& vertices, 
 	const std::vector <GLuint>& indices, 
 	const std::vector<Texture*>& textures
-)
-	: Mesh(textures)
-{
+) {
+	setTextures(textures);
 	setShapeData(vertices, indices);
 }
 
-Mesh::Mesh(const glm::vec3 color)
-	: Mesh() 
-{
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const glm::vec3 color) {
 	setColor(color);
-}
-
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const glm::vec3 color)
-	: Mesh(color)
-{
 	setShapeData(vertices, indices);
 }
 
@@ -36,13 +22,13 @@ glm::vec3 Mesh::getColor() {
 }
 
 void Mesh::setColor(const glm::vec3 color) {
-	this->material.color = color;
-	colorSource = ColorSource::MaterialColor;
+	material.color = color;
+	material.colorSource = ColorSource::MaterialColor;
 }
 
 void Mesh::setTextures(const std::vector<Texture*>& textures) {
-	this->material.textures = textures;
-	colorSource = ColorSource::Texture;
+	material.textures = textures;
+	material.colorSource = ColorSource::Texture;
 }
 
 void Mesh::setShapeData(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices) {
@@ -99,12 +85,12 @@ void Mesh::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 }
 
 void Mesh::prepareColorsAndTextures(Shader& shader) {
-	shader.setColorSource(colorSource);
-	if (colorSource == ColorSource::Texture) {
+	shader.setColorSource(material.colorSource);
+	if (material.colorSource == ColorSource::Texture) {
 		for (uint i = 0; i < material.textures.size(); i++) {
 			shader.setTexture(*material.textures[i], i);
 		}
-	} else if (colorSource == ColorSource::MaterialColor) {
+	} else if (material.colorSource == ColorSource::MaterialColor) {
 		shader.setColor(material.color);
 	}
 }

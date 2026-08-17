@@ -13,11 +13,14 @@ public:
 	 * 						    converted to be suitable as a specular texture
 	 */
 	ImageTexture(const char* image, TextureType texType, GLenum pixelType = GL_UNSIGNED_BYTE, bool convertToSpecular = false);
+
+	std::string getPath();
 private:
 	// constants
 	static constexpr float GAMMA_CORRECT = 1.0 / 2.2f;
 	static constexpr float BOOST_COEFFICIENT = 1.5f;
 
+	std::string path;
 	const std::string TAG = "ImageTexture";
 
 	void flipBitmap(unsigned char* bytes, int width, int height);

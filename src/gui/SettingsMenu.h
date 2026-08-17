@@ -10,9 +10,8 @@
 #include "Text.h"
 
 struct SettingGui {
-    std::unique_ptr<Text> description; // pointer cause Text is not copyable because it uses Mesh so i cant copy local variable to class scoped vector
-                                       // TODO: not true since it's still moveable
-    std::unique_ptr<IntGuiElement> guiElement; // pointer because same reason as above and because IntGuiElement is abstract
+    std::unique_ptr<Text> description; // could store just Text. but unique_ptrs are nice and it would be consistent with guiElement.
+    std::unique_ptr<IntGuiElement> guiElement; // pointer because IntGuiElement is abstract
 };
 
 class SettingsMenu: public Rect, public SettingsListener, public Clickable {
