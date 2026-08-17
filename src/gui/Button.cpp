@@ -2,10 +2,6 @@
 #include "util/Log.h"
 #include <fmt/color.h>
 
-Button::Button() {
-    background.useColorInsteadOfTexture = true;
-}
-
 void Button::onBoundsChanged() {
     background.setBounds(x, y, w, h);
     text.setFontSize(deriveFontSize());
@@ -36,7 +32,7 @@ void Button::setText(std::string text) {
 }
 
 void Button::setBackgroundColor(glm::vec3 color) {
-    background.color = color;
+    background.setColor(color);
 }
 
 void Button::draw() {

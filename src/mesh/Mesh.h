@@ -7,12 +7,21 @@
 #include "camera/PointLightCamera.h"
 #include "shader/Shader.h"
 
+struct Material {
+	glm::vec3 color = glm::vec3(1.0f);
+	std::vector<Texture*> textures;
+};
+
 class Mesh {
 public:
 	Mesh() = default;
 	Mesh(const std::vector<Texture*>& textures);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const std::vector<Texture*>& textures);
+	Mesh(const glm::vec3 color);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const glm::vec3 color);
 
+	glm::vec3 getColor();
+	void setColor(const glm::vec3 color);
 	void setTextures(const std::vector<Texture*>& textures);
 	void setShapeData(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices);
 
@@ -25,7 +34,10 @@ private:
 	VBO vbo;
 	EBO ebo;
 	int drawCount = 0;
-	std::vector<Texture*> textures;
+
+	ColorSource colorSource = ColorSource::Texture;
+	Material material;
+
 	const std::string TAG = "Mesh";
 };
 

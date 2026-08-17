@@ -47,6 +47,14 @@ glm::vec3 Shape3D::getPosition() {
     return position;
 }
 
+glm::vec3 Shape3D::getColor() {
+    return mesh.getColor();
+}
+
+void Shape3D::setColor(glm::vec3 color) {
+    mesh.setColor(color);
+}
+
 void Shape3D::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
     std::vector<Texture*> textures;
     if (diffuse != nullptr) textures.push_back(diffuse);
@@ -75,10 +83,7 @@ void Shape3D::setRotation(float angle, glm::vec3 axis) {
 
 void Shape3D::draw(Camera& camera, Shader& shader) {
     shader.setModel(model);
-    shader.setUseColor(useColorInsteadOfTexture);
-    if (isLightSource) {
-        shader.setColor(color);
-    } else {
+    if (!isLightSource) {
 		shader.setShininess(16); // TODO
         shader.setColorTint(tintColor);
     }

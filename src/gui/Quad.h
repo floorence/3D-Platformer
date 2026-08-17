@@ -10,8 +10,6 @@
 // assumes y increases downward, since that's how the gui shader is set up. 
 class Quad: public Rect {
 public:
-    bool useColorInsteadOfTexture = false;
-    glm::vec3 color;
     glm::vec4 tintColor = glm::vec4(0.0f);
 
     Quad() = default;
@@ -20,8 +18,9 @@ public:
 
     void draw(Shader& shader = *Globals::GuiShader);
 
-    // Textures; if none is set and useColorInsteadOfTexture = false then the quad will be transparent
+    // Textures and colors, if none is called the Quad will be white
 
+    void setColor(glm::vec3 color);
     void setTexture(Texture* texture);
     void setTextures(std::vector<Texture*> textures);
 private:

@@ -16,7 +16,7 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	lastX = camera.windowWidth / 2.0;
 	lastY = camera.windowHeight / 2.0;
 
-	orientationLine.color = glm::vec3(100.0f, 0.0f, 69.0f);
+	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 	orientationLine.specialShader = &lineShader;
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);

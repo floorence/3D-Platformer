@@ -9,8 +9,6 @@ class Shape3D: public Drawable3D {
 public:
     bool isLightSource = false;
 
-    glm::vec3 color; // if isLightSource, will be the colour of the light. else, will not be used
-
     // if !isLightSource, will be the tint colour of the light. else, will not be used
     // higher alpha value will lead to stronger tint
     glm::vec4 tintColor = glm::vec4(0.0f);  
@@ -23,6 +21,8 @@ public:
 
     glm::vec3 getPosition();
 
+    glm::vec3 getColor();
+    void setColor(glm::vec3 color);
     void setTextures(AssetTexture* diffuse, AssetTexture* specular);
     void setPosition(glm::vec3 position);
     /**

@@ -3,6 +3,7 @@
 #include<fstream>
 #include <glm/gtc/type_ptr.hpp>
 #include<iostream>
+#include "mesh/VAO.h"
 #include"util/Log.h"
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {
@@ -123,9 +124,9 @@ void Shader::setBloomEnabled(bool bloomEnabled) {
 	glUniform1i(glGetUniformLocation(ID, "bloomEnabled"), bloomEnabled);
 }
 
-void Shader::setUseColor(bool useColorInsteadOfTexture) {
+void Shader::setColorSource(ColorSource source) {
 	activate();
-	glUniform1i(glGetUniformLocation(ID, "useColor"), useColorInsteadOfTexture);
+	glUniform1i(glGetUniformLocation(ID, "colorSource"), static_cast<int>(source));
 }
 
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
@@ -144,6 +145,11 @@ void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightP
 void Shader::setNumPointLights(int num) {
     activate();
 	glUniform1i(glGetUniformLocation(ID, "numPointLights"), num);
+}
+
+void Shader::setMaterialColor(glm::vec3 color) {
+	activate();
+	glUniform3f(glGetUniformLocation(ID, "material.color"), color.x, color.y, color.z);
 }
 
 void Shader::setColor(glm::vec3 color) {

@@ -2,9 +2,6 @@
 #include "util/Log.h"
 
 Toggle::Toggle() {
-    outerRect.useColorInsteadOfTexture = true;
-    innerSquare.useColorInsteadOfTexture = true;
-
     setOnClick([this]() {
         on = !on;
         setData(on);
@@ -21,8 +18,8 @@ void Toggle::setData(int data) {
 }
 
 void Toggle::setColors(glm::vec3 innerColor, glm::vec3 outerColor) {
-    outerRect.color = outerColor;
-    innerSquare.color = innerColor;
+    outerRect.setColor(outerColor);
+    innerSquare.setColor(innerColor);
 }
 
 void Toggle::onBoundsChanged() {

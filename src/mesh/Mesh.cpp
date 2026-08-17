@@ -19,8 +19,30 @@ Mesh::Mesh(
 	setShapeData(vertices, indices);
 }
 
+Mesh::Mesh(const glm::vec3 color)
+	: Mesh() 
+{
+	setColor(color);
+}
+
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices, const glm::vec3 color)
+	: Mesh(color)
+{
+	setShapeData(vertices, indices);
+}
+
+glm::vec3 Mesh::getColor() {
+	return material.color;
+}
+
+void Mesh::setColor(const glm::vec3 color) {
+	this->material.color = color;
+	colorSource = ColorSource::MaterialColor;
+}
+
 void Mesh::setTextures(const std::vector<Texture*>& textures) {
-	this->textures = textures;
+	this->material.textures = textures;
+	colorSource = ColorSource::Texture;
 }
 
 void Mesh::setShapeData(const std::vector <Vertex>& vertices, const std::vector <GLuint>& indices) {
@@ -44,8 +66,13 @@ void Mesh::draw(Camera& camera, Shader& shader) {
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	for (unsigned int i = 0; i < textures.size(); i++) {
-		shader.setTexture(*textures[i], i);
+	shader.setColorSource(colorSource);
+	if (colorSource == ColorSource::Texture) {
+		for (uint i = 0; i < material.textures.size(); i++) {
+			shader.setTexture(*material.textures[i], i);
+		}
+	} else if (colorSource == ColorSource::MaterialColor) {
+		shader.setMaterialColor(material.color);
 	}
 
 	shader.setCamera(camera);
@@ -56,17 +83,25 @@ void Mesh::drawGui(Shader& shader) {
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	for (unsigned int i = 0; i < textures.size(); i++) {
-		shader.setTexture(*textures[i], i);
+	shader.setColorSource(colorSource);
+	if (colorSource == ColorSource::Texture) {
+		for (uint i = 0; i < material.textures.size(); i++) {
+			shader.setTexture(*material.textures[i], i);
+		}
+	} else if (colorSource == ColorSource::MaterialColor) {
+		shader.setColor(material.color);
 	}
 
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
+// need this function since line uses gui fragment shader which has different uniform name than default shader
 void Mesh::drawLine(Camera& camera, Shader& shader) {
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
+	shader.setColorSource(colorSource);
+	shader.setColor(material.color);
 	shader.setCamera(camera);
 	glDrawElements(GL_LINES, drawCount, GL_UNSIGNED_INT, 0);
 }
@@ -75,7 +110,7 @@ void Mesh::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	depthShader.activate();
 	vao.bind();
 
-	// depth map does not have textures
+	// depth map does not have textures or colours
 
 	depthShader.setPointLightCamera(camera);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);

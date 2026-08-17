@@ -7,7 +7,6 @@
 
 Model::Model(std::string path) {
     loadModel(path);
-    useColorInsteadOfTexture = true;
 
     float scale = 1.0f / 200.0f;
     glm::vec3 scaleFactors = glm::vec3(scale, scale, scale); 
@@ -97,9 +96,20 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     // specular maps
     std::vector<Texture*> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    
-    // return a mesh object created from the extracted mesh data
-    return Mesh(vertices, indices, textures);
+
+    if (textures.empty()) {
+        // it must be using colours instead of textures
+        glm::vec3 color = glm::vec3(1.0f);
+        aiColor3D aiColor;
+        if (material->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS) {
+            color = {aiColor.r, aiColor.g, aiColor.b};
+        } else {
+            Log::warn(TAG, "processMesh() found a mesh without textures or material colours!");
+        }
+        return Mesh(vertices, indices, color);
+    } else {
+        return Mesh(vertices, indices, textures);
+    }
 }
 
 std::vector<Texture*> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type) {
@@ -130,7 +140,6 @@ TextureType Model::aiToTextureType(aiTextureType type) {
 }
 
 void Model::draw(Camera& camera, Shader& shader) {
-    shader.setUseColor(useColorInsteadOfTexture);
     shader.setModel(model);
     shader.setShininess(16); // TODO
     for (auto& mesh: meshes) {

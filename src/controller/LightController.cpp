@@ -44,11 +44,11 @@ void LightController::processLighting(Shader& shader) {
 
     for (const auto& light: lights) {
         float linear, quadratic;
-        float intensity = Utils::getBrightness(light->color) / 10;
+        float intensity = Utils::getBrightness(light->getColor()) / 10;
         calculateAttenuationCoefficients(intensity, &linear, &quadratic);
         shader.registerLightSource(
             numPointLights,
-            light->color,
+            light->getColor(),
             light->getPosition(),
             linear, quadratic
         );

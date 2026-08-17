@@ -34,14 +34,9 @@ void SettingsMenu::initialize(const Settings& settings) {
 }
 
 void SettingsMenu::initPersistentUI() {
-    background.useColorInsteadOfTexture = true;
-    background.color = GREY_3;
-
-    headerBackground.useColorInsteadOfTexture = true;
-    headerBackground.color = GREY_5;
-
-    footerBackground.useColorInsteadOfTexture = true;
-    footerBackground.color = GREY_5;
+    background.setColor(GREY_3);
+    headerBackground.setColor(GREY_5);
+    footerBackground.setColor(GREY_5);
 
     closeButton.setText("x");
     closeButton.setBackgroundColor(GREY_7);

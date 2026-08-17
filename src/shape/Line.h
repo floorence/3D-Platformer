@@ -5,8 +5,6 @@
 
 class Line: public Shape3D {
 public:
-    glm::vec3 color = glm::vec3(0.0f);
-
     Line() = default;
     Line(glm::vec3 start, glm::vec3 end);
 

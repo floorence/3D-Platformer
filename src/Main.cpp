@@ -124,7 +124,7 @@ int main() {
 	objects.push_back(&floorCube);
 
 	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -0.8f, 0.0f), 0.2f, 0.2f, 0.2f, true);
-	floorLight.color = glm::vec3(100.0f, 100.0f, 100.0f);
+	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
 	objects.push_back(&floorLight);
 
 	Model spaceship("assets/models/spaceship/spaceship.obj");
