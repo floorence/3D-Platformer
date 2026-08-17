@@ -47,8 +47,7 @@ public:
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag
 
-	void setMaterialColor(glm::vec3 color); // default.frag
-	void setColor(glm::vec3 color); // light.frag, gui.frag
+	void setColor(glm::vec3 color); // default.frag, light.frag, gui.frag
 	void setColorTint(glm::vec4 color); // default.frag, gui.frag
 private:
 	const std::string TAG = "Shader";

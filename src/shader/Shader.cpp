@@ -147,14 +147,9 @@ void Shader::setNumPointLights(int num) {
 	glUniform1i(glGetUniformLocation(ID, "numPointLights"), num);
 }
 
-void Shader::setMaterialColor(glm::vec3 color) {
-	activate();
-	glUniform3f(glGetUniformLocation(ID, "material.color"), color.x, color.y, color.z);
-}
-
 void Shader::setColor(glm::vec3 color) {
 	activate();
-	glUniform3f(glGetUniformLocation(ID, "color"), color.x, color.y, color.z);
+	glUniform3f(glGetUniformLocation(ID, "materialColor"), color.x, color.y, color.z);
 }
 
 void Shader::setColorTint(glm::vec4 color) {

@@ -66,15 +66,7 @@ void Mesh::draw(Camera& camera, Shader& shader) {
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	shader.setColorSource(colorSource);
-	if (colorSource == ColorSource::Texture) {
-		for (uint i = 0; i < material.textures.size(); i++) {
-			shader.setTexture(*material.textures[i], i);
-		}
-	} else if (colorSource == ColorSource::MaterialColor) {
-		shader.setMaterialColor(material.color);
-	}
-
+	prepareColorsAndTextures(shader);
 	shader.setCamera(camera);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
@@ -83,25 +75,15 @@ void Mesh::drawGui(Shader& shader) {
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	shader.setColorSource(colorSource);
-	if (colorSource == ColorSource::Texture) {
-		for (uint i = 0; i < material.textures.size(); i++) {
-			shader.setTexture(*material.textures[i], i);
-		}
-	} else if (colorSource == ColorSource::MaterialColor) {
-		shader.setColor(material.color);
-	}
-
+	prepareColorsAndTextures(shader);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
 }
 
-// need this function since line uses gui fragment shader which has different uniform name than default shader
 void Mesh::drawLine(Camera& camera, Shader& shader) {
 	shader.activate(); // bind shader to be able to access uniforms
 	vao.bind();
 
-	shader.setColorSource(colorSource);
-	shader.setColor(material.color);
+	prepareColorsAndTextures(shader);
 	shader.setCamera(camera);
 	glDrawElements(GL_LINES, drawCount, GL_UNSIGNED_INT, 0);
 }
@@ -114,4 +96,15 @@ void Mesh::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 
 	depthShader.setPointLightCamera(camera);
 	glDrawElements(GL_TRIANGLES, drawCount, GL_UNSIGNED_INT, 0);
+}
+
+void Mesh::prepareColorsAndTextures(Shader& shader) {
+	shader.setColorSource(colorSource);
+	if (colorSource == ColorSource::Texture) {
+		for (uint i = 0; i < material.textures.size(); i++) {
+			shader.setTexture(*material.textures[i], i);
+		}
+	} else if (colorSource == ColorSource::MaterialColor) {
+		shader.setColor(material.color);
+	}
 }

@@ -11,7 +11,7 @@ const int COLOR_SOURCE_MATERIAL_COLOR = 2;
 
 uniform int colorSource;
 uniform sampler2D diffuse0;
-uniform vec3 color;
+uniform vec3 materialColor;
 
 uniform vec4 tintColor;
 
@@ -20,7 +20,7 @@ void main() {
 	if (colorSource == COLOR_SOURCE_TEXTURE) {
 		result = vec3(texture(diffuse0, texCoord));
 	} else {
-		result = color;
+		result = materialColor;
 	}
 	result = mix(result, tintColor.rgb, tintColor.a);
 	FragColor = vec4(result, 1.0);

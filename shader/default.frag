@@ -14,8 +14,6 @@ const int COLOR_SOURCE_VERTEX_COLOR = 1;
 const int COLOR_SOURCE_MATERIAL_COLOR = 2;
 
 struct Material {
-    int colorSource;
-    vec3 color;
     sampler2D diffuse;
     sampler2D specular;
     float shininess;
@@ -50,6 +48,11 @@ in vec3 crntPos;
 in vec3 normal;
 in vec2 texCoord;
 in vec3 color;
+
+// These are not part of the material struct since other shaders also have these uniforms and it would be annoying
+// to have these have a different uniform name
+uniform int colorSource;
+uniform vec3 materialColor;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLight;
@@ -125,10 +128,10 @@ vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
 }
 
 vec3 getColorFromSource() {
-    if (material.colorSource == COLOR_SOURCE_TEXTURE) {
+    if (colorSource == COLOR_SOURCE_TEXTURE) {
         return vec3(texture(material.diffuse, texCoord));
-    } else if (material.colorSource == COLOR_SOURCE_MATERIAL_COLOR) {
-        return material.color;
+    } else if (colorSource == COLOR_SOURCE_MATERIAL_COLOR) {
+        return materialColor;
     } else {
         return color;
     }
@@ -138,7 +141,7 @@ void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
     vec3 texColor = getColorFromSource();
-    vec3 specColor = (material.colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : texColor;
+    vec3 specColor = (colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : texColor;
     vec3 ambient = AMBIENT_LIGHT * texColor;
 
     //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);

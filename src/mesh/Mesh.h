@@ -26,9 +26,9 @@ public:
 	void setShapeData(const std::vector<Vertex>& vertices, const std::vector <GLuint>& indices);
 
 	void draw(Camera& camera, Shader& shader);
-	void drawGui(Shader& shader); // version of draw that ignores camera and assumes exactly one texture
-	void drawLine(Camera& camera, Shader& shader); // version of draw that ignores textures and uses GL_LINES
-	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader); // version of draw that uses depthShader and ignores textures 
+	void drawGui(Shader& shader); // version of draw that ignores camera
+	void drawLine(Camera& camera, Shader& shader); // version of draw that uses GL_LINES
+	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader); // version of draw that uses depthShader and ignores colors and textures 
 private:
 	VAO vao;
 	VBO vbo;
@@ -39,6 +39,8 @@ private:
 	Material material;
 
 	const std::string TAG = "Mesh";
+
+	void prepareColorsAndTextures(Shader& shader);
 };
 
 #endif
