@@ -8,9 +8,10 @@ Line::Line(glm::vec3 start, glm::vec3 end)
 }
 
 void Line::setCoordinates(glm::vec3 start, glm::vec3 end) {
-    setPosition(start);
     this->end = end - start;
-    invalidateModel();
+    setPosition(start);
+    // setPosition already called invalidateModel
+    invalidateShape();
 }
 
 std::vector<Vertex> Line::generateVertices() {
