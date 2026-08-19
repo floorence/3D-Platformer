@@ -6,13 +6,10 @@
 #include <assimp/postprocess.h>
 
 Model::Model(std::string path, glm::vec3 position)
-    : Drawable3D(position)
+    : Object3D(position)
 {
     loadModel(path);
-
-    float scale = 1.0f / 200.0f;
-    glm::vec3 scaleFactors = glm::vec3(scale, scale, scale); 
-    model = glm::scale(model, scaleFactors);
+    setScale(1.0f / 200.0f);
 }
 
 // function adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h loadModel()

@@ -4,7 +4,7 @@
 #include <glm/geometric.hpp>
 
 Shape3D::Shape3D(glm::vec3 position, bool isLightSource) 
-    : Rotatable3D(position) 
+    : Object3D(position) 
 {
     this->isLightSource = isLightSource;
 }
@@ -16,8 +16,8 @@ Shape3D::Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 positi
 }
 
 void Shape3D::invalidateShape() {
-    vertices = generateVertices();
-    indices = generateIndices();
+    std::vector<Vertex> vertices = generateVertices();
+    std::vector<GLuint> indices = generateIndices();
 
     mesh.setShapeData(vertices, indices);
 }

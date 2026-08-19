@@ -2,10 +2,10 @@
 #define SHAPE_3D_CLASS
 
 #include"mesh/Mesh.h"
-#include "shape/Rotatable3D.h"
+#include"Object3D.h"
 #include"texture/AssetTexture.h"
 
-class Shape3D: public Rotatable3D {
+class Shape3D: public Object3D {
 public:
     bool isLightSource = false;
 

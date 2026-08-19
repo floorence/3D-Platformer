@@ -2,7 +2,7 @@
 #define MODEL_H
 
 #include "mesh/Mesh.h"
-#include "shape/Rotatable3D.h"
+#include "Object3D.h"
 #include "texture/AssetTexture.h"
 #include "texture/ImageTexture.h"
 #include "texture/Texture.h"
@@ -11,7 +11,7 @@
 #include <string>
 #include <assimp/scene.h>
 
-class Model: public Drawable3D {
+class Model: public Object3D {
 public:
     Model(std::string path, glm::vec3 position);
 
@@ -24,7 +24,6 @@ private:
     std::vector<std::unique_ptr<ImageTexture>> textures;
     std::vector<Mesh> meshes;
     std::string directory;
-    glm::mat4 model = glm::mat4(1.0f);
     
     const std::string TAG = "Model";
 
@@ -33,8 +32,6 @@ private:
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
     std::vector<Texture*> loadMaterialTextures(aiMaterial *mat, aiTextureType type);
     TextureType aiToTextureType(aiTextureType type);
-
-    // void invalidateShapeData() override;
 };
 
 #endif
