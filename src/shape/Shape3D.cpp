@@ -39,7 +39,7 @@ void Shape3D::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
 
 void Shape3D::draw(Camera& camera, Shader& shader) {
     shader.setModel(model);
-    shader.setRotation(rotation);
+    shader.setRotation(rotation); // shader still has to rotate normals
     if (!isLightSource) {
 		shader.setShininess(16); // TODO
         shader.setColorTint(tintColor);

@@ -156,6 +156,7 @@ TextureType Model::aiToTextureType(aiTextureType type) {
 
 void Model::draw(Camera& camera, Shader& shader) {
     shader.setModel(model);
+    shader.setRotation(rotation); // shader still has to rotate normals
     shader.setShininess(16); // TODO
     for (auto& mesh: meshes) {
         mesh.draw(camera, shader);

@@ -134,6 +134,10 @@ int main() {
 	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
 	// objects.push_back(&light);
 
+	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	player.setTextures(&planksDiffuse, &planksSpecular);
+	player_ptr = &player;
+
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
 	Shader guiShader("shader/gui.vert", "shader/gui.frag");
@@ -146,6 +150,7 @@ int main() {
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
+	lc.registerDrawable(&player);
 	lc.registerDrawable(&spaceship);
 	lc.processLighting(shader);
 
@@ -164,11 +169,6 @@ int main() {
 	performanceText.setBounds(width - 200, 10, 200, 100);
 	performanceText.setFontSize(16);
 	performanceText.setCenterText(false);
-
-	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	player.setTextures(&planksDiffuse, &planksSpecular);
-	lc.registerShapes(player.getShapes());
-	player_ptr = &player;
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);

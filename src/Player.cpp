@@ -165,6 +165,16 @@ void Player::onSettingsChanged(const Settings& settings) {
 	sensitivity = settings.controls.sensitivity.value;
 }
 
+void Player::draw(Camera& camera, Shader& shader) {
+	if (thirdPerson) body.draw(camera, shader);
+	orientationLine.draw(camera, shader);
+}
+
+void Player::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
+	if (thirdPerson) body.drawToDepthMap(camera, depthShader);
+	orientationLine.drawToDepthMap(camera, depthShader); // wait, do we want this to have a shadow?
+}
+
 void Player::syncCamerasAndBody(glm::vec3 movement) {
 	camera.position = this->position;
 	camera.lookAt(orientation);

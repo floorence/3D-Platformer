@@ -7,7 +7,7 @@
 #include "shape/Line.h"
 #include "shape/RectangularPrism.h"
 
-class Player: public Mass, public SettingsListener {
+class Player: public Mass, public SettingsListener, public Drawable3D {
 public:
     Camera camera;
 	Camera thirdPersonCam;
@@ -31,6 +31,9 @@ public:
 	void handleMouseScroll(GLFWwindow* window, double xoffset, double yoffset);
 
     void onSettingsChanged(const Settings& settings) override;
+
+	void draw(Camera& camera, Shader& shader) override;
+	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
 	const float MAX_SPEED_DEFAULT = 1.0f;
 	const float MAX_SPEED_SPRINTING = 2.0f;
