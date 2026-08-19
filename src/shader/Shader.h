@@ -43,6 +43,7 @@ public:
 	void setBlurHorizontal(bool horizontal); // blur.frag
 	void setBloomEnabled(bool bloomEnabled); // hdr_bloom.frag
 	void setColorSource(ColorSource source); // default.frag, gui.frag
+	void setRotation(glm::mat4 rotation); // default.vert
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag

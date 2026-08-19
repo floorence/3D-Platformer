@@ -129,6 +129,11 @@ void Shader::setColorSource(ColorSource source) {
 	glUniform1i(glGetUniformLocation(ID, "colorSource"), static_cast<int>(source));
 }
 
+void Shader::setRotation(glm::mat4 rotation) {
+	activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, "rotation"), 1, GL_FALSE, glm::value_ptr(rotation));
+}
+
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
     Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
     activate();

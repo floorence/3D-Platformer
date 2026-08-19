@@ -2,7 +2,7 @@
 #define MODEL_H
 
 #include "mesh/Mesh.h"
-#include "shape/Drawable3D.h"
+#include "shape/Rotatable3D.h"
 #include "texture/AssetTexture.h"
 #include "texture/ImageTexture.h"
 #include "texture/Texture.h"
@@ -13,7 +13,7 @@
 
 class Model: public Drawable3D {
 public:
-    Model(std::string path);
+    Model(std::string path, glm::vec3 position);
 
     void draw(Camera& camera, Shader& shader) override;
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
@@ -33,6 +33,8 @@ private:
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
     std::vector<Texture*> loadMaterialTextures(aiMaterial *mat, aiTextureType type);
     TextureType aiToTextureType(aiTextureType type);
+
+    // void invalidateShapeData() override;
 };
 
 #endif

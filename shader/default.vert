@@ -12,10 +12,11 @@ out vec3 color;
 
 uniform mat4 camMatrix;
 uniform mat4 model;
+uniform mat4 rotation;
 
 void main() {
-	crntPos = vec3(model * vec4(aPos, 1.0f)); // final position of vertex in world
-	normal = aNormal;
+	crntPos = vec3(model * vec4(aPos, 1.0)); // final position of vertex in world
+	normal = vec3(rotation * vec4(aNormal, 1.0));
 	texCoord = aTex;
 	color = aColor;
 	gl_Position = camMatrix * vec4(crntPos, 1.0);

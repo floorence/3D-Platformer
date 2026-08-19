@@ -5,7 +5,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-Model::Model(std::string path) {
+Model::Model(std::string path, glm::vec3 position)
+    : Drawable3D(position)
+{
     loadModel(path);
 
     float scale = 1.0f / 200.0f;
