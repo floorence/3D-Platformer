@@ -5,7 +5,7 @@
 Player::Player(glm::vec3 position, int windowWidth, int windowHeight) 
     : camera(position, windowWidth, windowHeight),
 	  thirdPersonCam(position, windowWidth, windowHeight),
-	  body(position, 0.1f, 0.1f, 0.1f),
+	  body("assets/models/spaceship/spaceship.obj", position),
 	  lineShader("shader/default.vert", "shader/gui.frag") // we don't want the line affected by lighting
 {
     this->position = position;
@@ -16,19 +16,14 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	lastX = camera.windowWidth / 2.0;
 	lastY = camera.windowHeight / 2.0;
 
+	body.setScale(1.0f / 600.0f);
+	body.setDefaultRotation(0.0f, 180.0f, 0.0f);
+
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 	orientationLine.specialShader = &lineShader;
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
 	syncCamerasAndBody(glm::vec3(0.0f));
-}
-
-void Player::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
-	body.setTextures(diffuse, specular);
-}
-
-std::vector<Shape3D*> Player::getShapes() {
-	return {&body, &orientationLine};
 }
 
 Camera* Player::getActiveCamera() {
@@ -185,6 +180,7 @@ void Player::syncCamerasAndBody(glm::vec3 movement) {
 
 	float angle = glm::angle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)));
 	if (orientation.x > 0.0f) angle = -angle;
+	// float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
 	body.setPosition(position);
 	body.setRotation(glm::degrees(angle), Camera::UP);
 

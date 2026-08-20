@@ -24,6 +24,7 @@ public:
      * @param axis axis of rotation
      */
     void setRotation(float angle, glm::vec3 axis);
+    void setDefaultRotation(float rotationX, float rotationY, float rotationZ);
     void setScale(float scale);
     void setScale(glm::vec3 scale);
 protected:
@@ -32,9 +33,12 @@ protected:
     glm::mat4 rotation = glm::mat4(1.0f);
     glm::vec3 scale = glm::vec3(1.0f);
 
+    glm::vec3 defaultRotation = glm::vec3(0.0f); // rotation that should always be applied on top of setRotation()
+
+    const std::string TAG = "Object3D";
+
     /**
-     * resets model with current position, call this after updating position.
-     * call this before applying rotation to model since matrix multiplication in glm works from right to left
+     * resets model with current position, rotation, and scale.
      */
     virtual void invalidateModel();
 };

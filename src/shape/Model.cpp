@@ -9,7 +9,6 @@ Model::Model(std::string path, glm::vec3 position)
     : Object3D(position)
 {
     loadModel(path);
-    setScale(1.0f / 200.0f);
 }
 
 // function adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h loadModel()

@@ -127,7 +127,7 @@ int main() {
 	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
 	objects.push_back(&floorLight);
 
-	Model spaceship("assets/models/spaceship/spaceship.obj", glm::vec3(0.0f));
+	// Model spaceship("assets/models/spaceship/spaceship.obj", glm::vec3(0.0f));
 
 	// make light cube
 	// RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
@@ -135,7 +135,6 @@ int main() {
 	// objects.push_back(&light);
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	player.setTextures(&planksDiffuse, &planksSpecular);
 	player_ptr = &player;
 
 	Shader shader("shader/default.vert", "shader/default.frag");
@@ -151,7 +150,6 @@ int main() {
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
 	lc.registerDrawable(&player);
-	lc.registerDrawable(&spaceship);
 	lc.processLighting(shader);
 
 	Log::log(TAG, "initial lighting processing completed");
