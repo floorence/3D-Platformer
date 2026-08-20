@@ -1,4 +1,5 @@
 #include"Player.h"
+#include "util/Log.h"
 #include"util/Utils.h"
 
 Player::Player(glm::vec3 position, int windowWidth, int windowHeight) 
@@ -48,24 +49,21 @@ std::string Player::getDebugString() {
 void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (!focused) return;
 
-	glm::vec3* activeOrientation = &orientation;
-	if (thirdPerson) {
-		activeOrientation = &thirdPersonOrientation;
-	}
+	glm::vec3 activeOrientation = *getActiveOrientation();
 
 	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		force += glm::normalize(glm::vec3(activeOrientation->x, 0.0f, activeOrientation->z));
+		force += glm::normalize(glm::vec3(activeOrientation.x, 0.0f, activeOrientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		force += -glm::normalize(glm::cross(*activeOrientation, Camera::UP));
+		force += -glm::normalize(glm::cross(activeOrientation, Camera::UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		force += -glm::normalize(glm::vec3(activeOrientation->x, 0.0f, activeOrientation->z));
+		force += -glm::normalize(glm::vec3(activeOrientation.x, 0.0f, activeOrientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		force += glm::normalize(glm::cross(*activeOrientation, Camera::UP));
+		force += glm::normalize(glm::cross(activeOrientation, Camera::UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		force += Camera::UP;
@@ -77,7 +75,7 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (force != glm::vec3(0.0, 0.0, 0.0)) {
 		force = 2.0f * glm::normalize(force);
 		applyForce(force);
-		orientation = *activeOrientation;
+		orientation = activeOrientation;
 	}
 
 	glm::vec3 movement = updatePosition(deltaTime);
@@ -120,7 +118,11 @@ void Player::handleMousePos(GLFWwindow*, double xpos, double ypos) {
 
 	// calculate upcoming vertical change in the orientation
 	glm::vec3 newOrientation = *getActiveOrientation();
-	glm::vec3 verticalOrientation = glm::rotate(newOrientation, glm::radians(-rotY), glm::normalize(glm::cross(newOrientation, Camera::UP)));
+	glm::vec3 verticalOrientation = glm::normalize(glm::rotate(
+		newOrientation,
+		glm::radians(-rotY),
+		glm::normalize(glm::cross(newOrientation, Camera::UP))
+	));
 
 	// decide whether or not the next vertical orientation is legal or not
 	if (std::abs(glm::angle(verticalOrientation, Camera::UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
