@@ -21,7 +21,7 @@ void main() {
 		result = vec3(texture(diffuse0, texCoord));
 	} else {
 		result = materialColor;
-	}
+	} // TODO vertex color
 	result = mix(result, tintColor.rgb, tintColor.a);
 	FragColor = vec4(result, 1.0);
 }

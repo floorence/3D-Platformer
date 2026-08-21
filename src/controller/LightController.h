@@ -11,7 +11,6 @@ class LightController: public SettingsListener {
 public:
     LightController(int windowWidth, int windowHeight);
 
-    // TODO: make it so that only light sources can use registerShape
     void registerShape(Shape3D* shape);
     void registerShapes(const std::vector<Shape3D*>& shapes);
     void registerDrawable(Drawable3D* drawable);

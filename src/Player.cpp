@@ -167,7 +167,6 @@ void Player::draw(Camera& camera, Shader& shader) {
 
 void Player::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	if (thirdPerson) body.drawToDepthMap(camera, depthShader);
-	orientationLine.drawToDepthMap(camera, depthShader); // wait, do we want this to have a shadow?
 }
 
 void Player::syncCamerasAndBody(glm::vec3 movement) {
@@ -178,9 +177,7 @@ void Player::syncCamerasAndBody(glm::vec3 movement) {
 	thirdPersonOrientation = position - thirdPersonCam.position;
 	thirdPersonCam.lookAt(thirdPersonOrientation);
 
-	float angle = glm::angle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)));
-	if (orientation.x > 0.0f) angle = -angle;
-	// float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
+	float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
 	body.setPosition(position);
 	body.setRotation(glm::degrees(angle), Camera::UP);
 

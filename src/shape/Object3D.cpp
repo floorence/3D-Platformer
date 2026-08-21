@@ -19,11 +19,10 @@ void Object3D::setPosition(glm::vec3 position) {
 
 void Object3D::setRotation(float rotationX, float rotationY, float rotationZ) {
     rotation = glm::mat4(1.0f);
-    Log::log(TAG, fmt::format("rotationX: {}, rotationY: {}, rotationZ: {}", rotationX, rotationY, rotationZ));
+    // Log::log(TAG, fmt::format("rotationX: {}, rotationY: {}, rotationZ: {}", rotationX, rotationY, rotationZ));
     float rotX = rotationX + defaultRotation.x;
     float rotY = rotationY + defaultRotation.y;
     float rotZ = rotationZ + defaultRotation.z;
-    Log::log(TAG, fmt::format("rotX: {}, rotY: {}, rotZ: {}", rotX, rotY, rotZ));
 
     if (rotX) rotation = glm::rotate(rotation, glm::radians(rotX), glm::vec3(1.0f, 0.0f, 0.0f));
     if (rotY) rotation = glm::rotate(rotation, glm::radians(rotY), glm::vec3(0.0f, 1.0f, 0.0f));

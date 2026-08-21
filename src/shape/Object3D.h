@@ -20,12 +20,19 @@ public:
      */
     void setRotation(float rotationX, float rotationY, float rotationZ);
     /**
-     * @param angle angle of rotation in degrees
+     * @param angle angle of rotation in degrees, counterclockwise around a positive axis
      * @param axis axis of rotation
      */
     void setRotation(float angle, glm::vec3 axis);
+    /** @brief set the rotation that should always be applied on top of setRotation() */
     void setDefaultRotation(float rotationX, float rotationY, float rotationZ);
+    /**
+     * @param scale scale to apply to x, y, and z axes
+     */
     void setScale(float scale);
+    /**
+     * @param scale scale vector whose components represent scale in x, y, and z axes
+     */
     void setScale(glm::vec3 scale);
 protected:
     glm::mat4 model = glm::mat4(1.0f); // shader uses model to place vertices around correct location in the world
@@ -33,7 +40,7 @@ protected:
     glm::mat4 rotation = glm::mat4(1.0f);
     glm::vec3 scale = glm::vec3(1.0f);
 
-    glm::vec3 defaultRotation = glm::vec3(0.0f); // rotation that should always be applied on top of setRotation()
+    glm::vec3 defaultRotation = glm::vec3(0.0f);
 
     const std::string TAG = "Object3D";
 
