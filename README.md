@@ -5,7 +5,11 @@
 Prerequisites: 
 * computer on Linux, MacOS, or Windows
 * C and C++ compiler. the project compiles in C++17 or above
-* cmake, OpenGL and fmt installed on your system. all other dependencies (glad, glfw, glm, khr, and stb) are header files in the project source (which you will get when you clone the repo)
+* the following installed on your system. all other dependencies (glad, glfw, glm, khr, and stb) are header files in the project source (which you will get when you clone the repo)
+    * cmake 
+    * OpenGL
+    * fmt
+    * assimp
 
 Running the game:
 
@@ -19,9 +23,12 @@ These steps work on linux, I actually have no idea if the procedure is different
 
 note: depending on your system, AddressSanitizer can be annoying and report a bunch of memory leaks from system libraries. to stop this, add the libraries you want to suppress in `asan_suppressions.txt` and run `export LSAN_OPTIONS=suppressions=./asan_suppressions.txt`
 
-## Resources and credit
+## Resources and attributions
 
-Without people way smarter than me making tutorials and providing open source code examples, this project would not be possible in a reasonable time frame, or be vibecoded :vomiting_face:
+Spaceship model from:
+Spaceship by Liz Reddington [© CC-BY](https://creativecommons.org/licenses/by/3.0/) via [Poly Pizza](https://poly.pizza/m/5nWeu4IQXVX)
+
+Without people way smarter than me making tutorials and providing open source code examples, this project would not have been possible in a reasonable time frame, or be vibecoded :vomiting_face:
 
 places in my code that have been adapted from the below resources are clearly marked as such.
 

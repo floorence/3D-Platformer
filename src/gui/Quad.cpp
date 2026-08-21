@@ -8,6 +8,10 @@ Quad::Quad(Texture* texture) {
 
 Quad::Quad(float x, float y, float w, float h, bool corners): Rect(x, y, w, h, corners) {}
 
+void Quad::setColor(glm::vec3 color) {
+    mesh.setColor(color);
+}
+
 void Quad::setTexture(Texture* texture) {
     mesh.setTextures({texture});
 }
@@ -32,12 +36,6 @@ void Quad::onBoundsChanged() {
 }
 
 void Quad::draw(Shader& shader) {
-    if (useColorInsteadOfTexture) {
-        shader.setColor(color);
-        shader.setColorOverride(true);
-    } else {
-        shader.setColorOverride(false);
-    }
     shader.setColorTint(tintColor);
     mesh.drawGui(shader);
 }

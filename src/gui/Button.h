@@ -7,7 +7,7 @@
 
 class Button: public GuiElement {
 public:
-    Button();
+    Button() = default;
 
     void setText(std::string text);
     void setBackgroundColor(glm::vec3 color);

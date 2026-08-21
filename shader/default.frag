@@ -8,6 +8,11 @@
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
 
+// These values must match those in enum class ColorSource in Shader.h!!!
+const int COLOR_SOURCE_TEXTURE = 0;
+const int COLOR_SOURCE_VERTEX_COLOR = 1;
+const int COLOR_SOURCE_MATERIAL_COLOR = 2;
+
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -42,6 +47,12 @@ struct SpotLight {
 in vec3 crntPos;
 in vec3 normal;
 in vec2 texCoord;
+in vec3 color;
+
+// These are not part of the material struct since other shaders also have these uniforms and it would be annoying
+// to have these have a different uniform name
+uniform int colorSource;
+uniform vec3 materialColor;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLight;
@@ -69,7 +80,7 @@ bool isInShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
     return shadow;
 }
 
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
+vec3 calculatePointLight(PointLight light, vec3 texColor, vec3 specColor, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     // diffuse intensity
     float diff = max(dot(normal, lightDir), 0.0);
@@ -80,9 +91,9 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewD
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
     // combine results with texture
-    vec3 diffuse = diff * vec3(texture(material.diffuse, texCoord));
-    // specular texture only has red channel but needs to be grey
-    vec3 specTex = vec3(texture(material.specular, texCoord));
+    vec3 diffuse = diff * texColor;
+    // handle if specular texture only has red channel but needs to be grey
+    vec3 specTex = specColor;
     vec3 greySpecTex = vec3(specTex.r);
     vec3 specular = spec * greySpecTex;
     diffuse *= attenuation;
@@ -116,16 +127,32 @@ vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir
     return light.color * (ambient + diffuse + specular);
 }
 
+vec3 getColorFromSource() {
+    if (colorSource == COLOR_SOURCE_TEXTURE) {
+        return vec3(texture(material.diffuse, texCoord));
+    } else if (colorSource == COLOR_SOURCE_MATERIAL_COLOR) {
+        return materialColor;
+    } else {
+        return color;
+    }
+}
+
+float getBrightness(vec3 color) {
+    return dot(color, vec3(0.2126, 0.7152, 0.0722));
+}
+
 void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
-    vec3 ambient = AMBIENT_LIGHT * vec3(texture(material.diffuse, texCoord));
+    vec3 texColor = getColorFromSource();
+    vec3 specColor = (colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : vec3(getBrightness(texColor));
+    vec3 ambient = AMBIENT_LIGHT * texColor;
 
     //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
 	vec3 result = vec3(0);
 
 	for (int i = 0; i < numPointLights; i++)
-        result += calculatePointLight(pointLights[i], normal, crntPos, viewDirection);    
+        result += calculatePointLight(pointLights[i], texColor, specColor, normal, crntPos, viewDirection);    
 
     result += ambient;
 	result = mix(result, tintColor.rgb, tintColor.a);
@@ -138,7 +165,7 @@ void main() {
     // FragColor = vec4(vec3(depth), 1.0);
 
     // check whether fragment output is higher than threshold, if so output as brightness color
-    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    float brightness = getBrightness(FragColor.rgb);
     if (brightness > 50.0) {
 		// bright bloom blur texture is NOT tone mapped in hdr_bloom.frag, must map to 0-1 here, otherwise blurred areas will be too bright and not look blurred
 		float maxColorChannel = max(max(FragColor.r, FragColor.g), FragColor.b);

@@ -24,7 +24,5 @@ std::vector<GLuint> Line::generateIndices() {
 
 void Line::draw(Camera& camera, Shader& shader) {
     shader.setModel(model);
-    shader.setColor(color);
-    shader.setColorOverride(true);
     mesh.drawLine(camera, shader);
 }

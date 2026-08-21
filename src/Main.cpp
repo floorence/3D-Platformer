@@ -9,6 +9,7 @@
 #include "controller/ClickController.h"
 #include "gui/Button.h"
 #include "gui/SettingsMenu.h"
+#include "shape/Model.h"
 #include "shape/DebugPyramid.h"
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
@@ -123,13 +124,18 @@ int main() {
 	objects.push_back(&floorCube);
 
 	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -0.8f, 0.0f), 0.2f, 0.2f, 0.2f, true);
-	floorLight.color = glm::vec3(100.0f, 100.0f, 100.0f);
+	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
 	objects.push_back(&floorLight);
+
+	// Model spaceship("assets/models/spaceship/spaceship.obj", glm::vec3(0.0f));
 
 	// make light cube
 	// RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
 	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
 	// objects.push_back(&light);
+
+	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	player_ptr = &player;
 
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
@@ -143,6 +149,7 @@ int main() {
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
+	lc.registerDrawable(&player);
 	lc.processLighting(shader);
 
 	Log::log(TAG, "initial lighting processing completed");
@@ -160,11 +167,6 @@ int main() {
 	performanceText.setBounds(width - 200, 10, 200, 100);
 	performanceText.setFontSize(16);
 	performanceText.setCenterText(false);
-
-	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	player.setTextures(&planksDiffuse, &planksSpecular);
-	lc.registerShapes(player.getShapes());
-	player_ptr = &player;
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);

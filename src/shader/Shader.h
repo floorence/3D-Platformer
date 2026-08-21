@@ -12,6 +12,10 @@ enum class ShaderType {
 	Vertex, Geometry, Fragment, Program
 };
 
+enum class ColorSource {
+	Texture, VertexColor, MaterialColor
+};
+
 class Shader {
 public:
 	GLuint ID;
@@ -37,13 +41,14 @@ public:
 	void setExposure(float exposure); // hdr_bloom.frag
 	void setTextColor(glm::vec3 textColor); // font.frag
 	void setBlurHorizontal(bool horizontal); // blur.frag
-	void setColorOverride(bool override); // gui.frag
 	void setBloomEnabled(bool bloomEnabled); // hdr_bloom.frag
+	void setColorSource(ColorSource source); // default.frag, gui.frag
+	void setRotation(glm::mat4 rotation); // default.vert
 
     void registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic); // default.frag
     void setNumPointLights(int num); // default.frag
 
-	void setColor(glm::vec3 color); // light.frag, gui.frag
+	void setColor(glm::vec3 color); // default.frag, light.frag, gui.frag
 	void setColorTint(glm::vec4 color); // default.frag, gui.frag
 private:
 	const std::string TAG = "Shader";

@@ -8,6 +8,7 @@
 ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType, bool convertToSpecular) {
 	type = texType;
 	uniform = (type == TextureType::Diffuse) ? "material.diffuse" : "material.specular";
+	path = image;
 
 	int widthImg, heightImg, numColCh;
 	stbi_set_flip_vertically_on_load(true);
@@ -43,4 +44,8 @@ ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelT
 	}
 
 	stbi_image_free(bytes);
+}
+
+std::string ImageTexture::getPath() {
+	return path;
 }

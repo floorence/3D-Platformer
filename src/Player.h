@@ -4,14 +4,15 @@
 #include"Mass.h"
 #include"camera/Camera.h"
 #include "controller/SettingsListener.h"
+#include "shape/Model.h"
 #include "shape/Line.h"
 #include "shape/RectangularPrism.h"
 
-class Player: public Mass, public SettingsListener {
+class Player: public Mass, public SettingsListener, public Drawable3D {
 public:
     Camera camera;
 	Camera thirdPersonCam;
-	RectangularPrism body;
+	Model body;
 	Shader lineShader;
 	Line orientationLine;
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -19,8 +20,6 @@ public:
 
     Player(glm::vec3 position, int windowWidth, int windowHeight);
 
-	void setTextures(AssetTexture* diffuse, AssetTexture* specular);
-	std::vector<Shape3D*> getShapes();
 	Camera* getActiveCamera();
 	std::string getDebugString() override;
 	
@@ -31,6 +30,9 @@ public:
 	void handleMouseScroll(GLFWwindow* window, double xoffset, double yoffset);
 
     void onSettingsChanged(const Settings& settings) override;
+
+	void draw(Camera& camera, Shader& shader) override;
+	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
 	const float MAX_SPEED_DEFAULT = 1.0f;
 	const float MAX_SPEED_SPRINTING = 2.0f;

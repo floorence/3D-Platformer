@@ -26,7 +26,7 @@ void LightController::registerShape(Shape3D* shape) {
     if (shape->isLightSource)
         lights.push_back(shape);
     else
-        shapes.push_back(shape);
+        drawables.push_back(shape);
 }
 
 void LightController::registerShapes(const std::vector<Shape3D*>& shapes) {
@@ -35,16 +35,24 @@ void LightController::registerShapes(const std::vector<Shape3D*>& shapes) {
     }
 }
 
+void LightController::registerDrawable(Drawable3D* drawable) {
+    drawables.push_back(drawable);
+}
+
+void LightController::registerDrawables(const std::vector<Drawable3D*>& drawables) {
+    this->drawables.insert(this->drawables.end(), drawables.begin(), drawables.end());
+}
+
 void LightController::processLighting(Shader& shader) {
     int numPointLights = 0;
 
     for (const auto& light: lights) {
         float linear, quadratic;
-        float intensity = Utils::getBrightness(light->color) / 10;
+        float intensity = Utils::getBrightness(light->getColor()) / 10;
         calculateAttenuationCoefficients(intensity, &linear, &quadratic);
         shader.registerLightSource(
             numPointLights,
-            light->color,
+            light->getColor(),
             light->getPosition(),
             linear, quadratic
         );
@@ -60,8 +68,8 @@ void LightController::renderForShadows(Shader& shader) {
 
     pointLightCam.position = lights[0]->getPosition();
     pointLightCam.generateTransforms();
-    for (const auto& shape : shapes) {
-        shape->drawToDepthMap(pointLightCam, depthShader);
+    for (const auto& drawable : drawables) {
+        drawable->drawToDepthMap(pointLightCam, depthShader);
     }
 
     Utils::unbindFboAndClear();
@@ -75,9 +83,9 @@ void LightController::renderForShadows(Shader& shader) {
 void LightController::renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera) {
     hdrBloomFbo.bindAndClear();
     Shader* activeShader = &shader;
-    for (const auto& shape: shapes) {
-        if (shape->specialShader != nullptr) activeShader = shape->specialShader;
-        shape->draw(camera, *activeShader);
+    for (const auto& drawable: drawables) {
+        if (drawable->specialShader != nullptr) activeShader = drawable->specialShader;
+        drawable->draw(camera, *activeShader);
     }
 
     activeShader = &lightShader;
@@ -163,11 +171,7 @@ void LightController::renderForReal() {
 
 void LightController::onSettingsChanged(const Settings& settings) {
     blurAmount = settings.graphics.bloomAmount.value * 10;
-    if (blurAmount == 0) {
-        hdrBloomShader.setBloomEnabled(false);
-    } else {
-        hdrBloomShader.setBloomEnabled(true);
-    }
+    hdrBloomShader.setBloomEnabled(blurAmount);
 }
 
 std::string LightController::getDebugString() {

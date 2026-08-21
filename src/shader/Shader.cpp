@@ -3,6 +3,7 @@
 #include<fstream>
 #include <glm/gtc/type_ptr.hpp>
 #include<iostream>
+#include "mesh/VAO.h"
 #include"util/Log.h"
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {
@@ -118,14 +119,19 @@ void Shader::setBlurHorizontal(bool horizontal) {
 	glUniform1i(glGetUniformLocation(ID, "horizontal"), horizontal);
 }
 
-void Shader::setColorOverride(bool override) {
-	activate();
-	glUniform1i(glGetUniformLocation(ID, "colorOverride"), override);
-}
-
 void Shader::setBloomEnabled(bool bloomEnabled) {
 	activate();
 	glUniform1i(glGetUniformLocation(ID, "bloomEnabled"), bloomEnabled);
+}
+
+void Shader::setColorSource(ColorSource source) {
+	activate();
+	glUniform1i(glGetUniformLocation(ID, "colorSource"), static_cast<int>(source));
+}
+
+void Shader::setRotation(glm::mat4 rotation) {
+	activate();
+	glUniformMatrix4fv(glGetUniformLocation(ID, "rotation"), 1, GL_FALSE, glm::value_ptr(rotation));
 }
 
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
@@ -148,7 +154,7 @@ void Shader::setNumPointLights(int num) {
 
 void Shader::setColor(glm::vec3 color) {
 	activate();
-	glUniform3f(glGetUniformLocation(ID, "color"), color.x, color.y, color.z);
+	glUniform3f(glGetUniformLocation(ID, "materialColor"), color.x, color.y, color.z);
 }
 
 void Shader::setColorTint(glm::vec4 color) {

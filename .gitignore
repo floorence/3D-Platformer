@@ -15,7 +15,6 @@ cmake-build-release/
 
 # Compiled files
 *.o
-*.obj
 *.a
 *.so
 *.dll
