@@ -6,7 +6,10 @@
 #include "controller/SettingsListener.h"
 #include "shape/Model.h"
 #include "shape/Line.h"
-#include "shape/RectangularPrism.h"
+
+enum class FlightMode {
+	Tilt, Turn
+};
 
 class Player: public Mass, public SettingsListener, public Drawable3D {
 public:
@@ -34,18 +37,18 @@ public:
 	void draw(Camera& camera, Shader& shader) override;
 	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
-	const float MAX_SPEED_DEFAULT = 1.0f;
-	const float MAX_SPEED_SPRINTING = 2.0f;
 	const float ACCELERATION_MULTIPLIER = 1.0f;
+	const float TURN_SPEED = 45.0f; // degrees per second
 
 	bool firstClick = true;
 	bool focused = true;
-
 	double lastX, lastY;
 
-	// TODO
-	float maxSpeed = MAX_SPEED_DEFAULT; // units per second
 	float sensitivity = 100.0f; 
+
+	FlightMode flightMode = FlightMode::Tilt;
+	// first: total force applied in the past frames, second: number of frames
+	std::pair<glm::vec3, int> totalForce = std::pair(glm::vec3(0.0f), 0);
 
 	bool thirdPerson = false;
 	float thirdPersonDist = 1.0f; // distance from third person cam to player
@@ -53,7 +56,7 @@ private:
 
 	void handleFocusChange(GLFWwindow* window);
 	glm::vec3* getActiveOrientation();
-	void syncCamerasAndBody(glm::vec3 movement);
+	void syncCamerasAndBody(glm::vec3 movement, float deltaTime);
 };
 
 #endif
