@@ -58,7 +58,7 @@ private:
 
 	void handleFocusChange(GLFWwindow* window);
 	glm::vec3* getActiveOrientation();
-	void syncCamerasAndBody(glm::vec3 movement, float marginalTilt);
+	void syncCamerasAndBody(glm::vec3 movement, float turnAmount, float deltaTime);
 };
 
 #endif

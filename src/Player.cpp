@@ -18,14 +18,12 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 
 	body.setScale(1.0f / 600.0f);
 	body.setDefaultRotation(0.0f, glm::radians(180.0f), 0.0f);
-	float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
-	body.setRotation(angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 	orientationLine.specialShader = &lineShader;
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
-	syncCamerasAndBody(glm::vec3(0.0f), 0.0f);
+	syncCamerasAndBody(glm::vec3(0.0f), 0.0f, 0.0f);
 }
 
 Camera* Player::getActiveCamera() {
@@ -45,14 +43,8 @@ std::string Player::getDebugString() {
 
 /** tilt mode: 
  *  when presing a or d it tilts you in the direction you pressed
- *    tilt amount is proportional to the ratio of the speed in that direction over speed in orientation direction.
- *    maximum of tilt 45 degrees when speeds are the same
- *  force applied is constant no matter current speed, except if speed to left or right is going to be larger than
- *    speed in orientation direction, then no force should be applied.
- *  when tilting and going forward, ship should turn in direction of tilt
- *    ship should turn towards the direction it's accelerating in, but not instantly be facing that direction
- *  when not going forward but a or d is pressed, ship should not tilt, turn or move FOR NOW
- *  
+ *    tilt amount is proportional to how long the button was pressed at a maximum of 45 degrees.
+ *  when pressing a or d it turns in the direction you pressed, and keeps turning until no longer being pressed
  * turn mode:
  * tilt mode but ship never tilts.
  */
@@ -61,16 +53,14 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (!focused) return;
 
 	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
-	bool tilting = false;
-	float newTilt = tilt;
+	float turnAmount = 0.0f;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		force += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		// force += -glm::normalize(glm::cross(orientation, Camera::UP));
-		newTilt = std::min(newTilt + TILT_TURN_SPEED * deltaTime, TILT_MAX);
-		tilting = true;
+		turnAmount += TILT_TURN_SPEED * deltaTime;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		// TODO: restrict backward movement
@@ -78,8 +68,7 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		// force += glm::normalize(glm::cross(orientation, Camera::UP));
-		newTilt = std::max(newTilt - TILT_TURN_SPEED * deltaTime, -TILT_MAX);
-		tilting = true;
+		turnAmount -= TILT_TURN_SPEED * deltaTime;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		force += Camera::UP;
@@ -93,18 +82,8 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 		applyForce(force);
 		// orientation = activeOrientation;
 	}
-
-	if (!tilting) {
-		if (newTilt > 0) {
-			newTilt = std::max(0.0f, newTilt - TILT_TURN_SPEED * deltaTime);
-		} else {
-			newTilt = std::min(0.0f, newTilt + TILT_TURN_SPEED * deltaTime);
-		}
-	}
-
 	glm::vec3 movement = updatePosition(deltaTime);
-	syncCamerasAndBody(movement, newTilt - tilt);
-	tilt = newTilt;
+	syncCamerasAndBody(movement, turnAmount, deltaTime);
 }
 
 void Player::handleKeyInputs(GLFWwindow* window, int key, int action) {
@@ -192,7 +171,7 @@ void Player::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	if (thirdPerson) body.drawToDepthMap(camera, depthShader);
 }
 
-void Player::syncCamerasAndBody(glm::vec3 movement, float marginalTilt) {
+void Player::syncCamerasAndBody(glm::vec3 movement, float turnAmount, float deltaTime) {
 	camera.position = this->position;
 	camera.lookAt(orientation);
 
@@ -201,15 +180,33 @@ void Player::syncCamerasAndBody(glm::vec3 movement, float marginalTilt) {
 	thirdPersonCam.lookAt(thirdPersonOrientation);
 
 	body.setPosition(position);
-	marginalTilt = glm::radians(marginalTilt);
-	
-	// float vAlongOrientation = glm::dot(velocity, orientation);
-	// float vAlongLeft = glm::dot(velocity, -glm::normalize(glm::cross(orientation, Camera::UP)));
 
-	orientation = glm::rotate(orientation, marginalTilt, Camera::UP);
-	// Log::log("Player", fmt::format("tilt: {}", tilt));
-	body.rotate(marginalTilt, orientation);
-	body.rotate(marginalTilt, Camera::UP);
+	float newTilt = tilt;
+	if (turnAmount == 0.0f) {
+		if (newTilt > 0.0f) {
+			newTilt = std::max(0.0f, newTilt - TILT_TURN_SPEED * deltaTime);
+		} else {
+			newTilt = std::min(0.0f, newTilt + TILT_TURN_SPEED * deltaTime);
+		}
+	} else {
+		if (turnAmount < 0.0f) {
+			newTilt = std::max(newTilt + turnAmount, -TILT_MAX);
+		} else {
+			newTilt = std::min(newTilt + turnAmount, TILT_MAX);
+		}
+	}
+
+	float tiltAmount = newTilt - tilt;
+	tilt = newTilt;
+	tiltAmount = glm::radians(tiltAmount);
+	turnAmount = glm::radians(turnAmount);
+	Log::log("Player", fmt::format("tiltAmount: {}, turnAmount: {}", tiltAmount, turnAmount));
+
+	orientation = glm::rotate(orientation, turnAmount, Camera::UP);
+	float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
+	body.setRotation(angle, Camera::UP);
+	body.rotate(glm::radians(tilt), Camera::FORWARD);
+	// body.rotate(turnAmount, Camera::UP);
 
 	orientationLine.setCoordinates(position, position + orientation);
 }
