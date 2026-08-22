@@ -17,7 +17,9 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	lastY = camera.windowHeight / 2.0;
 
 	body.setScale(1.0f / 600.0f);
-	body.setDefaultRotation(0.0f, 180.0f, 0.0f);
+	body.setDefaultRotation(0.0f, glm::radians(180.0f), 0.0f);
+	float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
+	body.setRotation(angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 	orientationLine.specialShader = &lineShader;
@@ -59,19 +61,25 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (!focused) return;
 
 	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
+	bool tilting = false;
+	float newTilt = tilt;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		force += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		force += -glm::normalize(glm::cross(orientation, Camera::UP));
+		// force += -glm::normalize(glm::cross(orientation, Camera::UP));
+		newTilt = std::min(newTilt + TILT_TURN_SPEED * deltaTime, TILT_MAX);
+		tilting = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		// TODO: restrict backward movement
 		force += -glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		force += glm::normalize(glm::cross(orientation, Camera::UP));
+		// force += glm::normalize(glm::cross(orientation, Camera::UP));
+		newTilt = std::max(newTilt - TILT_TURN_SPEED * deltaTime, -TILT_MAX);
+		tilting = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		force += Camera::UP;
@@ -86,8 +94,17 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 		// orientation = activeOrientation;
 	}
 
+	if (!tilting) {
+		if (newTilt > 0) {
+			newTilt = std::max(0.0f, newTilt - TILT_TURN_SPEED * deltaTime);
+		} else {
+			newTilt = std::min(0.0f, newTilt + TILT_TURN_SPEED * deltaTime);
+		}
+	}
+
 	glm::vec3 movement = updatePosition(deltaTime);
-	syncCamerasAndBody(movement, deltaTime);
+	syncCamerasAndBody(movement, newTilt - tilt);
+	tilt = newTilt;
 }
 
 void Player::handleKeyInputs(GLFWwindow* window, int key, int action) {
@@ -175,7 +192,7 @@ void Player::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	if (thirdPerson) body.drawToDepthMap(camera, depthShader);
 }
 
-void Player::syncCamerasAndBody(glm::vec3 movement, float deltaTime) {
+void Player::syncCamerasAndBody(glm::vec3 movement, float marginalTilt) {
 	camera.position = this->position;
 	camera.lookAt(orientation);
 
@@ -184,33 +201,15 @@ void Player::syncCamerasAndBody(glm::vec3 movement, float deltaTime) {
 	thirdPersonCam.lookAt(thirdPersonOrientation);
 
 	body.setPosition(position);
+	marginalTilt = glm::radians(marginalTilt);
 	
-	float tilt = 0.0f;
-	float vAlongOrientation = glm::dot(velocity, orientation);
-	float vAlongLeft = glm::dot(velocity, -glm::normalize(glm::cross(orientation, Camera::UP)));
-	if (vAlongOrientation > 0) {
-		tilt = (vAlongLeft / vAlongOrientation) * 45;
-	}
-	float orientationToTarget = 0.0f;
-	if (prevAcceleration.x != 0 || prevAcceleration.y != 0 || prevAcceleration.z != 0) {
-		orientationToTarget = glm::orientedAngle(orientation, glm::normalize(prevAcceleration), Camera::UP);
-		if (abs(orientationToTarget) < 0.001f) orientationToTarget = 0.0f;
-		Log::log("Player", fmt::format("orientationToTarget: {}, acceleration: {}, {}, {}", orientationToTarget, prevAcceleration.x, prevAcceleration.y, prevAcceleration.z));
-	}
-	float turn;
-	float maxTurnAmount = TURN_SPEED * deltaTime;
-	if (orientationToTarget > 0) {
-		turn = std::min(orientationToTarget, glm::radians(maxTurnAmount));
-	} else {
-		turn = std::max(orientationToTarget, glm::radians(-maxTurnAmount));
-	}
-	orientation = glm::rotate(orientation, turn, Camera::UP);
-	Log::log("Player", fmt::format("turn: {}, orientation: {}, {}, {}", turn, orientation.x, orientation.y, orientation.z));
-	float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
-	float rotationX = orientation.x * tilt;
-	float rotationY = orientation.y * tilt + glm::degrees(angle);
-	float rotationZ = orientation.z * tilt;
-	body.setRotation(rotationX, rotationY, rotationZ);
+	// float vAlongOrientation = glm::dot(velocity, orientation);
+	// float vAlongLeft = glm::dot(velocity, -glm::normalize(glm::cross(orientation, Camera::UP)));
+
+	orientation = glm::rotate(orientation, marginalTilt, Camera::UP);
+	// Log::log("Player", fmt::format("tilt: {}", tilt));
+	body.rotate(marginalTilt, orientation);
+	body.rotate(marginalTilt, Camera::UP);
 
 	orientationLine.setCoordinates(position, position + orientation);
 }

@@ -99,7 +99,7 @@ int main() {
 	AssetTexture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
 	AssetTexture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
 	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-2.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
-	rect.setRotation(0, 0, 180);
+	rect.setRotation(0, 0, glm::radians(180.0f));
 	objects.push_back(&rect);
 
 	// make floor
