@@ -57,3 +57,12 @@ float Utils::randomFloat(float from, float to) {
     std::uniform_real_distribution<float> dist(from, to);
     return dist(gen);
 }
+
+float Utils::approach(float from, float to, float amount) {
+    if (from > to) {
+        from = std::max(to, from - amount);
+    } else {
+        from = std::min(to, from + amount);
+    }
+    return from;
+}

@@ -18,8 +18,8 @@ public:
 	Model body;
 	Shader lineShader;
 	Line orientationLine;
-	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f); // should always be normalized!!!
+	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f); // length should be the same as thirdPersonDist
 
     Player(glm::vec3 position, int windowWidth, int windowHeight);
 
@@ -38,9 +38,11 @@ public:
 	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
 	const float ACCELERATION_MULTIPLIER = 1.0f;
-	const float TILT_TURN_SPEED = 45.0f; // degrees per second
-	const float TILT_MAX = 45.0f;
-	float tilt = 0.0f; // degrees
+	const float TILT_TURN_SPEED = glm::radians(45.0f); // radians per second
+	const float TILT_MAX = glm::radians(45.0f); // radians
+	float yaw = 0.0f; // radians
+	float pitch = 0.0f; // radians
+	float roll = 0.0f; // radians
 
 	bool firstClick = true;
 	bool focused = true;
@@ -58,7 +60,7 @@ private:
 
 	void handleFocusChange(GLFWwindow* window);
 	glm::vec3* getActiveOrientation();
-	void syncCamerasAndBody(glm::vec3 movement, float turnAmount, float deltaTime);
+	void syncCamerasAndBody(glm::vec3 movement, float turnAmount, float pitchAmount, float deltaTime);
 };
 
 #endif

@@ -29,6 +29,7 @@ namespace Utils {
     glm::vec3 setVectorLength(glm::vec3 v, float desiredLength);
 
     float randomFloat(float from, float to); // [from, to]
+	float approach(float from, float to, float amount); // approach from -> to by amount
 };
 
 #endif
