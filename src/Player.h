@@ -60,7 +60,8 @@ private:
 
 	void handleFocusChange(GLFWwindow* window);
 	glm::vec3* getActiveOrientation();
-	void syncCamerasAndBody(glm::vec3 movement, float turnAmount, float pitchAmount, float deltaTime);
+	/** yawTurn and pitchTurn are 0, -1, or 1 depending on direction */
+	void syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, float deltaTime);
 };
 
 #endif
