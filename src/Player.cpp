@@ -5,8 +5,7 @@
 Player::Player(glm::vec3 position, int windowWidth, int windowHeight) 
     : camera(position, windowWidth, windowHeight),
 	  thirdPersonCam(position, windowWidth, windowHeight),
-	  body("assets/models/spaceship/spaceship.obj", position),
-	  lineShader("shader/default.vert", "shader/gui.frag") // we don't want the line affected by lighting
+	  body("assets/models/spaceship/spaceship.obj", position)
 {
     this->position = position;
     camera.setPerspective(45.0f, 0.1f, 100.0f);
@@ -20,7 +19,7 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	body.setDefaultRotation(0.0f, glm::radians(180.0f), 0.0f);
 
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
-	orientationLine.specialShader = &lineShader;
+	orientationLine.shader = Shader3D::Flat;
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
 	syncCamerasAndBody(glm::vec3(0.0f), 0.0f, 0.0f, 0.0f);

@@ -139,6 +139,7 @@ int main() {
 	// test trail no rotating
 	Trail trail(glm::vec3(0.0f, 0.0f, 0.0f), 10);
 	trail.setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+	trail.shader = Shader3D::Flat;
 	for (int i = 0; i < 10; i++) {
 		trail.addPoint(glm::vec3(0.0f, 0.0f, 0.1f * i), 0.0f);
 	}
@@ -146,6 +147,7 @@ int main() {
 	// test trail with rotation
 	Trail trail2(glm::vec3(0.0f, 0.0f, 0.0f), 10);
 	trail2.setColor(glm::vec3(0.0f, 1.0f, 0.0f));
+	trail2.shader = Shader3D::Flat;
 	for (int i = 0; i < 10; i++) {
 		trail2.addPoint(glm::vec3(0.5f, 0.0f, 0.1f * i), glm::radians(10.0f) * i);
 	}
@@ -153,6 +155,7 @@ int main() {
 	// test trail with rotation and tail deletion
 	Trail trail3(glm::vec3(0.0f, 0.0f, 0.0f), 10);
 	trail3.setColor(glm::vec3(1.0f, 0.0f, 1.0f));
+	trail3.shader = Shader3D::Flat;
 	for (int i = 0; i < 15; i++) {
 		trail3.addPoint(glm::vec3(1.0f, 0.0f, 0.1f * i), glm::radians(10.0f) * i);
 	}
@@ -160,17 +163,23 @@ int main() {
 	// test trail with rotation and turning
 	Trail trail4(glm::vec3(0.0f, 0.0f, 0.0f), 10);
 	trail4.setColor(glm::vec3(1.0f, 1.0f, 0.0f));
+	trail4.shader = Shader3D::Flat;
 	for (int i = 0; i < 10; i++) {
 		trail4.addPoint(glm::vec3(1.5f + 0.1f * (i * i), 0.0f, 0.1f * i), glm::radians(10.0f) * i);
 	}
 
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
+	Shader flatShader("shader/default.vert", "shader/gui.frag");
 	Shader guiShader("shader/gui.vert", "shader/gui.frag");
 	Shader fontShader("shader/gui.vert", "shader/font.frag");
 	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
 	guiShader.setProjection(guiProjection);
 	fontShader.setProjection(guiProjection);
+
+	Globals::DefaultShader = &shader;
+	Globals::LightShader = &lightShader;
+	Globals::FlatShader = &flatShader;
 	Globals::GuiShader = &guiShader;
 	Globals::FontShader = &fontShader;
 
@@ -248,7 +257,7 @@ int main() {
 
 		player.handleKeyInputs(window, deltaTime);
 		lc.renderForShadows(shader);
-		lc.renderForHDRAndBloom(shader, lightShader, *player.getActiveCamera());
+		lc.renderForHDRAndBloom(*player.getActiveCamera());
 		lc.adjustBrightness(deltaTime);
 		lc.blurBrightAreas();
 		lc.renderForReal();

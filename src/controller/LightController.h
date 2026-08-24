@@ -19,7 +19,7 @@ public:
 
     // these functions must all be called in order each frame
     void renderForShadows(Shader& shader);
-    void renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera);
+    void renderForHDRAndBloom(Camera& camera);
     void adjustBrightness(float deltaTime);
     void blurBrightAreas();
     void renderForReal();
@@ -84,6 +84,7 @@ private:
      *              note that most of the light falls in the first 20% of range.
      */
     void calculateAttenuationCoefficients(float range, float* linear, float* quadratic);
+    Shader* getShaderFor(Shader3D shaderType);
 };
 
 #endif

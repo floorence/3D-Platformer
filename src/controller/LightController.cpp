@@ -1,6 +1,7 @@
 #include "LightController.h"
 #include "camera/PointLightCamera.h"
 #include "texture/CubeMapTexture.h"
+#include "util/Globals.h"
 #include "util/Log.h"
 #include "util/Utils.h"
 #include <cmath>
@@ -81,20 +82,16 @@ void LightController::renderForShadows(Shader& shader) {
     glViewport(0, 0, windowWidth, windowHeight);
 }
 
-void LightController::renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera) {
+void LightController::renderForHDRAndBloom(Camera& camera) {
     hdrBloomFbo.bindAndClear();
-    Shader* activeShader = &shader;
     for (const auto& drawable: drawables) {
-        if (drawable->specialShader != nullptr) activeShader = drawable->specialShader;
         if (drawable->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-        drawable->draw(camera, *activeShader);
+        drawable->draw(camera, *getShaderFor(drawable->shader));
     }
 
-    activeShader = &lightShader;
     for (const auto& light: lights) {
-        if (light->specialShader != nullptr) activeShader = light->specialShader;
         if (light->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-        light->draw(camera, *activeShader);
+        light->draw(camera, *getShaderFor(light->shader));
     }
 
     Utils::unbindFboAndClear();
@@ -255,3 +252,11 @@ void LightController::calculateAttenuationCoefficients(float range, float* linea
     *quadratic = QUADRATIC_COEFFICIENT * pow(range, QUADRATIC_POWER);
 }
 
+Shader* LightController::getShaderFor(Shader3D shaderType) {
+    switch (shaderType) {
+        case Shader3D::Default: return Globals::DefaultShader;
+        case Shader3D::Light: return Globals::LightShader;
+        case Shader3D::Flat: return Globals::FlatShader;
+    }
+    return Globals::DefaultShader;
+}

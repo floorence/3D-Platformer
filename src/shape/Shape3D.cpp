@@ -7,6 +7,7 @@ Shape3D::Shape3D(glm::vec3 position, bool isLightSource)
     : Object3D(position) 
 {
     this->isLightSource = isLightSource;
+    if (isLightSource) shader = Shader3D::Light;
 }
 
 Shape3D::Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource) 

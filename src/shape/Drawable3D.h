@@ -5,10 +5,14 @@
 #include "mesh/VBO.h"
 #include "shader/Shader.h"
 
+enum class Shader3D {
+    Default, Light, Flat
+};
+
 class Drawable3D {
 public:
     bool cullFacesBeforeDraw = true;
-    Shader* specialShader = nullptr; // optional special shader to use instead of default
+    Shader3D shader = Shader3D::Default;
 
     Drawable3D() = default;
 

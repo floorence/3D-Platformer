@@ -16,7 +16,6 @@ public:
     Camera camera;
 	Camera thirdPersonCam;
 	Model body;
-	Shader lineShader;
 	Line orientationLine;
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f); // should always be normalized!!!
 	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f); // length should be the same as thirdPersonDist
