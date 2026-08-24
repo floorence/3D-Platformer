@@ -14,6 +14,7 @@
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
 #include"controller/LightController.h"
+#include "shape/Trail.h"
 #include"texture/FontTexture.h"
 #include"texture/ImageTexture.h"
 #include "util/Globals.h"
@@ -127,8 +128,6 @@ int main() {
 	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
 	objects.push_back(&floorLight);
 
-	// Model spaceship("assets/models/spaceship/spaceship.obj", glm::vec3(0.0f));
-
 	// make light cube
 	// RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
 	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
@@ -136,6 +135,27 @@ int main() {
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player_ptr = &player;
+
+	// test trail no rotating
+	Trail trail(glm::vec3(0.0f, 0.0f, 0.0f), 10);
+	trail.setColor(glm::vec3(100.0f, 0.0f, 0.0f));
+	for (int i = 0; i < 10; i++) {
+		trail.addPoint(glm::vec3(0.0f, 0.0f, 0.1f * (i + 1)), 0.0f);
+	}
+
+	// test trail with rotation
+	Trail trail2(glm::vec3(0.5f, 0.0f, 0.0f), 10);
+	trail2.setColor(glm::vec3(0.0f, 100.0f, 0.0f));
+	for (int i = 0; i < 10; i++) {
+		trail2.addPoint(glm::vec3(0.5f, 0.0f, 0.1f * (i + 1)), glm::radians(10.0f) * i);
+	}
+
+	// test trail with rotation and tail deletion
+	Trail trail3(glm::vec3(1.0f, 0.0f, 0.0f), 10);
+	trail3.setColor(glm::vec3(100.0f, 0.0f, 100.0f));
+	for (int i = 0; i < 15; i++) {
+		trail3.addPoint(glm::vec3(1.0f, 0.0f, 0.1f * (i + 1)), glm::radians(10.0f) * i);
+	}
 
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
@@ -149,6 +169,7 @@ int main() {
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
+	lc.registerDrawables({&trail, &trail2, &trail3});
 	lc.registerDrawable(&player);
 	lc.processLighting(shader);
 

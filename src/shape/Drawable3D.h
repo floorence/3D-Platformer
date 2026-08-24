@@ -7,6 +7,7 @@
 
 class Drawable3D {
 public:
+    bool cullFacesBeforeDraw = true;
     Shader* specialShader = nullptr; // optional special shader to use instead of default
 
     Drawable3D() = default;

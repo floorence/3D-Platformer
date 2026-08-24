@@ -69,6 +69,7 @@ void LightController::renderForShadows(Shader& shader) {
     pointLightCam.position = lights[0]->getPosition();
     pointLightCam.generateTransforms();
     for (const auto& drawable : drawables) {
+        if (drawable->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
         drawable->drawToDepthMap(pointLightCam, depthShader);
     }
 
@@ -85,12 +86,14 @@ void LightController::renderForHDRAndBloom(Shader& shader, Shader& lightShader, 
     Shader* activeShader = &shader;
     for (const auto& drawable: drawables) {
         if (drawable->specialShader != nullptr) activeShader = drawable->specialShader;
+        if (drawable->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
         drawable->draw(camera, *activeShader);
     }
 
     activeShader = &lightShader;
     for (const auto& light: lights) {
         if (light->specialShader != nullptr) activeShader = light->specialShader;
+        if (light->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
         light->draw(camera, *activeShader);
     }
 
