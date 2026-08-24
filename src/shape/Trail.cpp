@@ -3,28 +3,33 @@
 #include "util/Utils.h"
 #include <fmt/format.h>
 
-Trail::Trail(glm::vec3 position, int maxPoints)
+Trail::Trail(glm::vec3 position, int maxPoints, float headWidth)
     : Shape3D(position, false) 
 {
     this->maxPoints = maxPoints;
+    this->headWidth = headWidth;
     cullFacesBeforeDraw = false;
-
-    vertices.push_back(Vertex {
-        position,
-        glm::vec3(0.0f),
-        glm::vec2(0.0f),
-        glm::vec3(0.0f),
-    });
-    points++;
-
-    invalidateShape();
 }
 
 void Trail::addPoint(glm::vec3 position, float angle) {
+    addPointRelative(position - this->position, angle);
+}
+
+void Trail::addPointRelative(glm::vec3 position, float angle) {
     Log::log("Trail", fmt::format("addPoint position: {}, {}, {}, angle: {}", position.x, position.y, position.z, angle));
     glm::vec3 prevHead;
-    if (points == 1) {
-        // TODO might have to update normal of first vertex
+    if (points == 0) {
+        // first point ever
+        vertices.push_back(Vertex {
+            position,
+            glm::vec3(0.0f),
+            glm::vec2(0.0f),
+            glm::vec3(0.0f),
+        });
+        points++;
+        invalidateShape();
+        return;
+    } else if (points == 1) {
         prevHead = vertices[0].position;
     } else {
         prevHead = (vertices[0].position + vertices[1].position) / 2.0f;
@@ -37,6 +42,8 @@ void Trail::addPoint(glm::vec3 position, float angle) {
 
     Vertex leftVertex = {position + left, up, glm::vec2(0.0f), glm::vec3(0.0f)};
     Vertex rightVertex = {position - left, up, glm::vec2(0.0f), glm::vec3(0.0f)};
+    if (points == 1) vertices[0].normal = up; // update normal of first vertex
+    Log::log("Trail", fmt::format("normal: {}, {}, {}", up.x, up.y, up.z));
     
     std::vector<Vertex> newVertices = {leftVertex, rightVertex};
     vertices.insert(vertices.begin(), newVertices.begin(), newVertices.end());
@@ -49,7 +56,7 @@ void Trail::addPoint(glm::vec3 position, float angle) {
 
     // update existing points' widths and remove last point if greater than maxPoints
     for (uint i = 2; i < vertices.size(); i += 2) {
-        Log::log("Trail", fmt::format("i: {} size: {}, points: {}", i, vertices.size(), points));
+        // Log::log("Trail", fmt::format("i: {} size: {}, points: {}", i, vertices.size(), points));
 
         if (i / 2 + 1 == points) { // last point
             if (removePoint) {
@@ -78,18 +85,21 @@ std::vector<Vertex> Trail::generateVertices() {
 }
 
 std::vector<GLuint> Trail::generateIndices() {
-    for (uint i = indicesNumVertices; i < vertices.size(); i += 2) {
-        if (i == vertices.size() - 1) {
-            // only one vertex
-            indices.push_back(i);
-            break;
+    if (!indicesMaxPoints) {
+        indices.clear();
+        for (uint i = 0; i < vertices.size(); i += 2) {
+            if (i == vertices.size() - 1) {
+                // only one vertex
+                indices.push_back(i);
+                break;
+            }
+            if (i == vertices.size() - 3) {
+                indices.insert(indices.end(), {i, i + 2, i + 1});
+                break;
+            }
+            indices.insert(indices.end(), {i, i + 2, i + 3, i, i + 3, i + 1});
         }
-        if (i == vertices.size() - 3) {
-            indices.insert(indices.end(), {i, i + 2, i + 1});
-            break;
-        }
-        indices.insert(indices.end(), {i, i + 2, i + 3, i, i + 3, i + 1});
-    }
-    indicesNumVertices = vertices.size();
+        indicesMaxPoints = points == maxPoints;
+    } 
     return indices;
 }
