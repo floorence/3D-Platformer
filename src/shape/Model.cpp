@@ -168,17 +168,20 @@ TextureType Model::aiToTextureType(aiTextureType type) {
     }
 }
 
-void Model::draw(Camera& camera, Shader& shader) {
-    shader.setModel(model);
-    shader.setRotation(rotation); // shader still has to rotate normals
-    shader.setShininess(16); // TODO
+void Model::preDraw() {
+    Object3D::preDraw();
+    shader->setShininess(16); // TODO
+}
+
+void Model::draw(Camera& camera) {
+    preDraw();
     for (auto& mesh: meshes) {
-        mesh.draw(camera, shader);
+        mesh.draw(camera, *shader);
     }
 }
 
 void Model::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
-    depthShader.setModel(model);
+    preDrawToDepthMap(depthShader);
     for (auto& mesh: meshes) {
         mesh.drawToDepthMap(camera, depthShader);
     }

@@ -1,4 +1,5 @@
 #include"Trail.h"
+#include "util/Globals.h"
 #include "util/Log.h"
 #include "util/Utils.h"
 #include <fmt/format.h>
@@ -8,7 +9,7 @@ Trail::Trail(glm::vec3 position, int maxPoints, float headWidth)
 {
     this->maxPoints = maxPoints;
     this->headWidth = headWidth;
-	shader = Shader3D::Flat;
+	shader = Globals::FlatShader;
     cullFacesBeforeDraw = false;
 }
 
@@ -45,7 +46,7 @@ void Trail::addPointInternal(glm::vec3 position, float angle, glm::vec3 directio
     }
     if (position == prevHead) return;
     if (direction == glm::vec3(0.0f)) direction = position - prevHead;
-    glm::vec3 left = glm::cross(Camera::UP, direction);
+    glm::vec3 left = glm::cross(Constants::UP, direction);
     left = glm::rotate(left, angle, direction);
     left = Utils::setVectorLength(left, headWidth / 2);
     glm::vec3 up = glm::normalize(glm::cross(direction, left));

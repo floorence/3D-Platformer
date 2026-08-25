@@ -1,6 +1,7 @@
 #ifndef CAMERA_CLASS_H
 #define CAMERA_CLASS_H
 
+#include "util/Constants.h"
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<glm/glm.hpp>
@@ -18,17 +19,10 @@ public:
 	int windowWidth, windowHeight;
 	float farPlane;
 
-	// constants
-	static constexpr glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
-	static constexpr glm::vec3 DOWN = glm::vec3(0.0f, -1.0f, 0.0f);
-	static constexpr glm::vec3 FORWARD = glm::vec3(0.0f, 0.0f, -1.0f);
-	static constexpr glm::vec3 LEFT = glm::vec3(-1.0f, 0.0f, 0.0f);
-	static constexpr glm::vec3 RIGHT = glm::vec3(1.0f, 0.0f, 0.0f);
-
 	Camera(glm::vec3 position, int windowWidth, int windowHeight);
 
 	void setPerspective(float FOVdeg, float nearPlane, float farPlane);
-	void lookAt(glm::vec3 orientation, glm::vec3 up = UP);
+	void lookAt(glm::vec3 orientation, glm::vec3 up = Constants::UP);
 	glm::mat4 getCameraMatrix();
 private:
 	const std::string TAG = "Camera";

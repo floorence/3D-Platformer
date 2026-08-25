@@ -21,9 +21,8 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	body.setDefaultRotation(0.0f, glm::radians(180.0f), 0.0f);
 
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
-	orientationLine.shader = Shader3D::Flat;
 
-	leftTrail.setColor(glm::vec3(49.0f, 31.95f, 23.55f));
+	leftTrail.setColor(glm::vec3(98.0f, 63.9f, 47.1f));
 	rightTrail.setColor(glm::vec3(49.0f, 31.95f, 23.55f));
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
@@ -69,7 +68,7 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		yawTurn++;
-		if (!thirdPerson) force += -glm::normalize(glm::cross(orientation, Camera::UP));
+		if (!thirdPerson) force += -glm::normalize(glm::cross(orientation, Constants::UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		// TODO: restrict backward movement
@@ -80,15 +79,15 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		yawTurn--;
-		if (!thirdPerson) force += glm::normalize(glm::cross(orientation, Camera::UP));
+		if (!thirdPerson) force += glm::normalize(glm::cross(orientation, Constants::UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		pitchTurn--;
-		if (!thirdPerson) force += Camera::UP;
+		if (!thirdPerson) force += Constants::UP;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
 		pitchTurn++;
-		if (!thirdPerson) force -= Camera::UP;
+		if (!thirdPerson) force -= Constants::UP;
 	}
 
 	if (force != glm::vec3(0.0, 0.0, 0.0)) {
@@ -131,16 +130,16 @@ void Player::handleMousePos(GLFWwindow*, double xpos, double ypos) {
 	glm::vec3 verticalOrientation = glm::normalize(glm::rotate(
 		newOrientation,
 		glm::radians(-rotY),
-		glm::normalize(glm::cross(newOrientation, Camera::UP))
+		glm::normalize(glm::cross(newOrientation, Constants::UP))
 	));
 
 	// decide whether or not the next vertical orientation is legal or not
-	if (std::abs(glm::angle(verticalOrientation, Camera::UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
+	if (std::abs(glm::angle(verticalOrientation, Constants::UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
 		newOrientation = verticalOrientation;
 	}
 
 	// rotate the orientation left and right
-	newOrientation = glm::rotate(newOrientation, glm::radians(-rotX), Camera::UP);
+	newOrientation = glm::rotate(newOrientation, glm::radians(-rotX), Constants::UP);
 	
 	if (thirdPerson) {
 		thirdPersonCam.position = position - Utils::setVectorLength(newOrientation, thirdPersonDist);
@@ -175,13 +174,12 @@ void Player::onSettingsChanged(const Settings& settings) {
 	sensitivity = settings.controls.sensitivity.value;
 }
 
-void Player::draw(Camera& camera, Shader& shader) {
+void Player::draw(Camera& camera) {
 	if (thirdPerson) {
-		body.draw(camera, shader);
-		orientationLine.draw(camera, shader);
-		glDisable(GL_CULL_FACE);
-		leftTrail.draw(camera, shader);
-		rightTrail.draw(camera, shader);
+		body.draw(camera);
+		orientationLine.draw(camera);
+		leftTrail.draw(camera);
+		rightTrail.draw(camera);
 	}
 }
 
@@ -216,21 +214,21 @@ void Player::syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, 
 		// pitch += pitchTurn * tiltAmount;
 		// Log::log("Player", fmt::format("tiltAmount: {}, turnAmount: {}", tiltAmount, turnAmount));
 
-		orientation = glm::rotate(Camera::FORWARD, yaw, Camera::UP);
-		glm::vec3 left = glm::normalize(glm::cross(Camera::UP, orientation)); // not taking into account roll, since that's how pitch works
+		orientation = glm::rotate(Constants::FORWARD, yaw, Constants::UP);
+		glm::vec3 left = glm::normalize(glm::cross(Constants::UP, orientation)); // not taking into account roll, since that's how pitch works
 		orientation = glm::rotate(orientation, pitch, left);
 		// glm::vec3 up = glm::normalize(glm::cross(orientation, left));
 
-		body.setRotation(yaw, Camera::UP);
+		body.setRotation(yaw, Constants::UP);
 		// use local axes, otherwise rotation will be post multiplied against existing rotation
-		body.rotate(pitch, Camera::RIGHT); // instead of left since body has default rotation of 180 degrees
-		body.rotate(roll, Camera::FORWARD);
+		body.rotate(pitch, Constants::RIGHT); // instead of left since body has default rotation of 180 degrees
+		body.rotate(roll, Constants::FORWARD);
 
 		// use negative roll since body rotation is reversed due to it being rotated 180 degrees
 		left = glm::rotate(left, -roll, orientation);
 		glm::vec3 dimens = body.getDimensions();
-		glm::vec3 posToBack = Utils::setVectorLength(-orientation, dimens.z / 2.2f);
-		glm::vec3 backToLeftThruster = Utils::setVectorLength(left, dimens.x / 7.0f);
+		glm::vec3 posToBack = Utils::setVectorLength(-orientation, dimens.z / 2.4f);
+		glm::vec3 backToLeftThruster = Utils::setVectorLength(left, dimens.x / 7.5f);
 		leftTrail.addPointWithDir(position + posToBack + backToLeftThruster, -roll, orientation);
 		rightTrail.addPointWithDir(position + posToBack - backToLeftThruster, -roll, orientation);
 	}

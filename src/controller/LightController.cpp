@@ -44,14 +44,14 @@ void LightController::registerDrawables(const std::vector<Drawable3D*>& drawable
     this->drawables.insert(this->drawables.end(), drawables.begin(), drawables.end());
 }
 
-void LightController::processLighting(Shader& shader) {
+void LightController::processLighting() {
     int numPointLights = 0;
 
     for (const auto& light: lights) {
         float linear, quadratic;
         float intensity = Utils::getBrightness(light->getColor()) / 10;
         calculateAttenuationCoefficients(intensity, &linear, &quadratic);
-        shader.registerLightSource(
+        Globals::DefaultShader->registerLightSource(
             numPointLights,
             light->getColor(),
             light->getPosition(),
@@ -60,24 +60,23 @@ void LightController::processLighting(Shader& shader) {
         numPointLights++;
     }
 
-    shader.setNumPointLights(numPointLights);
+    Globals::DefaultShader->setNumPointLights(numPointLights);
 }
 
-void LightController::renderForShadows(Shader& shader) {
+void LightController::renderForShadows() {
     depthMapFbo.bindAndClear();
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
     pointLightCam.position = lights[0]->getPosition();
     pointLightCam.generateTransforms();
     for (const auto& drawable : drawables) {
-        if (drawable->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
         drawable->drawToDepthMap(pointLightCam, depthShader);
     }
 
     Utils::unbindFboAndClear();
 
-    shader.setCubeMapTexture(depthMapTexture, "depthMap", 5);
-    shader.setFarPlane(pointLightCam.farPlane);
+    Globals::DefaultShader->setCubeMapTexture(depthMapTexture, "depthMap", 5);
+    Globals::DefaultShader->setFarPlane(pointLightCam.farPlane);
 
     glViewport(0, 0, windowWidth, windowHeight);
 }
@@ -85,13 +84,11 @@ void LightController::renderForShadows(Shader& shader) {
 void LightController::renderForHDRAndBloom(Camera& camera) {
     hdrBloomFbo.bindAndClear();
     for (const auto& drawable: drawables) {
-        if (drawable->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-        drawable->draw(camera, *getShaderFor(drawable->shader));
+        drawable->draw(camera);
     }
 
     for (const auto& light: lights) {
-        if (light->cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
-        light->draw(camera, *getShaderFor(light->shader));
+        light->draw(camera);
     }
 
     Utils::unbindFboAndClear();
@@ -250,13 +247,4 @@ void LightController::prepareFPTexture(Texture& texture) {
 void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {
     *linear = LINEAR_COEFFICIENT * pow(range, LINEAR_POWER);
     *quadratic = QUADRATIC_COEFFICIENT * pow(range, QUADRATIC_POWER);
-}
-
-Shader* LightController::getShaderFor(Shader3D shaderType) {
-    switch (shaderType) {
-        case Shader3D::Default: return Globals::DefaultShader;
-        case Shader3D::Light: return Globals::LightShader;
-        case Shader3D::Flat: return Globals::FlatShader;
-    }
-    return Globals::DefaultShader;
 }

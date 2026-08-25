@@ -15,10 +15,10 @@ public:
     void registerShapes(const std::vector<Shape3D*>& shapes);
     void registerDrawable(Drawable3D* drawable);
     void registerDrawables(const std::vector<Drawable3D*>& drawables);
-    void processLighting(Shader& shader);
+    void processLighting();
 
     // these functions must all be called in order each frame
-    void renderForShadows(Shader& shader);
+    void renderForShadows();
     void renderForHDRAndBloom(Camera& camera);
     void adjustBrightness(float deltaTime);
     void blurBrightAreas();
@@ -84,7 +84,6 @@ private:
      *              note that most of the light falls in the first 20% of range.
      */
     void calculateAttenuationCoefficients(float range, float* linear, float* quadratic);
-    Shader* getShaderFor(Shader3D shaderType);
 };
 
 #endif

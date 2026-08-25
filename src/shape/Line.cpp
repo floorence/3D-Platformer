@@ -1,9 +1,11 @@
 #include"Line.h"
+#include "util/Globals.h"
 
 Line::Line(glm::vec3 start, glm::vec3 end) 
     : Shape3D(start, false),
       end(end - start)
 {
+	shader = Globals::FlatShader;
     invalidateShape();
 }
 
@@ -22,7 +24,7 @@ std::vector<GLuint> Line::generateIndices() {
     return {0, 1};
 }
 
-void Line::draw(Camera& camera, Shader& shader) {
-    shader.setModel(model);
-    mesh.drawLine(camera, shader);
+void Line::draw(Camera& camera) {
+    preDraw();
+    mesh.drawLine(camera, *shader);
 }

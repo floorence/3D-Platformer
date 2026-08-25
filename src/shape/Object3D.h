@@ -48,6 +48,8 @@ protected:
 
     const std::string TAG = "Object3D";
 
+    virtual void preDraw() override;
+    virtual void preDrawToDepthMap(Shader& depthShader) override;
     /**
      * resets model with current position, rotation, and scale.
      */

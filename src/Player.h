@@ -27,7 +27,7 @@ public:
 
     void onSettingsChanged(const Settings& settings) override;
 
-	void draw(Camera& camera, Shader& shader) override;
+	void draw(Camera& camera) override;
 	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
 	const float ACCELERATION_MULTIPLIER = 1.0f;

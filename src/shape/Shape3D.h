@@ -23,11 +23,12 @@ public:
     void setColor(glm::vec3 color);
     void setTextures(AssetTexture* diffuse, AssetTexture* specular);
     
-    virtual void draw(Camera& camera, Shader& shader) override;
+    virtual void draw(Camera& camera) override;
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 protected:
     Mesh mesh;
  
+    virtual void preDraw() override;
     /**
      * call this after updating rotation or any subclass fields used by generateVertices/Indices
      */

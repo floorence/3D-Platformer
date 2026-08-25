@@ -49,6 +49,17 @@ void Object3D::setScale(glm::vec3 scale) {
     invalidateModel();
 }
 
+void Object3D::preDraw() {
+    Drawable3D::preDraw();
+    shader->setModel(model);
+    shader->setRotation(rotation); // shader still has to rotate normals
+}
+
+void Object3D::preDrawToDepthMap(Shader& depthShader) {
+    Drawable3D::preDrawToDepthMap(depthShader);
+    depthShader.setModel(model);
+}
+
 void Object3D::invalidateModel() {
     // right to left: scale -> rotate -> translate since matrix multiplication is weird like that
     model = glm::translate(glm::mat4(1.0f), position);

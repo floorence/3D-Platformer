@@ -17,8 +17,10 @@ public:
 
     glm::vec3 getDimensions();
 
-    void draw(Camera& camera, Shader& shader) override;
+    void draw(Camera& camera) override;
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
+protected:
+    virtual void preDraw() override;
 private:
 	// stores all the textures loaded so far since we need textures to be class scoped
     // and also optimization to make sure textures aren't loaded more than once.
