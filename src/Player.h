@@ -8,10 +8,6 @@
 #include "shape/Line.h"
 #include "shape/Trail.h"
 
-enum class FlightMode {
-	Tilt, Turn
-};
-
 class Player: public Mass, public SettingsListener, public Drawable3D {
 public:
     Player(glm::vec3 position, int windowWidth, int windowHeight);
@@ -33,6 +29,9 @@ private:
 	const float ACCELERATION_MULTIPLIER = 1.0f;
 	const float TILT_TURN_SPEED = glm::radians(45.0f); // radians per second
 	const float TILT_MAX = glm::radians(45.0f); // radians
+	const float TRAIL_POINT_PERIOD = 1.0f / 70.0f; // seconds. not using 1/60 since will be weird if vsync is on
+	float timeSinceLastPoint = 0.0f; // seconds since last addPoint call
+
 	float yaw = 0.0f; // radians
 	float pitch = 0.0f; // radians
 	float roll = 0.0f; // radians
@@ -49,12 +48,7 @@ private:
 	bool firstClick = true;
 	bool focused = true;
 	double lastX, lastY;
-
 	float sensitivity = 100.0f; 
-
-	FlightMode flightMode = FlightMode::Tilt;
-	// first: total force applied in the past frames, second: number of frames
-	std::pair<glm::vec3, int> totalForce = std::pair(glm::vec3(0.0f), 0);
 
 	bool thirdPerson = false;
 	float thirdPersonDist = 1.0f; // distance from third person cam to player

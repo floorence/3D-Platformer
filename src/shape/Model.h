@@ -19,8 +19,6 @@ public:
 
     void draw(Camera& camera) override;
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
-protected:
-    virtual void preDraw() override;
 private:
 	// stores all the textures loaded so far since we need textures to be class scoped
     // and also optimization to make sure textures aren't loaded more than once.
@@ -39,6 +37,8 @@ private:
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
     std::vector<Texture*> loadMaterialTextures(aiMaterial *mat, aiTextureType type);
     TextureType aiToTextureType(aiTextureType type);
+
+    void preDraw() override;
 };
 
 #endif

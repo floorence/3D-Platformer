@@ -6,8 +6,8 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
     : camera(position, windowWidth, windowHeight),
 	  thirdPersonCam(position, windowWidth, windowHeight),
 	  body("assets/models/spaceship/spaceship.obj", position),
-	  leftTrail(glm::vec3(0.0f), 10),
-	  rightTrail(glm::vec3(0.0f), 10)
+	  leftTrail(glm::vec3(0.0f), 10, 0.09f),
+	  rightTrail(glm::vec3(0.0f), 10, 0.09f)
 {
     this->position = position;
     camera.setPerspective(45.0f, 0.1f, 100.0f);
@@ -22,8 +22,8 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 
-	leftTrail.setColor(glm::vec3(98.0f, 63.9f, 47.1f));
-	rightTrail.setColor(glm::vec3(49.0f, 31.95f, 23.55f));
+	leftTrail.setColor(glm::vec3(10.0f, 4.0f, 0.0f));
+	rightTrail.setColor(glm::vec3(10.0f, 4.0f, 0.0f));
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
 	syncCamerasAndBody(glm::vec3(0.0f), 0.0f, 0.0f, 0.0f);
@@ -44,14 +44,6 @@ std::string Player::getDebugString() {
 	);
 }
 
-/** tilt mode: 
- *  when presing a or d it tilts you in the direction you pressed
- *    tilt amount is proportional to how long the button was pressed at a maximum of 45 degrees.
- *  when pressing a or d it turns in the direction you pressed, and keeps turning until no longer being pressed
- * turn mode:
- * tilt mode but ship never tilts.
- */
-
 void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (!focused) return;
 
@@ -71,10 +63,10 @@ void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 		if (!thirdPerson) force += -glm::normalize(glm::cross(orientation, Constants::UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		// TODO: restrict backward movement
-		if (thirdPerson)
-			force -= orientation;
-		else
+		if (thirdPerson) {
+			float forwardSpeed = glm::dot(velocity, orientation);
+			if (forwardSpeed > 0) force -= orientation;
+		} else
 			force -= glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
@@ -224,13 +216,17 @@ void Player::syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, 
 		body.rotate(pitch, Constants::RIGHT); // instead of left since body has default rotation of 180 degrees
 		body.rotate(roll, Constants::FORWARD);
 
-		// use negative roll since body rotation is reversed due to it being rotated 180 degrees
-		left = glm::rotate(left, -roll, orientation);
-		glm::vec3 dimens = body.getDimensions();
-		glm::vec3 posToBack = Utils::setVectorLength(-orientation, dimens.z / 2.4f);
-		glm::vec3 backToLeftThruster = Utils::setVectorLength(left, dimens.x / 7.5f);
-		leftTrail.addPointWithDir(position + posToBack + backToLeftThruster, -roll, orientation);
-		rightTrail.addPointWithDir(position + posToBack - backToLeftThruster, -roll, orientation);
+		timeSinceLastPoint += deltaTime;
+		if (timeSinceLastPoint >= TRAIL_POINT_PERIOD) {
+			// use negative roll since body rotation is reversed due to it being rotated 180 degrees
+			left = glm::rotate(left, -roll, orientation);
+			glm::vec3 dimens = body.getDimensions();
+			glm::vec3 posToBack = Utils::setVectorLength(-orientation, dimens.z / 2.5f);
+			glm::vec3 backToLeftThruster = Utils::setVectorLength(left, dimens.x / 7.9f);
+			leftTrail.addPointWithDir(position + posToBack + backToLeftThruster, -roll, orientation);
+			rightTrail.addPointWithDir(position + posToBack - backToLeftThruster, -roll, orientation);
+			timeSinceLastPoint = 0.0f;
+		}
 	}
 
 	orientationLine.setCoordinates(position, position + orientation);

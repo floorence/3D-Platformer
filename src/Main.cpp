@@ -160,16 +160,8 @@ int main() {
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player_ptr = &player;
 
-	// test trail no rotating
-	Trail trail(glm::vec3(0.0f, 0.0f, 0.0f), 10);
-	trail.setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-	for (int i = 0; i < 10; i++) {
-		trail.addPoint(glm::vec3(0.0f, 0.0f, 0.1f * i), 0.0f);
-	}	
-
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
-	lc.registerDrawable(&trail);
 	lc.registerDrawable(&player);
 	lc.processLighting();
 

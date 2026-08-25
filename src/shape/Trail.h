@@ -30,11 +30,10 @@ private:
     int points = 0;
     int maxPoints = 0;
     bool indicesMaxPoints = false;
+    float headWidth = 0.1f;
 
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
-
-    float headWidth = 0.1f;
 
     std::vector<Vertex> generateVertices() override;
     std::vector<GLuint> generateIndices() override;
