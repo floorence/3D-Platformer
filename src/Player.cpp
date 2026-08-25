@@ -5,7 +5,9 @@
 Player::Player(glm::vec3 position, int windowWidth, int windowHeight) 
     : camera(position, windowWidth, windowHeight),
 	  thirdPersonCam(position, windowWidth, windowHeight),
-	  body("assets/models/spaceship/spaceship.obj", position)
+	  body("assets/models/spaceship/spaceship.obj", position),
+	  leftTrail(glm::vec3(0.0f), 10),
+	  rightTrail(glm::vec3(0.0f), 10)
 {
     this->position = position;
     camera.setPerspective(45.0f, 0.1f, 100.0f);
@@ -20,6 +22,9 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
 	orientationLine.shader = Shader3D::Flat;
+
+	leftTrail.setColor(glm::vec3(49.0f, 31.95f, 23.55f));
+	rightTrail.setColor(glm::vec3(49.0f, 31.95f, 23.55f));
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
 	syncCamerasAndBody(glm::vec3(0.0f), 0.0f, 0.0f, 0.0f);
@@ -174,6 +179,9 @@ void Player::draw(Camera& camera, Shader& shader) {
 	if (thirdPerson) {
 		body.draw(camera, shader);
 		orientationLine.draw(camera, shader);
+		glDisable(GL_CULL_FACE);
+		leftTrail.draw(camera, shader);
+		rightTrail.draw(camera, shader);
 	}
 }
 
@@ -209,7 +217,7 @@ void Player::syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, 
 		// Log::log("Player", fmt::format("tiltAmount: {}, turnAmount: {}", tiltAmount, turnAmount));
 
 		orientation = glm::rotate(Camera::FORWARD, yaw, Camera::UP);
-		glm::vec3 left = glm::normalize(glm::cross(Camera::UP, orientation));
+		glm::vec3 left = glm::normalize(glm::cross(Camera::UP, orientation)); // not taking into account roll, since that's how pitch works
 		orientation = glm::rotate(orientation, pitch, left);
 		// glm::vec3 up = glm::normalize(glm::cross(orientation, left));
 
@@ -217,6 +225,14 @@ void Player::syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, 
 		// use local axes, otherwise rotation will be post multiplied against existing rotation
 		body.rotate(pitch, Camera::RIGHT); // instead of left since body has default rotation of 180 degrees
 		body.rotate(roll, Camera::FORWARD);
+
+		// use negative roll since body rotation is reversed due to it being rotated 180 degrees
+		left = glm::rotate(left, -roll, orientation);
+		glm::vec3 dimens = body.getDimensions();
+		glm::vec3 posToBack = Utils::setVectorLength(-orientation, dimens.z / 2.2f);
+		glm::vec3 backToLeftThruster = Utils::setVectorLength(left, dimens.x / 7.0f);
+		leftTrail.addPointWithDir(position + posToBack + backToLeftThruster, -roll, orientation);
+		rightTrail.addPointWithDir(position + posToBack - backToLeftThruster, -roll, orientation);
 	}
 
 	orientationLine.setCoordinates(position, position + orientation);

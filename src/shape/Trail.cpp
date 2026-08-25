@@ -8,15 +8,24 @@ Trail::Trail(glm::vec3 position, int maxPoints, float headWidth)
 {
     this->maxPoints = maxPoints;
     this->headWidth = headWidth;
+	shader = Shader3D::Flat;
     cullFacesBeforeDraw = false;
 }
 
 void Trail::addPoint(glm::vec3 position, float angle) {
-    addPointRelative(position - this->position, angle);
+    addPointInternal(position - this->position, angle);
 }
 
 void Trail::addPointRelative(glm::vec3 position, float angle) {
-    Log::log("Trail", fmt::format("addPoint position: {}, {}, {}, angle: {}", position.x, position.y, position.z, angle));
+    addPointInternal(position, angle);
+}
+
+void Trail::addPointWithDir(glm::vec3 position, float angle, glm::vec3 direction) {
+    addPointInternal(position - this->position, angle, direction);
+}
+
+void Trail::addPointInternal(glm::vec3 position, float angle, glm::vec3 direction) {
+    // Log::log("Trail", fmt::format("addPoint position: {}, {}, {}, angle: {}", position.x, position.y, position.z, angle));
     glm::vec3 prevHead;
     if (points == 0) {
         // first point ever
@@ -34,7 +43,8 @@ void Trail::addPointRelative(glm::vec3 position, float angle) {
     } else {
         prevHead = (vertices[0].position + vertices[1].position) / 2.0f;
     }
-    glm::vec3 direction = position - prevHead;
+    if (position == prevHead) return;
+    if (direction == glm::vec3(0.0f)) direction = position - prevHead;
     glm::vec3 left = glm::cross(Camera::UP, direction);
     left = glm::rotate(left, angle, direction);
     left = Utils::setVectorLength(left, headWidth / 2);
@@ -43,7 +53,7 @@ void Trail::addPointRelative(glm::vec3 position, float angle) {
     Vertex leftVertex = {position + left, up, glm::vec2(0.0f), glm::vec3(0.0f)};
     Vertex rightVertex = {position - left, up, glm::vec2(0.0f), glm::vec3(0.0f)};
     if (points == 1) vertices[0].normal = up; // update normal of first vertex
-    Log::log("Trail", fmt::format("normal: {}, {}, {}", up.x, up.y, up.z));
+    // Log::log("Trail", fmt::format("normal: {}, {}, {}", up.x, up.y, up.z));
     
     std::vector<Vertex> newVertices = {leftVertex, rightVertex};
     vertices.insert(vertices.begin(), newVertices.begin(), newVertices.end());
@@ -69,7 +79,8 @@ void Trail::addPointRelative(glm::vec3 position, float angle) {
             // last point which only has one vertex
             break;
         }
-        float width = (points - i / 2) * (headWidth / points); 
+        float width = (points - 1 - i / 2) * (headWidth / (points - 1)); 
+        // Log::log("Trail", fmt::format("points: {}, num: {}, width: {}", points, (points - i / 2), width));
         glm::vec3 midPoint = (vertices[i].position + vertices[i + 1].position) / 2.0f;
         glm::vec3 left = vertices[i].position - midPoint;
         left = Utils::setVectorLength(left, width / 2.0f);

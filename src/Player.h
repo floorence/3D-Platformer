@@ -6,6 +6,7 @@
 #include "controller/SettingsListener.h"
 #include "shape/Model.h"
 #include "shape/Line.h"
+#include "shape/Trail.h"
 
 enum class FlightMode {
 	Tilt, Turn
@@ -13,13 +14,6 @@ enum class FlightMode {
 
 class Player: public Mass, public SettingsListener, public Drawable3D {
 public:
-    Camera camera;
-	Camera thirdPersonCam;
-	Model body;
-	Line orientationLine;
-	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f); // should always be normalized!!!
-	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f); // length should be the same as thirdPersonDist
-
     Player(glm::vec3 position, int windowWidth, int windowHeight);
 
 	Camera* getActiveCamera();
@@ -42,6 +36,15 @@ private:
 	float yaw = 0.0f; // radians
 	float pitch = 0.0f; // radians
 	float roll = 0.0f; // radians
+
+    Camera camera;
+	Camera thirdPersonCam;
+	Model body;
+	Line orientationLine;
+	Trail leftTrail;
+	Trail rightTrail;
+	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f); // should always be normalized!!!
+	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f); // length should be the same as thirdPersonDist
 
 	bool firstClick = true;
 	bool focused = true;

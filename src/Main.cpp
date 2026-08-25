@@ -139,34 +139,9 @@ int main() {
 	// test trail no rotating
 	Trail trail(glm::vec3(0.0f, 0.0f, 0.0f), 10);
 	trail.setColor(glm::vec3(1.0f, 0.0f, 0.0f));
-	trail.shader = Shader3D::Flat;
 	for (int i = 0; i < 10; i++) {
 		trail.addPoint(glm::vec3(0.0f, 0.0f, 0.1f * i), 0.0f);
-	}
-
-	// test trail with rotation
-	Trail trail2(glm::vec3(0.0f, 0.0f, 0.0f), 10);
-	trail2.setColor(glm::vec3(0.0f, 1.0f, 0.0f));
-	trail2.shader = Shader3D::Flat;
-	for (int i = 0; i < 10; i++) {
-		trail2.addPoint(glm::vec3(0.5f, 0.0f, 0.1f * i), glm::radians(10.0f) * i);
-	}
-
-	// test trail with rotation and tail deletion
-	Trail trail3(glm::vec3(0.0f, 0.0f, 0.0f), 10);
-	trail3.setColor(glm::vec3(1.0f, 0.0f, 1.0f));
-	trail3.shader = Shader3D::Flat;
-	for (int i = 0; i < 15; i++) {
-		trail3.addPoint(glm::vec3(1.0f, 0.0f, 0.1f * i), glm::radians(10.0f) * i);
-	}
-	
-	// test trail with rotation and turning
-	Trail trail4(glm::vec3(0.0f, 0.0f, 0.0f), 10);
-	trail4.setColor(glm::vec3(1.0f, 1.0f, 0.0f));
-	trail4.shader = Shader3D::Flat;
-	for (int i = 0; i < 10; i++) {
-		trail4.addPoint(glm::vec3(1.5f + 0.1f * (i * i), 0.0f, 0.1f * i), glm::radians(10.0f) * i);
-	}
+	}	
 
 	Shader shader("shader/default.vert", "shader/default.frag");
 	Shader lightShader("shader/light.vert", "shader/light.frag");
@@ -185,7 +160,7 @@ int main() {
 
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
-	lc.registerDrawables({&trail, &trail2, &trail3, &trail4});
+	lc.registerDrawable(&trail);
 	lc.registerDrawable(&player);
 	lc.processLighting(shader);
 

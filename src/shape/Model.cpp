@@ -11,6 +11,14 @@ Model::Model(std::string path, glm::vec3 position)
     loadModel(path);
 }
 
+glm::vec3 Model::getDimensions() {
+    return {
+        (maxCoords.x - minCoords.x) * scale.x,
+        (maxCoords.y - minCoords.y) * scale.y,
+        (maxCoords.z - minCoords.z) * scale.z,
+    };
+}
+
 // function adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h loadModel()
 void Model::loadModel(std::string path) {
     Assimp::Importer import;
@@ -77,6 +85,13 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             };
             // Log::log(TAG, fmt::format("vertex.color = {}, {}, {}", vertex.color.r, vertex.color.g, vertex.color.b));
         }
+        // update min max coordinates
+        minCoords.x = std::min(minCoords.x, vertex.position.x);
+        minCoords.y = std::min(minCoords.y, vertex.position.y);
+        minCoords.z = std::min(minCoords.z, vertex.position.z);
+        maxCoords.x = std::max(maxCoords.x, vertex.position.x);
+        maxCoords.y = std::max(maxCoords.y, vertex.position.y);
+        maxCoords.z = std::max(maxCoords.z, vertex.position.z);
 
         vertices.push_back(vertex);
     }

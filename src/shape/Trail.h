@@ -24,6 +24,8 @@ public:
     void addPoint(glm::vec3 position, float angle);
     /** @brief same as addPoint, but position is relative to the model position of the trail */
     void addPointRelative(glm::vec3 position, float angle);
+    /** @brief same as addPoint, but direction is specified and head will be perpendicular to direction */
+    void addPointWithDir(glm::vec3 position, float angle, glm::vec3 direction);
 private:
     int points = 0;
     int maxPoints = 0;
@@ -36,6 +38,8 @@ private:
 
     std::vector<Vertex> generateVertices() override;
     std::vector<GLuint> generateIndices() override;
+
+    void addPointInternal(glm::vec3 position, float angle, glm::vec3 direction = glm::vec3(0.0f));
 };
 
 #endif

@@ -15,6 +15,8 @@ class Model: public Object3D {
 public:
     Model(std::string path, glm::vec3 position);
 
+    glm::vec3 getDimensions();
+
     void draw(Camera& camera, Shader& shader) override;
     void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
@@ -24,6 +26,9 @@ private:
     std::vector<std::unique_ptr<ImageTexture>> textures;
     std::vector<Mesh> meshes;
     std::string directory;
+
+    glm::vec3 minCoords = glm::vec3(INT_MAX);
+    glm::vec3 maxCoords = glm::vec3(INT_MIN);
     
     const std::string TAG = "Model";
 
