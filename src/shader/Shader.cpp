@@ -158,6 +158,7 @@ void Shader::setColor(glm::vec3 color) {
 }
 
 void Shader::setColorTint(glm::vec4 color) {
+	activate();
 	glUniform4f(glGetUniformLocation(ID, "tintColor"), color.x, color.y, color.z, color.a);
 }
 
