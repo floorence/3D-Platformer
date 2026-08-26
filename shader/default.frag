@@ -66,14 +66,20 @@ uniform float farPlane;
 
 bool isInShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
     // calculate bias
-    vec3 lightDir = normalize(lightPos - fragPos);
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
-    vec3 biasedFragPos = fragPos + normal * bias;
-
-    vec3 lightToFrag = biasedFragPos - lightPos;
+    vec3 lightToFrag = fragPos - lightPos;
+    vec3 lightDir = normalize(lightPos - fragPos); // direction to light from frag
     float currentDepth = length(lightToFrag);
+    // float depthScale = (1.0 / farPlane) * currentDepth; 
+    float maxBias = 0.05; float minBias = 0.0005;
+    float bias = max(maxBias * (1.0 - dot(normal, lightDir)), minBias);
+
+    // normal offset
+    vec3 biasedFragPos = fragPos + normal * bias;
+    vec3 biasedLightToFrag = biasedFragPos - lightPos;
+    currentDepth = length(biasedLightToFrag);
+
     // cube texture sampling works by having vector from middle of cube point to where you want to sample
-    float closestDepth = texture(depthMap, lightToFrag).r;
+    float closestDepth = texture(depthMap, biasedLightToFrag).r;
     closestDepth *= farPlane; // transform [0,1] back to original depth value
 
     // test for shadows
