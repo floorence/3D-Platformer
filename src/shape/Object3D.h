@@ -13,10 +13,11 @@ public:
 
     glm::vec3 getPosition();
     void setPosition(glm::vec3 position);
+    void rotate(float angle, glm::vec3 axis);
     /**
-     * @param rotationX rotation around x axis in degrees
-     * @param rotationY rotation around y axis in degrees
-     * @param rotationZ rotation around z axis in degrees
+     * @param rotationX rotation around x axis in radians
+     * @param rotationY rotation around y axis in radians
+     * @param rotationZ rotation around z axis in radians
      */
     void setRotation(float rotationX, float rotationY, float rotationZ);
     /**
@@ -24,7 +25,10 @@ public:
      * @param axis axis of rotation
      */
     void setRotation(float angle, glm::vec3 axis);
-    /** @brief set the rotation that should always be applied on top of setRotation() */
+    /**
+     * @brief set the rotation that should always be applied on top of setRotation() 
+     * should call this before any setRotation calls, since this will reset current rotation to the default
+     */
     void setDefaultRotation(float rotationX, float rotationY, float rotationZ);
     /**
      * @param scale scale to apply to x, y, and z axes
@@ -40,14 +44,17 @@ protected:
     glm::mat4 rotation = glm::mat4(1.0f);
     glm::vec3 scale = glm::vec3(1.0f);
 
-    glm::vec3 defaultRotation = glm::vec3(0.0f);
+    glm::mat4 defaultRotation = glm::mat4(1.0f);
 
     const std::string TAG = "Object3D";
 
+    virtual void preDraw() override;
+    virtual void preDrawToDepthMap(Shader& depthShader) override;
     /**
      * resets model with current position, rotation, and scale.
      */
     virtual void invalidateModel();
+    glm::mat4 rotate(glm::mat4 mat, float rotationX, float rotationY, float rotationZ);
 };
 
 #endif

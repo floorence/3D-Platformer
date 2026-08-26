@@ -19,10 +19,10 @@ public:
 
     virtual ~Mass() = default;
 protected:
-	const float AIR_RESISTANCE_COEFFICIENT = 2.0f;
+	const float AIR_RESISTANCE_COEFFICIENT = 1.0f;
 	const float STOPPING_SPEED = 0.0005f;
 
-	glm::vec3 prevAcceleration;
+	glm::vec3 prevAcceleration; // used to access acceleration of previous frame, or acceleration of current frame after calling updatePosition
 
 	glm::vec3 getAirResistance(); // return force from air resistance
 	virtual void processVelocity();

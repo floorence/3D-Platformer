@@ -1,6 +1,7 @@
 #include "LightController.h"
 #include "camera/PointLightCamera.h"
 #include "texture/CubeMapTexture.h"
+#include "util/Globals.h"
 #include "util/Log.h"
 #include "util/Utils.h"
 #include <cmath>
@@ -43,14 +44,14 @@ void LightController::registerDrawables(const std::vector<Drawable3D*>& drawable
     this->drawables.insert(this->drawables.end(), drawables.begin(), drawables.end());
 }
 
-void LightController::processLighting(Shader& shader) {
+void LightController::processLighting() {
     int numPointLights = 0;
 
     for (const auto& light: lights) {
         float linear, quadratic;
         float intensity = Utils::getBrightness(light->getColor()) / 10;
         calculateAttenuationCoefficients(intensity, &linear, &quadratic);
-        shader.registerLightSource(
+        Globals::DefaultShader->registerLightSource(
             numPointLights,
             light->getColor(),
             light->getPosition(),
@@ -59,10 +60,10 @@ void LightController::processLighting(Shader& shader) {
         numPointLights++;
     }
 
-    shader.setNumPointLights(numPointLights);
+    Globals::DefaultShader->setNumPointLights(numPointLights);
 }
 
-void LightController::renderForShadows(Shader& shader) {
+void LightController::renderForShadows() {
     depthMapFbo.bindAndClear();
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
@@ -74,24 +75,20 @@ void LightController::renderForShadows(Shader& shader) {
 
     Utils::unbindFboAndClear();
 
-    shader.setCubeMapTexture(depthMapTexture, "depthMap", 5);
-    shader.setFarPlane(pointLightCam.farPlane);
+    Globals::DefaultShader->setCubeMapTexture(depthMapTexture, "depthMap", 5);
+    Globals::DefaultShader->setFarPlane(pointLightCam.farPlane);
 
     glViewport(0, 0, windowWidth, windowHeight);
 }
 
-void LightController::renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera) {
+void LightController::renderForHDRAndBloom(Camera& camera) {
     hdrBloomFbo.bindAndClear();
-    Shader* activeShader = &shader;
     for (const auto& drawable: drawables) {
-        if (drawable->specialShader != nullptr) activeShader = drawable->specialShader;
-        drawable->draw(camera, *activeShader);
+        drawable->draw(camera);
     }
 
-    activeShader = &lightShader;
     for (const auto& light: lights) {
-        if (light->specialShader != nullptr) activeShader = light->specialShader;
-        light->draw(camera, *activeShader);
+        light->draw(camera);
     }
 
     Utils::unbindFboAndClear();
@@ -251,4 +248,3 @@ void LightController::calculateAttenuationCoefficients(float range, float* linea
     *linear = LINEAR_COEFFICIENT * pow(range, LINEAR_POWER);
     *quadratic = QUADRATIC_COEFFICIENT * pow(range, QUADRATIC_POWER);
 }
-

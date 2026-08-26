@@ -6,7 +6,8 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
     : camera(position, windowWidth, windowHeight),
 	  thirdPersonCam(position, windowWidth, windowHeight),
 	  body("assets/models/spaceship/spaceship.obj", position),
-	  lineShader("shader/default.vert", "shader/gui.frag") // we don't want the line affected by lighting
+	  leftTrail(glm::vec3(0.0f), 10, 0.09f),
+	  rightTrail(glm::vec3(0.0f), 10, 0.09f)
 {
     this->position = position;
     camera.setPerspective(45.0f, 0.1f, 100.0f);
@@ -17,13 +18,15 @@ Player::Player(glm::vec3 position, int windowWidth, int windowHeight)
 	lastY = camera.windowHeight / 2.0;
 
 	body.setScale(1.0f / 600.0f);
-	body.setDefaultRotation(0.0f, 180.0f, 0.0f);
+	body.setDefaultRotation(0.0f, glm::radians(180.0f), 0.0f);
 
 	orientationLine.setColor(glm::vec3(100.0f, 0.0f, 69.0f));
-	orientationLine.specialShader = &lineShader;
+
+	leftTrail.setColor(glm::vec3(10.0f, 4.0f, 0.0f));
+	rightTrail.setColor(glm::vec3(10.0f, 4.0f, 0.0f));
 
 	thirdPersonCam.position = glm::vec3(position.x, position.y, position.z + thirdPersonDist);
-	syncCamerasAndBody(glm::vec3(0.0f));
+	syncCamerasAndBody(glm::vec3(0.0f), 0.0f, 0.0f, 0.0f);
 }
 
 Camera* Player::getActiveCamera() {
@@ -44,47 +47,50 @@ std::string Player::getDebugString() {
 void Player::handleKeyInputs(GLFWwindow* window, float deltaTime) {
 	if (!focused) return;
 
-	glm::vec3 activeOrientation = *getActiveOrientation();
-
 	glm::vec3 force = glm::vec3(0.0, 0.0, 0.0); // Newtons
+	int yawTurn = 0;
+	int pitchTurn = 0;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		force += glm::normalize(glm::vec3(activeOrientation.x, 0.0f, activeOrientation.z));
+		if (thirdPerson)
+			force += orientation;
+		else
+			force += glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		force += -glm::normalize(glm::cross(activeOrientation, Camera::UP));
+		yawTurn++;
+		if (!thirdPerson) force += -glm::normalize(glm::cross(orientation, Constants::UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		force += -glm::normalize(glm::vec3(activeOrientation.x, 0.0f, activeOrientation.z));
+		if (thirdPerson) {
+			float forwardSpeed = glm::dot(velocity, orientation);
+			if (forwardSpeed > 0) force -= orientation;
+		} else
+			force -= glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z));
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		force += glm::normalize(glm::cross(activeOrientation, Camera::UP));
+		yawTurn--;
+		if (!thirdPerson) force += glm::normalize(glm::cross(orientation, Constants::UP));
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		force += Camera::UP;
+		pitchTurn--;
+		if (!thirdPerson) force += Constants::UP;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		force += -Camera::UP;
+		pitchTurn++;
+		if (!thirdPerson) force -= Constants::UP;
 	}
 
 	if (force != glm::vec3(0.0, 0.0, 0.0)) {
 		force = 2.0f * glm::normalize(force);
 		applyForce(force);
-		orientation = activeOrientation;
 	}
-
 	glm::vec3 movement = updatePosition(deltaTime);
-	syncCamerasAndBody(movement);
+	syncCamerasAndBody(movement, yawTurn, pitchTurn, deltaTime);
 }
 
 void Player::handleKeyInputs(GLFWwindow* window, int key, int action) {
-	if (key == GLFW_KEY_LEFT_CONTROL) {
-		if (action == GLFW_PRESS) {
-			maxSpeed = MAX_SPEED_SPRINTING;
-		} else if (action == GLFW_RELEASE) {
-			maxSpeed = MAX_SPEED_DEFAULT;
-		}
-	}
 	if (key == GLFW_KEY_E) {
 		if (action == GLFW_PRESS) handleFocusChange(window);
 	}
@@ -116,16 +122,16 @@ void Player::handleMousePos(GLFWwindow*, double xpos, double ypos) {
 	glm::vec3 verticalOrientation = glm::normalize(glm::rotate(
 		newOrientation,
 		glm::radians(-rotY),
-		glm::normalize(glm::cross(newOrientation, Camera::UP))
+		glm::normalize(glm::cross(newOrientation, Constants::UP))
 	));
 
 	// decide whether or not the next vertical orientation is legal or not
-	if (std::abs(glm::angle(verticalOrientation, Camera::UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
+	if (std::abs(glm::angle(verticalOrientation, Constants::UP) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
 		newOrientation = verticalOrientation;
 	}
 
 	// rotate the orientation left and right
-	newOrientation = glm::rotate(newOrientation, glm::radians(-rotX), Camera::UP);
+	newOrientation = glm::rotate(newOrientation, glm::radians(-rotX), Constants::UP);
 	
 	if (thirdPerson) {
 		thirdPersonCam.position = position - Utils::setVectorLength(newOrientation, thirdPersonDist);
@@ -160,16 +166,20 @@ void Player::onSettingsChanged(const Settings& settings) {
 	sensitivity = settings.controls.sensitivity.value;
 }
 
-void Player::draw(Camera& camera, Shader& shader) {
-	if (thirdPerson) body.draw(camera, shader);
-	orientationLine.draw(camera, shader);
+void Player::draw(Camera& camera) {
+	if (thirdPerson) {
+		body.draw(camera);
+		orientationLine.draw(camera);
+		leftTrail.draw(camera);
+		rightTrail.draw(camera);
+	}
 }
 
 void Player::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
 	if (thirdPerson) body.drawToDepthMap(camera, depthShader);
 }
 
-void Player::syncCamerasAndBody(glm::vec3 movement) {
+void Player::syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, float deltaTime) {
 	camera.position = this->position;
 	camera.lookAt(orientation);
 
@@ -177,9 +187,47 @@ void Player::syncCamerasAndBody(glm::vec3 movement) {
 	thirdPersonOrientation = position - thirdPersonCam.position;
 	thirdPersonCam.lookAt(thirdPersonOrientation);
 
-	float angle = glm::orientedAngle(Camera::FORWARD, glm::normalize(glm::vec3(orientation.x, 0.0f, orientation.z)), Camera::UP);
 	body.setPosition(position);
-	body.setRotation(glm::degrees(angle), Camera::UP);
+
+	if (thirdPerson) {
+		float tiltAmount = TILT_TURN_SPEED * deltaTime;
+		if (yawTurn == 0) {
+			roll = Utils::approach(roll, 0.0f, tiltAmount);
+		} else {
+			roll = std::clamp(roll + yawTurn * tiltAmount, -TILT_MAX, TILT_MAX);
+		}
+		if (pitchTurn == 0) {
+			pitch = Utils::approach(pitch, 0.0f, tiltAmount);
+		} else {
+			pitch = std::clamp(pitch + pitchTurn * tiltAmount, -TILT_MAX, TILT_MAX);
+		}
+
+		yaw += yawTurn * tiltAmount;
+		// pitch += pitchTurn * tiltAmount;
+		// Log::log("Player", fmt::format("tiltAmount: {}, turnAmount: {}", tiltAmount, turnAmount));
+
+		orientation = glm::rotate(Constants::FORWARD, yaw, Constants::UP);
+		glm::vec3 left = glm::normalize(glm::cross(Constants::UP, orientation)); // not taking into account roll, since that's how pitch works
+		orientation = glm::rotate(orientation, pitch, left);
+		// glm::vec3 up = glm::normalize(glm::cross(orientation, left));
+
+		body.setRotation(yaw, Constants::UP);
+		// use local axes, otherwise rotation will be post multiplied against existing rotation
+		body.rotate(pitch, Constants::RIGHT); // instead of left since body has default rotation of 180 degrees
+		body.rotate(roll, Constants::FORWARD);
+
+		timeSinceLastPoint += deltaTime;
+		if (timeSinceLastPoint >= TRAIL_POINT_PERIOD) {
+			// use negative roll since body rotation is reversed due to it being rotated 180 degrees
+			left = glm::rotate(left, -roll, orientation);
+			glm::vec3 dimens = body.getDimensions();
+			glm::vec3 posToBack = Utils::setVectorLength(-orientation, dimens.z / 2.5f);
+			glm::vec3 backToLeftThruster = Utils::setVectorLength(left, dimens.x / 7.9f);
+			leftTrail.addPointWithDir(position + posToBack + backToLeftThruster, -roll, orientation);
+			rightTrail.addPointWithDir(position + posToBack - backToLeftThruster, -roll, orientation);
+			timeSinceLastPoint = 0.0f;
+		}
+	}
 
 	orientationLine.setCoordinates(position, position + orientation);
 }

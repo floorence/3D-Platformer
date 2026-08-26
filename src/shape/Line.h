@@ -9,7 +9,7 @@ public:
     Line(glm::vec3 start, glm::vec3 end);
 
     void setCoordinates(glm::vec3 start, glm::vec3 end);
-    void draw(Camera& camera, Shader& shader) override;
+    void draw(Camera& camera) override;
 private:
     glm::vec3 end; // relative to the start of the line (position)!
 

@@ -14,6 +14,7 @@
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
 #include"controller/LightController.h"
+#include "shape/Trail.h"
 #include"texture/FontTexture.h"
 #include"texture/ImageTexture.h"
 #include "util/Globals.h"
@@ -83,11 +84,39 @@ int main() {
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
+	// create shaders, textures, and populate globals
+	Shader shader("shader/default.vert", "shader/default.frag");
+	Shader lightShader("shader/light.vert", "shader/light.frag");
+	Shader flatShader("shader/default.vert", "shader/gui.frag");
+	Shader guiShader("shader/gui.vert", "shader/gui.frag");
+	Shader fontShader("shader/gui.vert", "shader/font.frag");
+	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
+	guiShader.setProjection(guiProjection);
+	fontShader.setProjection(guiProjection);
+
+	Log::log(TAG, "shaders initialized");
+
+	AssetTexture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
+	AssetTexture planksSpecular = ImageTexture("assets/planks.png", TextureType::Specular, GL_UNSIGNED_BYTE, true);
+	AssetTexture metalDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
+	AssetTexture metalSpecular = ImageTexture("assets/metal.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
+	AssetTexture stoneDiffuse = ImageTexture("assets/stone.jpg", TextureType::Diffuse);
+	AssetTexture stoneSpecular = ImageTexture("assets/stone.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
+	FontTexture fontTex("assets/pixel_operator_short_dollar.ttf");
+
+	Log::log(TAG, "textures initialized");
+
+	Globals::Font = &fontTex;
+	Globals::DefaultShader = &shader;
+	Globals::LightShader = &lightShader;
+	Globals::FlatShader = &flatShader;
+	Globals::GuiShader = &guiShader;
+	Globals::FontShader = &fontShader;
+
+	// start making 3d objects
 	std::vector<Shape3D*> objects;
 
 	// make debug pyramid
-	AssetTexture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
-	AssetTexture planksSpecular = ImageTexture("assets/planks.png", TextureType::Specular, GL_UNSIGNED_BYTE, true);
 	// DebugPyramid pyramid(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, 0.0f, 0.0f));
 	// objects.push_back(&pyramid);
 
@@ -96,16 +125,12 @@ int main() {
 	objects.push_back(&sphere);
 
 	// make rectangular prism
-	AssetTexture bunDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
-	AssetTexture bunSpecular = ImageTexture("assets/metal.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
-	RectangularPrism rect(&bunDiffuse, &bunSpecular, glm::vec3(-2.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
-	rect.setRotation(0, 0, 180);
+	RectangularPrism rect(&metalDiffuse, &metalSpecular, glm::vec3(-2.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
+	rect.setRotation(0, 0, glm::radians(180.0f));
 	objects.push_back(&rect);
 
 	// make floor
-	AssetTexture floorDiffuse = ImageTexture("assets/stone.jpg", TextureType::Diffuse);
-	AssetTexture floorSpecular = ImageTexture("assets/stone.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
-	RectangularPrism floor(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
+	RectangularPrism floor(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
 	objects.push_back(&floor);
 
 	/*
@@ -127,8 +152,6 @@ int main() {
 	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
 	objects.push_back(&floorLight);
 
-	// Model spaceship("assets/models/spaceship/spaceship.obj", glm::vec3(0.0f));
-
 	// make light cube
 	// RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
 	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
@@ -137,27 +160,14 @@ int main() {
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player_ptr = &player;
 
-	Shader shader("shader/default.vert", "shader/default.frag");
-	Shader lightShader("shader/light.vert", "shader/light.frag");
-	Shader guiShader("shader/gui.vert", "shader/gui.frag");
-	Shader fontShader("shader/gui.vert", "shader/font.frag");
-	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
-	guiShader.setProjection(guiProjection);
-	fontShader.setProjection(guiProjection);
-	Globals::GuiShader = &guiShader;
-	Globals::FontShader = &fontShader;
-
 	LightController lc(fbWidth, fbHeight);
 	lc.registerShapes(objects);
 	lc.registerDrawable(&player);
-	lc.processLighting(shader);
+	lc.processLighting();
 
 	Log::log(TAG, "initial lighting processing completed");
 
 	// make text
-	FontTexture fontTex("assets/pixel_operator_short_dollar.ttf");
-	Globals::Font = &fontTex;
-	// TextRenderer tr(width, height);
 	Text playerDebugText;
 	playerDebugText.setBounds(10, 10, 400, 200);
 	playerDebugText.setFontSize(20);
@@ -219,8 +229,8 @@ int main() {
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
 
 		player.handleKeyInputs(window, deltaTime);
-		lc.renderForShadows(shader);
-		lc.renderForHDRAndBloom(shader, lightShader, *player.getActiveCamera());
+		lc.renderForShadows();
+		lc.renderForHDRAndBloom(*player.getActiveCamera());
 		lc.adjustBrightness(deltaTime);
 		lc.blurBrightAreas();
 		lc.renderForReal();

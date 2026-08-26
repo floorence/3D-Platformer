@@ -6,18 +6,10 @@
 #include "controller/SettingsListener.h"
 #include "shape/Model.h"
 #include "shape/Line.h"
-#include "shape/RectangularPrism.h"
+#include "shape/Trail.h"
 
 class Player: public Mass, public SettingsListener, public Drawable3D {
 public:
-    Camera camera;
-	Camera thirdPersonCam;
-	Model body;
-	Shader lineShader;
-	Line orientationLine;
-	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f);
-
     Player(glm::vec3 position, int windowWidth, int windowHeight);
 
 	Camera* getActiveCamera();
@@ -31,20 +23,31 @@ public:
 
     void onSettingsChanged(const Settings& settings) override;
 
-	void draw(Camera& camera, Shader& shader) override;
+	void draw(Camera& camera) override;
 	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
-	const float MAX_SPEED_DEFAULT = 1.0f;
-	const float MAX_SPEED_SPRINTING = 2.0f;
 	const float ACCELERATION_MULTIPLIER = 1.0f;
+	const float TILT_TURN_SPEED = glm::radians(45.0f); // radians per second
+	const float TILT_MAX = glm::radians(45.0f); // radians
+	const float TRAIL_POINT_PERIOD = 1.0f / 70.0f; // seconds. not using 1/60 since will be weird if vsync is on
+	float timeSinceLastPoint = 0.0f; // seconds since last addPoint call
+
+	float yaw = 0.0f; // radians
+	float pitch = 0.0f; // radians
+	float roll = 0.0f; // radians
+
+    Camera camera;
+	Camera thirdPersonCam;
+	Model body;
+	Line orientationLine;
+	Trail leftTrail;
+	Trail rightTrail;
+	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f); // should always be normalized!!!
+	glm::vec3 thirdPersonOrientation = glm::vec3(0.0f, 0.0f, -1.0f); // length should be the same as thirdPersonDist
 
 	bool firstClick = true;
 	bool focused = true;
-
 	double lastX, lastY;
-
-	// TODO
-	float maxSpeed = MAX_SPEED_DEFAULT; // units per second
 	float sensitivity = 100.0f; 
 
 	bool thirdPerson = false;
@@ -53,7 +56,8 @@ private:
 
 	void handleFocusChange(GLFWwindow* window);
 	glm::vec3* getActiveOrientation();
-	void syncCamerasAndBody(glm::vec3 movement);
+	/** yawTurn and pitchTurn are 0, -1, or 1 depending on direction */
+	void syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, float deltaTime);
 };
 
 #endif

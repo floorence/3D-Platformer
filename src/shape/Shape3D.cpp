@@ -1,5 +1,5 @@
 #include "Shape3D.h"
-#include "shape/Drawable3D.h"
+#include "util/Globals.h"
 #include "util/Log.h"
 #include <glm/geometric.hpp>
 
@@ -7,6 +7,7 @@ Shape3D::Shape3D(glm::vec3 position, bool isLightSource)
     : Object3D(position) 
 {
     this->isLightSource = isLightSource;
+    if (isLightSource) shader = Globals::LightShader;
 }
 
 Shape3D::Shape3D(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, bool isLightSource) 
@@ -37,17 +38,20 @@ void Shape3D::setTextures(AssetTexture* diffuse, AssetTexture* specular) {
     mesh.setTextures(textures);
 }
 
-void Shape3D::draw(Camera& camera, Shader& shader) {
-    shader.setModel(model);
-    shader.setRotation(rotation); // shader still has to rotate normals
+void Shape3D::preDraw() {
+    Object3D::preDraw();
     if (!isLightSource) {
-		shader.setShininess(16); // TODO
-        shader.setColorTint(tintColor);
+		shader->setShininess(16); // TODO
+        shader->setColorTint(tintColor);
     }
-    mesh.draw(camera, shader);
+}
+
+void Shape3D::draw(Camera& camera) {
+    preDraw();
+    mesh.draw(camera, *shader);
 }
 
 void Shape3D::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
-    depthShader.setModel(model);
+    preDrawToDepthMap(depthShader);
     mesh.drawToDepthMap(camera, depthShader);
 }

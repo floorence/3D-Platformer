@@ -15,11 +15,11 @@ public:
     void registerShapes(const std::vector<Shape3D*>& shapes);
     void registerDrawable(Drawable3D* drawable);
     void registerDrawables(const std::vector<Drawable3D*>& drawables);
-    void processLighting(Shader& shader);
+    void processLighting();
 
     // these functions must all be called in order each frame
-    void renderForShadows(Shader& shader);
-    void renderForHDRAndBloom(Shader& shader, Shader& lightShader, Camera& camera);
+    void renderForShadows();
+    void renderForHDRAndBloom(Camera& camera);
     void adjustBrightness(float deltaTime);
     void blurBrightAreas();
     void renderForReal();
