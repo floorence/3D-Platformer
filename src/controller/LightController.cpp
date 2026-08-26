@@ -169,6 +169,7 @@ void LightController::renderForReal() {
 void LightController::onSettingsChanged(const Settings& settings) {
     blurAmount = settings.graphics.bloomAmount.value * 10;
     hdrBloomShader.setBloomEnabled(blurAmount);
+    Globals::DefaultShader->setSoftShadowsEnabled(settings.graphics.qualityShadows.value);
 }
 
 std::string LightController::getDebugString() {

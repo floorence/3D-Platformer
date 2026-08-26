@@ -34,10 +34,11 @@ struct SettingsCategory {
 struct GraphicsSettings: SettingsCategory {
     GraphicsSettings(): SettingsCategory("Graphics") {};
     Setting bloomAmount {"Bloom Amount", 1, 0, 4, SettingGuiElement::Stepper}; // blurAmount = bloomAmount * 10
+    Setting qualityShadows {"High Quality Shadows", true, 0, 1, SettingGuiElement::Toggle};
     Setting vsync {"Vsync", true, 0, 1, SettingGuiElement::Toggle};
 
     std::vector<Setting*> getChildren() override {
-        return {&bloomAmount, &vsync};
+        return {&bloomAmount, &qualityShadows, &vsync};
     }
 };
 

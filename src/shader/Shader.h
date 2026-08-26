@@ -42,6 +42,7 @@ public:
 	void setTextColor(glm::vec3 textColor); // font.frag
 	void setBlurHorizontal(bool horizontal); // blur.frag
 	void setBloomEnabled(bool bloomEnabled); // hdr_bloom.frag
+	void setSoftShadowsEnabled(bool softShadowsEnabled); // default.frag
 	void setColorSource(ColorSource source); // default.frag, gui.frag
 	void setRotation(glm::mat4 rotation); // default.vert
 
