@@ -64,7 +64,15 @@ uniform vec4 tintColor;
 uniform vec3 camPos;
 uniform float farPlane;
 
-bool isInShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
+vec3 sampleOffsetDirections[20] = vec3[] (
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);
+
+float calculateShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
     // calculate bias
     vec3 lightToFrag = fragPos - lightPos;
     vec3 lightDir = normalize(lightPos - fragPos); // direction to light from frag
@@ -78,14 +86,18 @@ bool isInShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
     vec3 biasedLightToFrag = biasedFragPos - lightPos;
     currentDepth = length(biasedLightToFrag);
 
-    // cube texture sampling works by having vector from middle of cube point to where you want to sample
-    float closestDepth = texture(depthMap, biasedLightToFrag).r;
-    closestDepth *= farPlane; // transform [0,1] back to original depth value
+    float shadow = 0.0;
+    int samples = 20;
+    float diskRadius = 0.01;
+    for (int i = 0; i < samples; i++) {
+        float closestDepth = texture(depthMap, biasedLightToFrag + sampleOffsetDirections[i] * diskRadius).r;
+        closestDepth *= farPlane; // transform [0,1] back to original depth value
 
-    // test for shadows
-    bool shadow = currentDepth > closestDepth;
-       
-    return shadow;
+        if (currentDepth > closestDepth) shadow += 1.0;
+    }
+
+    shadow /= float(samples);
+    return 1.0 - shadow;
 }
 
 vec3 calculatePointLight(PointLight light, vec3 texColor, vec3 specColor, vec3 normal, vec3 fragPos, vec3 viewDir) {
@@ -106,7 +118,7 @@ vec3 calculatePointLight(PointLight light, vec3 texColor, vec3 specColor, vec3 n
     vec3 specular = spec * greySpecTex;
     diffuse *= attenuation;
     specular *= attenuation;
-    float shadow = isInShadow(fragPos, normal, light.position) ? 0.0 : 1.0;
+    float shadow = calculateShadow(fragPos, normal, light.position);
     return light.color * shadow * (diffuse + specular);
 }
 
