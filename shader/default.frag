@@ -13,6 +13,11 @@ const int COLOR_SOURCE_TEXTURE = 0;
 const int COLOR_SOURCE_VERTEX_COLOR = 1;
 const int COLOR_SOURCE_MATERIAL_COLOR = 2;
 
+// These values must match those in enum class ShadowQuality in LightController.h!!!
+const int SHADOW_QUALITY_OFF = 0;
+const int SHADOW_QUALITY_LOW = 1;
+const int SHADOW_QUALITY_HIGH = 2; // softer shadows
+
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -63,7 +68,7 @@ uniform int numPointLights;
 uniform vec4 tintColor;
 uniform vec3 camPos;
 uniform float farPlane;
-uniform bool softShadows;
+uniform int shadowQuality;
 
 vec3 sampleOffsetDirections[20] = vec3[] (
    vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
@@ -73,7 +78,7 @@ vec3 sampleOffsetDirections[20] = vec3[] (
    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
 );
 
-float calculateShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
+float calculateShadow(vec3 fragPos, vec3 normal, vec3 lightPos, bool softShadows) {
     // calculate bias
     vec3 lightToFrag = fragPos - lightPos;
     vec3 lightDir = normalize(lightPos - fragPos); // direction to light from frag
@@ -127,7 +132,9 @@ vec3 calculatePointLight(PointLight light, vec3 texColor, vec3 specColor, vec3 n
     vec3 specular = spec * greySpecTex;
     diffuse *= attenuation;
     specular *= attenuation;
-    float shadow = calculateShadow(fragPos, normal, light.position);
+    float shadow = 1.0;
+    if (shadowQuality != SHADOW_QUALITY_OFF)
+        shadow = calculateShadow(fragPos, normal, light.position, shadowQuality == SHADOW_QUALITY_HIGH);
     return light.color * shadow * (diffuse + specular);
 }
 

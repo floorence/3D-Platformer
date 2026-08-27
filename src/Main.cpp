@@ -227,11 +227,7 @@ int main() {
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
 
 		player.handleKeyInputs(window, deltaTime);
-		lc.renderForShadows();
-		lc.renderForHDRAndBloom(*player.getActiveCamera());
-		lc.adjustBrightness(deltaTime);
-		lc.blurBrightAreas();
-		lc.renderForReal();
+		lc.render(*player.getActiveCamera(), deltaTime);
 
 		glDisable(GL_DEPTH_TEST);
 		playerDebugText.setText(player.getDebugString());

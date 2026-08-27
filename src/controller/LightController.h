@@ -7,6 +7,10 @@
 #include "gui/Quad.h"
 #include "shape/Shape3D.h"
 
+enum class ShadowQuality {
+	Off, Low, High
+};
+
 class LightController: public SettingsListener {
 public:
     LightController(int windowWidth, int windowHeight);
@@ -17,12 +21,7 @@ public:
     void registerDrawables(const std::vector<Drawable3D*>& drawables);
     void processLighting();
 
-    // these functions must all be called in order each frame
-    void renderForShadows();
-    void renderForHDRAndBloom(Camera& camera);
-    void adjustBrightness(float deltaTime);
-    void blurBrightAreas();
-    void renderForReal();
+    void render(Camera& camera, float deltaTime);
 
     void onSettingsChanged(const Settings& settings) override;
     std::string getDebugString();
@@ -34,6 +33,7 @@ private:
     const std::string TAG = "LightController";
 
     // stuff for shadows
+    bool shadowsEnabled = true;
     const uint DEPTH_MAP_WIDTH = 1024, DEPTH_MAP_HEIGHT = 1024;
     FBO depthMapFbo;
     CubeMapTexture depthMapTexture;
@@ -77,8 +77,14 @@ private:
     void prepareHdrAndBloom();
     void prepareAvgColorBuffer();
     void prepareGaussianBlur();
-
     void prepareFPTexture(Texture& texture); // FP = floating point
+
+    // these functions must be called in order each frame
+    void renderForShadows();
+    void renderForHDRAndBloom(Camera& camera);
+    void adjustBrightness(float deltaTime);
+    void blurBrightAreas();
+    void renderForReal();
     /**
      * @param range the distance away from the light that it can (visibly) reach.
      *              note that most of the light falls in the first 20% of range.

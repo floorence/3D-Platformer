@@ -4,7 +4,7 @@
     },
     "Graphics": {
         "Bloom Amount": 1,
-        "High Quality Shadows": 1,
+        "Shadow Quality": 2,
         "Vsync": 1
     }
 }

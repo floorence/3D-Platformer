@@ -63,6 +63,14 @@ void LightController::processLighting() {
     Globals::DefaultShader->setNumPointLights(numPointLights);
 }
 
+void LightController::render(Camera& camera, float deltaTime) {
+    if (shadowsEnabled) renderForShadows();
+    renderForHDRAndBloom(camera);
+    adjustBrightness(deltaTime);
+    blurBrightAreas();
+    renderForReal();
+}
+
 void LightController::renderForShadows() {
     depthMapFbo.bindAndClear();
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
@@ -169,7 +177,9 @@ void LightController::renderForReal() {
 void LightController::onSettingsChanged(const Settings& settings) {
     blurAmount = settings.graphics.bloomAmount.value * 10;
     hdrBloomShader.setBloomEnabled(blurAmount);
-    Globals::DefaultShader->setSoftShadowsEnabled(settings.graphics.qualityShadows.value);
+    int shadowQuality = settings.graphics.shadowQuality.value;
+    shadowsEnabled = shadowQuality != static_cast<int>(ShadowQuality::Off);
+    Globals::DefaultShader->setShadowQuality(shadowQuality);
 }
 
 std::string LightController::getDebugString() {

@@ -124,9 +124,9 @@ void Shader::setBloomEnabled(bool bloomEnabled) {
 	glUniform1i(glGetUniformLocation(ID, "bloomEnabled"), bloomEnabled);
 }
 
-void Shader::setSoftShadowsEnabled(bool softShadowsEnabled) {
+void Shader::setShadowQuality(int quality) {
 	activate();
-	glUniform1i(glGetUniformLocation(ID, "softShadows"), softShadowsEnabled);
+	glUniform1i(glGetUniformLocation(ID, "shadowQuality"), quality);
 }
 
 void Shader::setColorSource(ColorSource source) {

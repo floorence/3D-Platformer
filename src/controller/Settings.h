@@ -20,8 +20,9 @@ enum class SettingGuiElement {
 struct Setting {
     std::string name;
     int value;
-    int minValue, maxValue;
     SettingGuiElement guiRepresentation;
+    int minValue = 0, maxValue = 0; // for stepper
+    std::vector<std::string> options = {}; // for cycleButton
 };
 
 struct SettingsCategory {
@@ -33,18 +34,20 @@ struct SettingsCategory {
 
 struct GraphicsSettings: SettingsCategory {
     GraphicsSettings(): SettingsCategory("Graphics") {};
-    Setting bloomAmount {"Bloom Amount", 1, 0, 4, SettingGuiElement::Stepper}; // blurAmount = bloomAmount * 10
-    Setting qualityShadows {"High Quality Shadows", true, 0, 1, SettingGuiElement::Toggle};
-    Setting vsync {"Vsync", true, 0, 1, SettingGuiElement::Toggle};
+    Setting bloomAmount {"Bloom Amount", 1, SettingGuiElement::Stepper, 0, 4}; // blurAmount = bloomAmount * 10
+    Setting shadowQuality {"Shadow Quality", 2, SettingGuiElement::CycleButton, 0, 2, 
+        {"Off", "Low", "High"}
+    };
+    Setting vsync {"Vsync", true, SettingGuiElement::Toggle};
 
     std::vector<Setting*> getChildren() override {
-        return {&bloomAmount, &qualityShadows, &vsync};
+        return {&bloomAmount, &shadowQuality, &vsync};
     }
 };
 
 struct ControlsSettings: SettingsCategory {
     ControlsSettings(): SettingsCategory("Controls") {};
-    Setting sensitivity {"Sensitivity", 100, 10, 200, SettingGuiElement::Stepper};
+    Setting sensitivity {"Sensitivity", 100, SettingGuiElement::Stepper, 10, 200};
 
     std::vector<Setting*> getChildren() override {
         return {&sensitivity};

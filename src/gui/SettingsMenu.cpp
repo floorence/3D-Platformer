@@ -1,5 +1,6 @@
 #include"SettingsMenu.h"
 #include "controller/Settings.h"
+#include "gui/CycleButton.h"
 #include "gui/IntGuiElement.h"
 #include "gui/Stepper.h"
 #include "gui/Toggle.h"
@@ -82,7 +83,11 @@ void SettingsMenu::initGuiElementsFor(Setting& setting, int categoryNum) {
             break;
         }
         case SettingGuiElement::CycleButton: {
-            // TODO
+            auto cycleButton = std::make_unique<CycleButton>();
+            
+            cycleButton->setBackgroundColor(GREY_5);
+            cycleButton->setOptions(setting.options);
+            settingGui.guiElement = std::move(cycleButton);
             break;
         }
     }

@@ -33,7 +33,7 @@ public:
     void centerVertically(float x, float w, float h, float start, float end);
     void center(float w, float h, float startX, float endX, float startY, float endY);
 protected:
-    float x, y, w, h;
+    float x = 0, y = 0, w = 0, h = 0;
     // set to true if subclass can handle unbound width and height at the same time
     bool enableUnboundWidthAndHeight = false;
 private:
