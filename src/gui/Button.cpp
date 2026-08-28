@@ -10,7 +10,7 @@ void Button::onBoundsChanged() {
 }
 
 float Button::getUnboundWidth(float h) {
-    Log::log("Button", fmt::format("getUnboundWidth: text: {} fontSize: {}", text.getText(), deriveFontSize(h)));
+    // Log::log("Button", fmt::format("getUnboundWidth: text: {} fontSize: {}", text.getText(), deriveFontSize(h)));
     std::pair<float, float> textSize = Globals::Font->getSize(text.getText(), deriveFontSize(h));
     return TEXT_TO_EDGE_MARGIN * 2 + textSize.first;
 }
