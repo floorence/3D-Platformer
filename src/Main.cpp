@@ -224,8 +224,6 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
-
 		player.handleKeyInputs(window, deltaTime);
 		lc.render(*player.getActiveCamera(), deltaTime);
 

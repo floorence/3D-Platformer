@@ -75,7 +75,7 @@ void LightController::renderForShadows() {
     depthMapFbo.bindAndClear();
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
-    pointLightCam.position = lights[0]->getPosition();
+    pointLightCam.position = lights[primaryLightSourceIndex]->getPosition();
     pointLightCam.generateTransforms();
     for (const auto& drawable : drawables) {
         drawable->drawToDepthMap(pointLightCam, depthShader);
@@ -90,7 +90,16 @@ void LightController::renderForShadows() {
 }
 
 void LightController::renderForHDRAndBloom(Camera& camera) {
-    hdrBloomFbo.bindAndClear();
+    hdrBloomFbo.bind();
+
+    glm::vec3 skyColor = getSkyColor(camera);
+    const float background[] = {skyColor.r, skyColor.g, skyColor.b, 1.0f};
+    const float black[] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+    glClearBufferfv(GL_COLOR, 0, background); // hdr attachment
+    glClearBufferfv(GL_COLOR, 1, black); // bloom attachment
+    glClear(GL_DEPTH_BUFFER_BIT);
+
     for (const auto& drawable: drawables) {
         drawable->draw(camera);
     }
@@ -258,4 +267,12 @@ void LightController::prepareFPTexture(Texture& texture) {
 void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {
     *linear = LINEAR_COEFFICIENT * pow(range, LINEAR_POWER);
     *quadratic = QUADRATIC_COEFFICIENT * pow(range, QUADRATIC_POWER);
+}
+
+glm::vec3 LightController::getSkyColor(Camera& camera) {
+    Shape3D* light = lights[primaryLightSourceIndex];
+    float dist = glm::length(camera.position - light->getPosition());
+    glm::vec3 c = light->getColor();
+    glm::vec3 mappedLightColor = c / std::max(std::max(c.r, c.g), c.b);
+    return mappedLightColor / std::max((dist * dist), 2.0f);
 }
