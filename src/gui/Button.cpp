@@ -39,7 +39,7 @@ int Button::deriveFontSize(float h) {
 
 void Button::setText(std::string text) {
     this->text.setText(text);
-    onBoundsChanged();
+    invalidateBounds();
 }
 
 void Button::setBackgroundColor(glm::vec3 color) {

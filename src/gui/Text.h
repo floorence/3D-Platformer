@@ -17,8 +17,6 @@ public:
     void setTextAndSize(std::string text, int fontSize);
     void setCenterText(bool centerText);
 
-    // TODO: if font size or text is changed after Rect centering it will not be centered anymore
-
     void draw();
 private:
     std::string text;

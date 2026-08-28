@@ -31,7 +31,7 @@ int CycleButton::getData() {
 void CycleButton::setData(int data) {
     option = data;
     button.setText(options[option]);
-    onBoundsChanged();
+    invalidateBounds();
 }
 
 void CycleButton::setOptions(std::vector<std::string> options) {
