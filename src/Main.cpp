@@ -6,6 +6,7 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<fmt/format.h>
 
+#include "Window.h"
 #include "controller/ClickController.h"
 #include "gui/Button.h"
 #include "gui/SettingsMenu.h"
@@ -48,13 +49,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int) {
         glfwGetCursorPos(window, &xpos, &ypos);
 		clickController_ptr->handleMouseButton(xpos, ypos, action);
     }
-}
-
-std::string formatPerformanceInfo(float frameTime, float realFrameTime) {
-	int fps = 1 / frameTime;
-	int realFps = 1 / realFrameTime;
-
-	return fmt::format("FPS: {}  |  {}\nframe time: {:.3f}  |  {:.3f}", fps, realFps, frameTime * 1000, realFrameTime * 1000);
 }
 
 int main() {
@@ -171,11 +165,6 @@ int main() {
 	playerDebugText.setFontSize(20);
 	playerDebugText.setCenterText(false);
 
-	Text performanceText;
-	performanceText.setBounds(width - 200, 10, 200, 100);
-	performanceText.setFontSize(16);
-	performanceText.setCenterText(false);
-
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
@@ -197,37 +186,30 @@ int main() {
 	cc.registerClickable(&button);
 	cc.registerClickable(&settingsMenu);
 	
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
-	float lastUpdatedInfoText = 0.0f;
-
-	// first: total frame time, second: number of frames. real frame time is the frame time if vsync wasn't on.
-	std::pair<float, int> totalFrameTime(0.0f, 0);
-	std::pair<float, int> totalRealFrameTime(0.0f, 0);
-
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouseCallback);
 	glfwSetScrollCallback(window, scrollCallback);
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
+	Window w(width, height);
+
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
 	glViewport(0, 0, fbWidth, fbHeight);
-	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 	glEnable(GL_CULL_FACE); // enable back face culling
 
 	Log::log(TAG, "everything is set up; starting main game loop");
 
 	while (!glfwWindowShouldClose(window)) {
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		w.startFrame();
 
-		player.handleKeyInputs(window, deltaTime);
-		lc.render(*player.getActiveCamera(), deltaTime);
+		player.handleKeyInputs(window, w.deltaTime);
 
-		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
+		lc.render(*player.getActiveCamera(), w.deltaTime);
+		glDisable(GL_DEPTH_TEST); // disable for gui drawing
+
 		playerDebugText.setText(player.getDebugString());
 		playerDebugText.draw();
 		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -237,26 +219,8 @@ int main() {
 
 		glfwPollEvents();
 
-		// doing this here since glfwSwapBuffers() is what actually suspends when using vsync
-
-		float realCurrentFrame = glfwGetTime();
-		totalFrameTime.first += deltaTime;
-		totalFrameTime.second++;
-		totalRealFrameTime.first += realCurrentFrame - currentFrame;
-		totalRealFrameTime.second++;
-
-		if (realCurrentFrame - lastUpdatedInfoText >= 1.0f) {
-			lastUpdatedInfoText = realCurrentFrame;
-			float avgFrameTime = totalFrameTime.first / totalFrameTime.second;
-			float avgRealFrameTime = totalRealFrameTime.first / totalRealFrameTime.second;
-			
-			performanceText.setText(formatPerformanceInfo(avgFrameTime, avgRealFrameTime)); 
-			totalFrameTime = std::pair(0.0f, 0);
-			totalRealFrameTime = std::pair(0.0f, 0);
-		}
-
-		performanceText.draw();
-		glEnable(GL_DEPTH_TEST);
+		// end frame here since glfwSwapBuffers() suspends when using vsync
+		w.endFrame();
 
 		glfwSwapBuffers(window);
 	}
