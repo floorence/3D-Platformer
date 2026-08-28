@@ -3,6 +3,11 @@
 
 #include <string>
 
+enum class Alignment {
+    TopLeft, TopRight, CenterVertical, CenterHorizontal, Center
+    // todo when there's a use case: BotLeft, BotRight
+};
+
 class Rect {
 public:
     // set to true if dimensions are expected to be negative for some reason. ONLY FOR LIGHTCONTROLLER QUADS!
@@ -33,15 +38,22 @@ public:
     void centerVertically(float x, float w, float h, float start, float end);
     void center(float w, float h, float startX, float endX, float startY, float endY);
 protected:
-    float x, y, w, h;
+    float x = 0, y = 0, w = 0, h = 0;
+    float specX = 0, specY = 0, specW = 0, specH = 0; // keep track of what public functions were called with
+    float startX = 0, endX = 0, startY = 0, endY = 0;
+    Alignment alignment = Alignment::TopLeft;
     // set to true if subclass can handle unbound width and height at the same time
     bool enableUnboundWidthAndHeight = false;
+
+    /** re-apply saved bounds, recalculating any unbound values */
+    void invalidateBounds();
 private:
     std::string TAG = "Rect";
 
     virtual void onBoundsChanged() {};
     virtual float getUnboundWidth(float h) { return h; };
     virtual float getUnboundHeight(float w) { return w; };
+    void setBoundsInternal(float x, float y, float w, float h);
     std::pair<float, float> processDimensions(float w, float h);
 };
 

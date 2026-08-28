@@ -15,12 +15,17 @@ public:
 
     void onHover() override;
     void onHoverOff() override;
+    // public since other gui elements who use Button might need to call these
+    float getUnboundWidth(float h) override;
+    float getUnboundHeight(float w) override;
 private:
     Quad background;
     Text text;
 
+    const float TEXT_TO_EDGE_MARGIN = 10.0f;
+
     void onBoundsChanged() override;
-    int deriveFontSize();
+    int deriveFontSize(float h);
 };
 
 #endif

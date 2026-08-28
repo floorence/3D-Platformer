@@ -124,6 +124,11 @@ void Shader::setBloomEnabled(bool bloomEnabled) {
 	glUniform1i(glGetUniformLocation(ID, "bloomEnabled"), bloomEnabled);
 }
 
+void Shader::setShadowQuality(int quality) {
+	activate();
+	glUniform1i(glGetUniformLocation(ID, "shadowQuality"), quality);
+}
+
 void Shader::setColorSource(ColorSource source) {
 	activate();
 	glUniform1i(glGetUniformLocation(ID, "colorSource"), static_cast<int>(source));

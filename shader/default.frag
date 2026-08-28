@@ -13,6 +13,11 @@ const int COLOR_SOURCE_TEXTURE = 0;
 const int COLOR_SOURCE_VERTEX_COLOR = 1;
 const int COLOR_SOURCE_MATERIAL_COLOR = 2;
 
+// These values must match those in enum class ShadowQuality in LightController.h!!!
+const int SHADOW_QUALITY_OFF = 0;
+const int SHADOW_QUALITY_LOW = 1;
+const int SHADOW_QUALITY_HIGH = 2; // softer shadows
+
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -42,7 +47,6 @@ struct SpotLight {
 };
 
 #define MAX_POINT_LIGHTS 100
-#define AMBIENT_LIGHT 0.2
 
 in vec3 crntPos;
 in vec3 normal;
@@ -63,21 +67,50 @@ uniform int numPointLights;
 uniform vec4 tintColor;
 uniform vec3 camPos;
 uniform float farPlane;
+uniform int shadowQuality;
 
-bool isInShadow(vec3 fragPos, vec3 normal, vec3 lightPos) {
-    vec3 lightToFrag = fragPos - lightPos;
-    // cube texture sampling works by having vector from middle of cube point to where you want to sample
-    float closestDepth = texture(depthMap, lightToFrag).r;
-    closestDepth *= farPlane; // transform [0,1] back to original depth value
-    float currentDepth = length(lightToFrag);
+vec3 sampleOffsetDirections[20] = vec3[] (
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+);
+
+float calculateShadow(vec3 fragPos, vec3 normal, vec3 lightPos, bool softShadows) {
     // calculate bias
-    vec3 lightDir = normalize(lightPos - fragPos);
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    vec3 lightToFrag = fragPos - lightPos;
+    vec3 lightDir = normalize(lightPos - fragPos); // direction to light from frag
+    float currentDepth = length(lightToFrag);
+    // float depthScale = (1.0 / farPlane) * currentDepth; 
+    float maxBias = 0.05; float minBias = softShadows ? 0.015 : 0.005;
+    float bias = max(maxBias * (1.0 - dot(normal, lightDir)), minBias);
 
-    // test for shadows
-    bool shadow = currentDepth - bias > closestDepth;
-       
-    return shadow;
+    // normal offset
+    vec3 biasedFragPos = fragPos + normal * bias;
+    vec3 biasedLightToFrag = biasedFragPos - lightPos;
+    currentDepth = length(biasedLightToFrag);
+
+    float shadow = 0.0;
+
+    if (softShadows) {
+        int samples = 20;
+        float diskRadius = 0.05 * (1.0 / farPlane) * currentDepth;
+        for (int i = 0; i < samples; i++) {
+            vec3 sampleDir = biasedLightToFrag + sampleOffsetDirections[i] * diskRadius;
+            float closestDepth = texture(depthMap, sampleDir).r;
+            closestDepth *= farPlane; // transform [0,1] back to original depth value
+
+            if (currentDepth > closestDepth) shadow += 1.0;
+        }
+        shadow /= float(samples);
+    } else {
+        float closestDepth = texture(depthMap, biasedLightToFrag).r;
+        closestDepth *= farPlane;
+        if (currentDepth > closestDepth) shadow = 1.0;
+    }
+
+    return 1.0 - shadow;
 }
 
 vec3 calculatePointLight(PointLight light, vec3 texColor, vec3 specColor, vec3 normal, vec3 fragPos, vec3 viewDir) {
@@ -98,33 +131,10 @@ vec3 calculatePointLight(PointLight light, vec3 texColor, vec3 specColor, vec3 n
     vec3 specular = spec * greySpecTex;
     diffuse *= attenuation;
     specular *= attenuation;
-    float shadow = isInShadow(fragPos, normal, light.position) ? 0.0 : 1.0;
+    float shadow = 1.0;
+    if (shadowQuality != SHADOW_QUALITY_OFF)
+        shadow = calculateShadow(fragPos, normal, light.position, shadowQuality == SHADOW_QUALITY_HIGH);
     return light.color * shadow * (diffuse + specular);
-}
-
-// TODO
-vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
-    vec3 lightDir = normalize(light.position - fragPos);
-    // diffuse intensity
-    float diff = max(dot(normal, lightDir), 0.0);
-    // specular intensity
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // attenuation
-    float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
-    // spotlight intensity
-    float theta = dot(lightDir, normalize(-light.direction)); 
-    float epsilon = light.cutOff - light.outerCutOff;
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-    // combine results with texture
-    vec3 ambient = AMBIENT_LIGHT * vec3(texture(material.diffuse, texCoord));
-    vec3 diffuse = diff * vec3(texture(material.diffuse, texCoord));
-    vec3 specular = spec * vec3(texture(material.specular, texCoord));
-    ambient *= attenuation * intensity;
-    diffuse *= attenuation * intensity;
-    specular *= attenuation * intensity;
-    return light.color * (ambient + diffuse + specular);
 }
 
 vec3 getColorFromSource() {
@@ -141,12 +151,17 @@ float getBrightness(vec3 color) {
     return dot(color, vec3(0.2126, 0.7152, 0.0722));
 }
 
+vec3 getAmbientColor(PointLight light, vec3 fragPos) {
+    float dist = length(fragPos - light.position);
+    vec3 mappedLightColor = light.color / max(max(light.color.r, light.color.g), light.color.b);
+    return mappedLightColor / max((dist * dist), 2.0);
+}
+
 void main() {
 	vec3 normal = normalize(normal);
 	vec3 viewDirection = normalize(camPos - crntPos);
     vec3 texColor = getColorFromSource();
     vec3 specColor = (colorSource == COLOR_SOURCE_TEXTURE) ? vec3(texture(material.specular, texCoord)) : vec3(getBrightness(texColor));
-    vec3 ambient = AMBIENT_LIGHT * texColor;
 
     //	vec3 result = calculateSpotLight(spotLight, normal, crntPos, viewDirection);
 	vec3 result = vec3(0);
@@ -154,6 +169,8 @@ void main() {
 	for (int i = 0; i < numPointLights; i++)
         result += calculatePointLight(pointLights[i], texColor, specColor, normal, crntPos, viewDirection);    
 
+    // todo: primary light index is always 0 here since that's the only use case but eventually should match the value in LightController
+    vec3 ambient = getAmbientColor(pointLights[0], crntPos) * texColor;
     result += ambient;
 	result = mix(result, tintColor.rgb, tintColor.a);
     

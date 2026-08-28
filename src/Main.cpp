@@ -133,17 +133,15 @@ int main() {
 	RectangularPrism floor(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
 	objects.push_back(&floor);
 
-	/*
-	RectangularPrism rightWall(&floorDiffuse, &floorSpecular, glm::vec3(2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
-	RectangularPrism leftWall(&floorDiffuse, &floorSpecular, glm::vec3(-2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
-	RectangularPrism backWall(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, 1.3f, 2.5f), 5.0f, 5.0f, 0.1f);
-	RectangularPrism frontWall(&floorDiffuse, &floorSpecular, glm::vec3(0.0f, 1.3f, -2.5f), 5.0f, 5.0f, 0.1f);
+	RectangularPrism rightWall(&stoneDiffuse, &stoneSpecular, glm::vec3(2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
+	RectangularPrism leftWall(&stoneDiffuse, &stoneSpecular, glm::vec3(-2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
+	// RectangularPrism backWall(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, 1.3f, 2.5f), 5.0f, 5.0f, 0.1f);
+	// RectangularPrism frontWall(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, 1.3f, -2.5f), 5.0f, 5.0f, 0.1f);
 
 	objects.push_back(&rightWall);
 	objects.push_back(&leftWall);
-	objects.push_back(&backWall);
-	objects.push_back(&frontWall);
-    */
+	// objects.push_back(&backWall);
+	// objects.push_back(&frontWall);
 
 	RectangularPrism floorCube(&planksDiffuse, &planksSpecular, glm::vec3(-1.0f, -0.95f, -1.0f), 0.4f, 0.4f, 0.4f);
 	objects.push_back(&floorCube);
@@ -226,14 +224,8 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f); // background colour
-
 		player.handleKeyInputs(window, deltaTime);
-		lc.renderForShadows();
-		lc.renderForHDRAndBloom(*player.getActiveCamera());
-		lc.adjustBrightness(deltaTime);
-		lc.blurBrightAreas();
-		lc.renderForReal();
+		lc.render(*player.getActiveCamera(), deltaTime);
 
 		glDisable(GL_DEPTH_TEST);
 		playerDebugText.setText(player.getDebugString());
