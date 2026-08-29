@@ -6,16 +6,14 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<fmt/format.h>
 
+#include "Hud.h"
 #include "Window.h"
 #include "controller/ClickController.h"
 #include "gui/Button.h"
 #include "gui/SettingsMenu.h"
-#include "shape/Model.h"
-#include "shape/DebugPyramid.h"
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
 #include"controller/LightController.h"
-#include "shape/Trail.h"
 #include"texture/FontTexture.h"
 #include"texture/ImageTexture.h"
 #include "util/Globals.h"
@@ -24,7 +22,7 @@
 #include "util/Utils.h"
 
 const unsigned int width = 800;
-const unsigned int height = 800;
+const unsigned int height = 600;
 const std::string TAG = "Main";
 
 Player* player_ptr;
@@ -84,7 +82,7 @@ int main() {
 	Shader flatShader("shader/default.vert", "shader/gui.frag");
 	Shader guiShader("shader/gui.vert", "shader/gui.frag");
 	Shader fontShader("shader/gui.vert", "shader/font.frag");
-	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
+	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);	
 	guiShader.setProjection(guiProjection);
 	fontShader.setProjection(guiProjection);
 
@@ -176,17 +174,12 @@ int main() {
 
 	Log::log(TAG, "settings loaded from save");
 
-	Button button;
-	button.setCorners(width - 80, height - 40, width - 10, height - 10);
-	button.setText("settings");
-	button.setBackgroundColor(glm::vec3(1.0f, 0.71f, 0.957f));
-	button.setOnClick([&settingsMenu]() {
-		settingsMenu.isOpen = !settingsMenu.isOpen;
-	});
+	Hud hud(width, height, &settingsMenu);
+	w.registerListener(&hud);
 
 	ClickController cc;
 	clickController_ptr = &cc;
-	cc.registerClickable(&button);
+	cc.registerClickable(&hud);
 	cc.registerClickable(&settingsMenu);
 	
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -213,7 +206,7 @@ int main() {
 
 		playerDebugText.setText(player.getDebugString());
 		playerDebugText.draw();
-		button.draw();
+		hud.draw();
 
 		if (settingsMenu.isOpen) settingsMenu.draw();
 

@@ -175,6 +175,10 @@ void SettingsMenu::onSettingsChanged(const Settings& settings) {
     }
 }
 
+void SettingsMenu::onWindowSizeChanged(int newWidth, int newHeight) {
+	setCorners(100, 100, newWidth - 100, newHeight - 100);
+}
+
 Settings SettingsMenu::readSettings() {
     Settings settings;
 

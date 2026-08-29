@@ -3,9 +3,9 @@
         "Sensitivity": 100
     },
     "Graphics": {
-        "Resolution": 0,
-        "Fullscreen": 0,
         "Bloom Amount": 1,
+        "Fullscreen": 1,
+        "Resolution": 0,
         "Shadow Quality": 2
     }
 }

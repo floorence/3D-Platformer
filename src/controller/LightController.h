@@ -29,7 +29,7 @@ public:
     std::string getDebugString();
 private:
     GLFWwindow* window;
-    int windowWidth, windowHeight;
+    int windowWidth, windowHeight; // technically these are framebuffer width and height
     std::vector<Shape3D*> lights;
     std::vector<Drawable3D*> drawables;
 

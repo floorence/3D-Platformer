@@ -35,7 +35,7 @@ struct SettingsCategory {
 struct GraphicsSettings: SettingsCategory {
     GraphicsSettings(): SettingsCategory("Graphics") {};
     Setting resolution {"Resolution", 0, SettingGuiElement::CycleButton, 0, 2,
-        {"800x600, 1280x720, 1920x1080"}
+        {"800x600", "1280x720", "1920x1080"}
     };
     Setting fullscreen {"Fullscreen", false, SettingGuiElement::Toggle};
     Setting bloomAmount {"Bloom Amount", 1, SettingGuiElement::Stepper, 0, 4}; // blurAmount = bloomAmount * 10

@@ -17,11 +17,12 @@ public:
 	glm::mat4 projection;
 	glm::mat4 view;
 	int windowWidth, windowHeight;
-	float farPlane;
+	float fovDeg, nearPlane, farPlane;
 
 	Camera(glm::vec3 position, int windowWidth, int windowHeight);
 
-	void setPerspective(float FOVdeg, float nearPlane, float farPlane);
+	void setPerspective(float fovDeg, float nearPlane, float farPlane);
+	void setViewSize(float width, float height);
 	void lookAt(glm::vec3 orientation, glm::vec3 up = Constants::UP);
 	glm::mat4 getCameraMatrix();
 private:
