@@ -34,14 +34,31 @@ struct SettingsCategory {
 
 struct GraphicsSettings: SettingsCategory {
     GraphicsSettings(): SettingsCategory("Graphics") {};
+    Setting resolution {"Resolution", 0, SettingGuiElement::CycleButton, 0, 2,
+        {"800x600, 1280x720, 1920x1080"}
+    };
+    Setting fullscreen {"Fullscreen", false, SettingGuiElement::Toggle};
     Setting bloomAmount {"Bloom Amount", 1, SettingGuiElement::Stepper, 0, 4}; // blurAmount = bloomAmount * 10
     Setting shadowQuality {"Shadow Quality", 2, SettingGuiElement::CycleButton, 0, 2, 
         {"Off", "Low", "High"}
     };
-    Setting vsync {"Vsync", true, SettingGuiElement::Toggle};
 
     std::vector<Setting*> getChildren() override {
-        return {&bloomAmount, &shadowQuality, &vsync};
+        return {&resolution, &fullscreen, &bloomAmount, &shadowQuality};
+    }
+
+    void getResolution(int* width, int* height) const {
+        switch (resolution.value) {
+            case 0:
+                *width = 800; *height = 600;
+                break;
+            case 1:
+                *width = 1280; *height = 720;
+                break;
+            case 2:
+                *width = 1920; *height = 1080;
+                break;
+        }
     }
 };
 

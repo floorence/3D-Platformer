@@ -1,10 +1,19 @@
 #include "Window.h"
+#include "util/Log.h"
 #include <GLFW/glfw3.h>
 
-Window::Window(float windowWidth, float windowHeight) {
-	performanceText.setBounds(windowWidth - 200, 10, 200, 100);
+Window::Window(GLFWwindow* window)
+    : window(window) 
+{
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+	performanceText.setBoundsEnd(windowWidth, 10, 200, 100);
 	performanceText.setFontSize(16);
 	performanceText.setCenterText(false);
+}
+
+void Window::registerListener(WindowListener* listener) {
+    listeners.push_back(listener);
 }
 
 void Window::startFrame() {
@@ -31,6 +40,53 @@ void Window::endFrame() {
 
     performanceText.draw();
     prevFrameStart = currentFrameStart;
+}
+
+void Window::onSettingsChanged(const Settings& settings) {
+    int width, height;
+    settings.graphics.getResolution(&width, &height);
+    if (width != windowWidth || height != windowHeight) {
+        windowWidth = width;
+        windowHeight = height;
+        glfwSetWindowSize(window, windowWidth, windowHeight);
+        notifyListeners(width, height);
+    }
+    setFullscreen(settings.graphics.fullscreen.value);
+}
+
+void Window::notifyListeners(int newWidth, int newHeight) {
+    for (auto& listener: listeners) {
+        listener->onWindowSizeChanged(newWidth, newHeight);
+    }
+}
+
+void Window::setFullscreen(bool fullscreen) {
+    if (this->fullscreen == fullscreen) return;
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    if (!monitor) return;
+
+    if (fullscreen) {
+        glfwGetWindowPos(window, &windowX, &windowY);
+
+        // use optimal refresh rate if monitor supports the resolution
+        int mode_count;
+        const GLFWvidmode* modes = glfwGetVideoModes(monitor, &mode_count);
+        int refreshRate = 60;
+
+        for (int i = 0; i < mode_count; i++) {
+            if (modes[i].width == windowWidth && modes[i].height == windowHeight) {
+                refreshRate = modes[i].refreshRate;
+                break;
+            }
+        }
+
+        glfwSetWindowMonitor(window, monitor, 0, 0, windowWidth, windowHeight, refreshRate);
+        Log::log(TAG, fmt::format("Switched to fullscreen: {}x{} @ {}Hz", windowWidth, windowHeight, refreshRate));
+    } else {
+        glfwSetWindowMonitor(window, nullptr, windowX, windowY, windowWidth, windowHeight, 0);
+        Log::log(TAG, fmt::format("Switched to windowed mode: {}x{}", windowWidth, windowHeight));
+    }
+    this->fullscreen = fullscreen;
 }
 
 std::string Window::formatPerformanceInfo(float frameTime, float realFrameTime) {

@@ -152,7 +152,7 @@ int main() {
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player_ptr = &player;
 
-	LightController lc(fbWidth, fbHeight);
+	LightController lc(window);
 	lc.registerShapes(objects);
 	lc.registerDrawable(&player);
 	lc.processLighting();
@@ -165,10 +165,13 @@ int main() {
 	playerDebugText.setFontSize(20);
 	playerDebugText.setCenterText(false);
 
+	Window w(window);
+	w.registerListener(&lc);
+
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
-	sc.registerListeners({&settingsMenu, &lc, &player});
+	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	sc.load();
 
 	Log::log(TAG, "settings loaded from save");
@@ -192,8 +195,6 @@ int main() {
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
-	Window w(width, height);
-
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
 	glViewport(0, 0, fbWidth, fbHeight);
@@ -212,16 +213,13 @@ int main() {
 
 		playerDebugText.setText(player.getDebugString());
 		playerDebugText.draw();
-		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
 		button.draw();
 
 		if (settingsMenu.isOpen) settingsMenu.draw();
 
 		glfwPollEvents();
-
 		// end frame here since glfwSwapBuffers() suspends when using vsync
 		w.endFrame();
-
 		glfwSwapBuffers(window);
 	}
 
