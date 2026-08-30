@@ -32,7 +32,8 @@ private:
 	std::pair<float, int> totalRealFrameTime = std::pair(0.0f, 0);
 
     bool fullscreen = false;
-    int windowWidth, windowHeight, windowX, windowY;
+    int windowWidth, windowHeight;
+    int savedW, savedH, savedX, savedY;
     const std::string TAG = "Window";
 
     void notifyListeners(int newWidth, int newHeight);

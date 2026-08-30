@@ -12,9 +12,9 @@ enum class ShadowQuality {
 	Off, Low, High
 };
 
-class LightController: public SettingsListener, public WindowListener {
+class LightController: public SettingsListener {
 public:
-    LightController(GLFWwindow* window);
+    LightController(int fbWidth, int fbHeight);
 
     void registerShape(Shape3D* shape);
     void registerShapes(const std::vector<Shape3D*>& shapes);
@@ -25,11 +25,10 @@ public:
     void render(Camera& camera, float deltaTime);
 
     void onSettingsChanged(const Settings& settings) override;
-    void onWindowSizeChanged(int newWidth, int newHeight) override;
+    void onFrameBufferSizeChanged(int newWidth, int newHeight);
     std::string getDebugString();
 private:
-    GLFWwindow* window;
-    int windowWidth, windowHeight; // technically these are framebuffer width and height
+    int fbWidth, fbHeight; // framebuffer width and height
     std::vector<Shape3D*> lights;
     std::vector<Drawable3D*> drawables;
 

@@ -9,7 +9,6 @@
 #include "Hud.h"
 #include "Window.h"
 #include "controller/ClickController.h"
-#include "gui/Button.h"
 #include "gui/SettingsMenu.h"
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
@@ -27,6 +26,7 @@ const std::string TAG = "Main";
 
 Player* player_ptr;
 ClickController* clickController_ptr;
+LightController* lightController_ptr;
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	player_ptr->handleMousePos(window, xpos, ypos);
@@ -49,6 +49,11 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int) {
     }
 }
 
+void frameBufferSizeCallback(GLFWwindow*, int width, int height) {
+    Log::log(TAG, fmt::format("Framebuffer size changed: {}x{}", width, height));
+	lightController_ptr->onFrameBufferSizeChanged(width, height);
+}
+
 int main() {
 	glfwInit();
 
@@ -67,6 +72,13 @@ int main() {
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);  // enable VSync
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
+	glfwSetKeyCallback(window, keyCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
 	gladLoadGL();
 
@@ -150,7 +162,8 @@ int main() {
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
 	player_ptr = &player;
 
-	LightController lc(window);
+	LightController lc(fbWidth, fbHeight);
+	lightController_ptr = &lc;
 	lc.registerShapes(objects);
 	lc.registerDrawable(&player);
 	lc.processLighting();
@@ -164,29 +177,26 @@ int main() {
 	playerDebugText.setCenterText(false);
 
 	Window w(window);
-	w.registerListener(&lc);
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
+
+	Hud hud(width, height, &settingsMenu);
+
+	// the glfw window size callback is unreliable in my experience so gotta handle it myself
+	w.registerListener(&hud);
+	w.registerListener(&player);
+	w.registerListener(&settingsMenu);
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	sc.load();
 
 	Log::log(TAG, "settings loaded from save");
 
-	Hud hud(width, height, &settingsMenu);
-	w.registerListener(&hud);
-
 	ClickController cc;
 	clickController_ptr = &cc;
 	cc.registerClickable(&hud);
 	cc.registerClickable(&settingsMenu);
-	
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouseCallback);
-	glfwSetScrollCallback(window, scrollCallback);
-	glfwSetKeyCallback(window, keyCallback);
-	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 

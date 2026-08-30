@@ -4,8 +4,8 @@
     },
     "Graphics": {
         "Bloom Amount": 1,
-        "Fullscreen": 1,
-        "Resolution": 0,
+        "Fullscreen": 0,
+        "Resolution": 2,
         "Shadow Quality": 2
     }
 }
