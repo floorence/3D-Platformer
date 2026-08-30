@@ -185,9 +185,7 @@ int main() {
 	Hud hud(width, height, &settingsMenu);
 
 	// the glfw window size callback is unreliable in my experience so gotta handle it myself
-	w.registerListener(&hud);
-	w.registerListener(&player);
-	w.registerListener(&settingsMenu);
+	w.registerListeners({&hud, &player, &settingsMenu});
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	sc.load();
 
@@ -195,8 +193,8 @@ int main() {
 
 	ClickController cc;
 	clickController_ptr = &cc;
-	cc.registerClickable(&hud);
-	cc.registerClickable(&settingsMenu);
+	cc.registerListener(&hud);
+	cc.registerListener(&settingsMenu);
 
 	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
@@ -216,6 +214,7 @@ int main() {
 
 		playerDebugText.setText(player.getDebugString());
 		playerDebugText.draw();
+		hud.setPerformanceText(w.performanceInfo);
 		hud.draw();
 
 		if (settingsMenu.isOpen) settingsMenu.draw();

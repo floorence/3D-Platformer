@@ -1,7 +1,6 @@
 #ifndef LIGHT_CONTROLLER_H
 #define LIGHT_CONTROLLER_H
 
-#include "WindowListener.h"
 #include "buffer/FBO.h"
 #include "buffer/PBO.h"
 #include "controller/SettingsListener.h"

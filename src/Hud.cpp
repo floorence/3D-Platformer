@@ -11,6 +11,10 @@ Hud::Hud(int windowWidth, int windowHeight, SettingsMenu* settingsMenu) {
 		Log::log("Hud", "settings button clicked");
 		settingsMenu->isOpen = !settingsMenu->isOpen;
 	});
+
+	performanceText.setBoundsEnd(windowWidth, 10, 200, 100);
+	performanceText.setFontSize(16);
+	performanceText.setCenterText(false);
 }
 
 bool Hud::dispatchMouseEvent(float x, float y, MouseEvent event) {
@@ -23,8 +27,14 @@ void Hud::onWindowSizeChanged(int newWidth, int newHeight) {
 	Globals::FontShader->setProjection(guiProjection);
 
 	settingsButton.setBoundsEnd(newWidth - 10, newHeight - 40, 70, 30);
+	performanceText.setBoundsEnd(newWidth, 10, 200, 100);
+}
+
+void Hud::setPerformanceText(std::string text) {
+    performanceText.setText(text);
 }
 
 void Hud::draw() {
     settingsButton.draw();
+    performanceText.draw();
 }

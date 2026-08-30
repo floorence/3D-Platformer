@@ -6,14 +6,6 @@ Window::Window(GLFWwindow* window)
     : window(window) 
 {
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
-
-	performanceText.setBoundsEnd(windowWidth, 10, 200, 100);
-	performanceText.setFontSize(16);
-	performanceText.setCenterText(false);
-}
-
-void Window::registerListener(WindowListener* listener) {
-    listeners.push_back(listener);
 }
 
 void Window::startFrame() {
@@ -33,12 +25,11 @@ void Window::endFrame() {
         float avgFrameTime = totalFrameTime.first / totalFrameTime.second;
         float avgRealFrameTime = totalRealFrameTime.first / totalRealFrameTime.second;
         
-        performanceText.setText(formatPerformanceInfo(avgFrameTime, avgRealFrameTime)); 
+        formatPerformanceInfo(avgFrameTime, avgRealFrameTime); 
         totalFrameTime = std::pair(0.0f, 0);
         totalRealFrameTime = std::pair(0.0f, 0);
     }
 
-    performanceText.draw();
     prevFrameStart = currentFrameStart;
 }
 
@@ -97,9 +88,9 @@ void Window::setFullscreen(bool fullscreen) {
     this->fullscreen = fullscreen;
 }
 
-std::string Window::formatPerformanceInfo(float frameTime, float realFrameTime) {
+void Window::formatPerformanceInfo(float frameTime, float realFrameTime) {
 	int fps = 1 / frameTime;
 	int realFps = 1 / realFrameTime;
 
-	return fmt::format("FPS: {}  |  {}\nframe time: {:.3f}  |  {:.3f}", fps, realFps, frameTime * 1000, realFrameTime * 1000);
+	performanceInfo = fmt::format("FPS: {}  |  {}\nframe time: {:.3f}  |  {:.3f}", fps, realFps, frameTime * 1000, realFrameTime * 1000);
 }
