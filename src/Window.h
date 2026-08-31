@@ -16,6 +16,7 @@ public:
     void startFrame();
     void endFrame();
 
+    void setSizeAndNotify(int newWidth, int newHeight);
     void onSettingsChanged(const Settings& settings);
 private:
     GLFWwindow* window;
@@ -34,7 +35,6 @@ private:
     int savedW, savedH, savedX, savedY;
     const std::string TAG = "Window";
 
-    void notifyListeners(int newWidth, int newHeight);
-    void setFullscreen(bool fullscreen);
+    void setFullscreen(bool fullscreen, int windowedWidth, int windowedHeight);
     void formatPerformanceInfo(float frameTime, float realFrameTime);
 };

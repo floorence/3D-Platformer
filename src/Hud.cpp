@@ -22,6 +22,7 @@ bool Hud::dispatchMouseEvent(float x, float y, MouseEvent event) {
 }
 
 void Hud::onWindowSizeChanged(int newWidth, int newHeight) {
+    Log::log("Hud", fmt::format("onWindowSizeChanged({}, {})", newWidth, newHeight));
 	glm::mat4 guiProjection = glm::ortho(0.0f, (float)newWidth, (float)newHeight, 0.0f, -1.0f, 1.0f);	
 	Globals::GuiShader->setProjection(guiProjection);
 	Globals::FontShader->setProjection(guiProjection);

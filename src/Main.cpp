@@ -27,6 +27,7 @@ const std::string TAG = "Main";
 Player* player_ptr;
 ClickController* clickController_ptr;
 LightController* lightController_ptr;
+Window* window_ptr;
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	player_ptr->handleMousePos(window, xpos, ypos);
@@ -47,6 +48,11 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int) {
         glfwGetCursorPos(window, &xpos, &ypos);
 		clickController_ptr->handleMouseButton(xpos, ypos, action);
     }
+}
+
+void windowSizeCallback(GLFWwindow*, int width, int height) {
+    Log::log(TAG, fmt::format("Window size changed: {}x{}", width, height));
+	window_ptr->setSizeAndNotify(width, height);
 }
 
 void frameBufferSizeCallback(GLFWwindow*, int width, int height) {
@@ -78,6 +84,7 @@ int main() {
 	glfwSetScrollCallback(window, scrollCallback);
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetWindowSizeCallback(window, windowSizeCallback);
 	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
 	gladLoadGL();
@@ -177,6 +184,7 @@ int main() {
 	playerDebugText.setCenterText(false);
 
 	Window w(window);
+	window_ptr = &w;
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
@@ -196,9 +204,9 @@ int main() {
 	cc.registerListener(&hud);
 	cc.registerListener(&settingsMenu);
 
-	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
+	// Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
 
-	glViewport(0, 0, fbWidth, fbHeight);
+	// glViewport(0, 0, fbWidth, fbHeight);
 	glEnable(GL_CULL_FACE); // enable back face culling
 
 	Log::log(TAG, "everything is set up; starting main game loop");

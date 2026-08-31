@@ -39,51 +39,51 @@ void Window::onSettingsChanged(const Settings& settings) {
     if (width != windowWidth || height != windowHeight) {
         Log::log(TAG, fmt::format("Changing window size: {}x{} -> {}x{}", windowWidth, windowHeight, width, height));
 
-        windowWidth = width;
-        windowHeight = height;
-        glfwSetWindowSize(window, windowWidth, windowHeight);
-        notifyListeners(width, height);
+        glfwSetWindowSize(window, width, height);
+        setSizeAndNotify(width, height);
     }
-    setFullscreen(settings.graphics.fullscreen.value);
+    setFullscreen(settings.graphics.fullscreen.value, width, height);
 }
 
-void Window::notifyListeners(int newWidth, int newHeight) {
+void Window::setSizeAndNotify(int newWidth, int newHeight) {
+    windowWidth = newWidth;
+    windowHeight = newHeight;
     for (auto& listener: listeners) {
-        listener->onWindowSizeChanged(newWidth, newHeight);
+        listener->onWindowSizeChanged(windowWidth, windowHeight);
     }
 }
 
-void Window::setFullscreen(bool fullscreen) {
+void Window::setFullscreen(bool fullscreen, int windowedWidth, int windowedHeight) {
     if (this->fullscreen == fullscreen) return;
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     if (!monitor) return;
 
     if (fullscreen) {
         glfwGetWindowPos(window, &savedX, &savedY);
-        glfwGetWindowSize(window, &savedW, &savedH);
+        // glfwGetWindowSize(window, &savedW, &savedH);
 
-        // use optimal refresh rate if monitor supports the resolution
-        int mode_count;
-        const GLFWvidmode* modes = glfwGetVideoModes(monitor, &mode_count);
-        int refreshRate = 60;
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-        for (int i = 0; i < mode_count; i++) {
-            if (modes[i].width == windowWidth && modes[i].height == windowHeight) {
-                refreshRate = modes[i].refreshRate;
-                break;
-            }
-        }
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-        glfwSetWindowMonitor(window, monitor, 0, 0, windowWidth, windowHeight, refreshRate);
-        Log::log(TAG, fmt::format("Switched to fullscreen: {}x{} @ {}Hz", windowWidth, windowHeight, refreshRate));
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+        // windowWidth = mode->width;
+        // windowHeight = mode->height;
+        // notifyListeners();
+
+        Log::log(TAG, fmt::format("Switched to fullscreen: {}x{} @ {}Hz", mode->width, mode->height, mode->refreshRate));
     } else {
-        glfwSetWindowMonitor(window, nullptr, savedX, savedY, savedW, savedH, 0);
-        Log::log(TAG, fmt::format("Switched to windowed mode: {}x{}", savedW, savedH));
+        glfwSetWindowMonitor(window, nullptr, savedX, savedY, windowedWidth, windowedHeight, 0);
+        setSizeAndNotify(windowedWidth, windowedHeight);
+        
+        Log::log(TAG, fmt::format("Switched to windowed mode: {}x{}", windowedWidth, windowedHeight));
     }
 
-    glfwGetWindowSize(window, &windowWidth, &windowHeight);
-    Log::log(TAG, fmt::format("New window size: {}x{}", windowWidth, windowHeight));
-    notifyListeners(windowWidth, windowHeight);
+    // glfwGetWindowSize(window, &windowWidth, &windowHeight);
+    // Log::log(TAG, fmt::format("New window size: {}x{}", windowWidth, windowHeight));
 
     this->fullscreen = fullscreen;
 }
