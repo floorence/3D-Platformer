@@ -4,7 +4,7 @@
 #include "util/Utils.h"
 #include <fmt/format.h>
 
-Trail::Trail(glm::vec3 position, int maxPoints, float headWidth)
+Trail::Trail(glm::vec3 position, uint maxPoints, float headWidth)
     : Shape3D(position, false) 
 {
     this->maxPoints = maxPoints;

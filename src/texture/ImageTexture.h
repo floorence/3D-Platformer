@@ -1,7 +1,6 @@
-#ifndef IMAGE_TEXTURE_CLASS_H
-#define IMAGE_TEXTURE_CLASS_H
+#pragma once
 
-#include"AssetTexture.h"
+#include "texture/AssetTexture.h"
 
 // Texture for raster images
 class ImageTexture: public AssetTexture {
@@ -25,5 +24,3 @@ private:
 
 	void flipBitmap(unsigned char* bytes, int width, int height);
 };
-
-#endif

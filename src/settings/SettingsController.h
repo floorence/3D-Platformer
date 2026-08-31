@@ -1,8 +1,7 @@
-#ifndef SETTINGS_CONTROLLER_H
-#define SETTINGS_CONTROLLER_H
+#pragma once
 
 #include "util/Observable.h"
-#include "SettingsListener.h"
+#include "settings/SettingsListener.h"
 
 class SettingsController: public Observable<SettingsListener> {
 public:
@@ -13,5 +12,3 @@ public:
 private:
     void notifyListeners(const Settings& settings);
 };
-
-#endif

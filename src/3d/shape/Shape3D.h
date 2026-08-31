@@ -1,5 +1,4 @@
-#ifndef SHAPE_3D_CLASS
-#define SHAPE_3D_CLASS
+#pragma once
 
 #include "mesh/Mesh.h"
 #include "3d/Object3D.h"
@@ -39,5 +38,3 @@ private:
     virtual std::vector<Vertex> generateVertices() = 0;
     virtual std::vector<GLuint> generateIndices() = 0;
 };
-
-#endif

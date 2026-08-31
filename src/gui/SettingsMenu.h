@@ -1,12 +1,11 @@
-#ifndef SETTINGSMENU_H
-#define SETTINGSMENU_H
+#pragma once
 
 #include "window/WindowListener.h"
 #include "settings/SettingsController.h"
 #include "settings/SettingsListener.h"
-#include "element/Button.h"
-#include "element/IntGuiElement.h"
-#include "framework/Quad.h"
+#include "gui/element/Button.h"
+#include "gui/element/IntGuiElement.h"
+#include "gui/framework/Quad.h"
 #include <memory>
 
 struct SettingGui {
@@ -58,5 +57,3 @@ private:
     void onBoundsChanged() override;
     Settings readSettings();
 };
-
-#endif

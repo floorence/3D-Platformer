@@ -1,5 +1,4 @@
-#ifndef MASS_CLASS_H
-#define MASS_CLASS_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <string>
@@ -27,5 +26,3 @@ protected:
 	glm::vec3 getAirResistance(); // return force from air resistance
 	virtual void processVelocity();
 };
-
-#endif

@@ -1,7 +1,6 @@
-#ifndef LINE_H
-#define LINE_H
+#pragma once
 
-#include "Shape3D.h"
+#include "3d/shape/Shape3D.h"
 
 class Line: public Shape3D {
 public:
@@ -16,5 +15,3 @@ private:
     std::vector<Vertex> generateVertices() override;
     std::vector<GLuint> generateIndices() override;
 };
-
-#endif

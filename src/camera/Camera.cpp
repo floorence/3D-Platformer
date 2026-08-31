@@ -1,5 +1,5 @@
-#include"Camera.h"
-#include"util/Log.h"
+#include "Camera.h"
+#include "util/Log.h"
 
 Camera::Camera(glm::vec3 position, int windowWidth, int windowHeight)
 	: position(position), windowWidth(windowWidth), windowHeight(windowHeight) {}

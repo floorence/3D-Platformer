@@ -1,8 +1,7 @@
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
 
 #include "mesh/Mesh.h"
-#include "Object3D.h"
+#include "3d/Object3D.h"
 #include "texture/AssetTexture.h"
 #include "texture/ImageTexture.h"
 #include "texture/Texture.h"
@@ -40,5 +39,3 @@ private:
 
     void preDraw() override;
 };
-
-#endif

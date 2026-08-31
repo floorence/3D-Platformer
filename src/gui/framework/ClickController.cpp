@@ -1,6 +1,6 @@
 #include "ClickController.h"
 #include <GLFW/glfw3.h>
-#include "Clickable.h"
+#include "gui/framework/Clickable.h"
 #include "util/Log.h"
 #include <fmt/format.h>
 

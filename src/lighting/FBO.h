@@ -1,5 +1,4 @@
-#ifndef FBO_H
-#define FBO_H
+#pragma once
 
 #include <glad/glad.h>
 
@@ -25,5 +24,3 @@ public:
 
     void checkStatus();
 };
-
-#endif

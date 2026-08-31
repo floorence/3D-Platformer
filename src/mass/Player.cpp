@@ -1,6 +1,6 @@
-#include"Player.h"
+#include "Player.h"
 #include "util/Log.h"
-#include"util/Utils.h"
+#include "util/Utils.h"
 
 Player::Player(glm::vec3 position, int windowWidth, int windowHeight) 
     : camera(position, windowWidth, windowHeight),

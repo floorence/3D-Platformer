@@ -1,5 +1,4 @@
-#ifndef DRAWABLE_3D_H
-#define DRAWABLE_3D_H
+#pragma once
 
 #include "camera/Camera.h"
 #include "shader/Shader.h"
@@ -24,5 +23,3 @@ protected:
         if (cullFacesBeforeDraw) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
     }
 };
-
-#endif

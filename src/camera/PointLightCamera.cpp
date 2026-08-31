@@ -1,4 +1,4 @@
-#include"PointLightCamera.h"
+#include "PointLightCamera.h"
 
 PointLightCamera::PointLightCamera(glm::vec3 position, int width, int height)
     : Camera(position, width, height) {}

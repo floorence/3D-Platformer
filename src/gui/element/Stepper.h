@@ -1,9 +1,8 @@
-#ifndef STEPPER_H
-#define STEPPER_H
+#pragma once
 
-#include "Button.h"
+#include "gui/element/Button.h"
 #include "gui/framework/Clickable.h"
-#include "IntGuiElement.h"
+#include "gui/element/IntGuiElement.h"
 
 class Stepper: public IntGuiElement {
 public:
@@ -30,5 +29,3 @@ private:
     float getUnboundWidth(float h) override;
     float getUnboundHeight(float w) override;
 };
-
-#endif

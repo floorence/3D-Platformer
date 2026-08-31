@@ -1,5 +1,4 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -63,5 +62,3 @@ struct Settings {
 
     std::vector<SettingsCategory*> children = {&graphics, &controls};
 };
-
-#endif

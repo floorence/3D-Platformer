@@ -1,11 +1,10 @@
-#ifndef VBO_CLASS_H
-#define VBO_CLASS_H
+#pragma once
 
-#include<fmt/format.h>
-#include<glm/glm.hpp>
-#include<glad/glad.h>
+#include <fmt/format.h>
+#include <glm/glm.hpp>
+#include <glad/glad.h>
 #include <string>
-#include<vector>
+#include <vector>
 
 struct Vertex {
 	glm::vec3 position = glm::vec3(0.0f);
@@ -36,5 +35,3 @@ public:
 	void linkVertices(const std::vector<Vertex>& vertices);
 	void bind();
 };
-
-#endif

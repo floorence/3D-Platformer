@@ -1,5 +1,4 @@
-#ifndef LIGHT_CONTROLLER_H
-#define LIGHT_CONTROLLER_H
+#pragma once
 
 #include "lighting/FBO.h"
 #include "lighting/PBO.h"
@@ -99,5 +98,3 @@ private:
     void calculateAttenuationCoefficients(float range, float* linear, float* quadratic);
     glm::vec3 getSkyColor(Camera& camera);
 };
-
-#endif

@@ -1,7 +1,6 @@
-#ifndef RECTANGULAR_PRISM_H
-#define RECTANGULAR_PRISM_H
+#pragma once
 
-#include "Shape3D.h"
+#include "3d/shape/Shape3D.h"
 
 enum class Facing {
     negX, posX, negY, posY, negZ, posZ
@@ -30,5 +29,3 @@ private:
     std::vector<GLuint> generateIndices() override;
     glm::vec2 deriveTexCoord(glm::vec3 vertex, Facing dir);
 };
-
-#endif

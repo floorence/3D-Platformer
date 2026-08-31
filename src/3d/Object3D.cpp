@@ -1,5 +1,4 @@
 #include "Object3D.h"
-#include "Drawable3D.h"
 #include "util/Log.h"
 
 Object3D::Object3D(glm::vec3 position) {

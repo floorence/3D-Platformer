@@ -1,7 +1,6 @@
-#ifndef TEXT_H
-#define TEXT_H
+#pragma once
 
-#include "Rect.h"
+#include "gui/framework/Rect.h"
 #include "mesh/Mesh.h"
 
 class Text: public Rect {
@@ -31,5 +30,3 @@ private:
     float getUnboundHeight(float w) override;
     void updateTextSize();
 };
-
-#endif

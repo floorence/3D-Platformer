@@ -1,10 +1,9 @@
-#include"Shader.h"
+#include "Shader.h"
 #include <fmt/format.h>
-#include<fstream>
+#include <fstream>
 #include <glm/gtc/type_ptr.hpp>
-#include<iostream>
-#include "mesh/VAO.h"
-#include"util/Log.h"
+#include <iostream>
+#include "util/Log.h"
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile) {
 	std::string vertexCode = getFileContents(vertexFile);

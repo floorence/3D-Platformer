@@ -1,5 +1,4 @@
-#ifndef CLICKABLE_H
-#define CLICKABLE_H
+#pragma once
 
 enum class MouseEvent {
     Down, Up, Hover
@@ -11,5 +10,3 @@ public:
     /** @return whether or not click was registered */
     virtual bool dispatchMouseEvent(float x, float y, MouseEvent event) = 0;
 };
-
-#endif

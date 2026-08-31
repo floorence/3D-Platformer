@@ -1,7 +1,6 @@
-#ifndef INT_GUI_ELEMENT_H
-#define INT_GUI_ELEMENT_H
+#pragma once
 
-#include "GuiElement.h"
+#include "gui/element/GuiElement.h"
 
 /**
  * Gui element whose data can be represented by or transformed to an integer
@@ -13,5 +12,3 @@ public:
     virtual void setData(int data) = 0;
     virtual int getData() = 0;
 };
-
-#endif

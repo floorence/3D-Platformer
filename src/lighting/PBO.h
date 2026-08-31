@@ -1,5 +1,4 @@
-#ifndef PBO_H
-#define PBO_H
+#pragma once
 
 #include <glad/glad.h>
 
@@ -18,5 +17,3 @@ public:
 
 	void bind();
 };
-
-#endif

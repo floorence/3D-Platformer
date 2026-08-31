@@ -1,7 +1,6 @@
-#ifndef DEBUG_PYRAMID_H
-#define DEBUG_PYRAMID_H
+#pragma once
 
-#include "Shape3D.h"
+#include "3d/shape/Shape3D.h"
 
 class DebugPyramid: public Shape3D {
 public:
@@ -46,5 +45,3 @@ private:
         };
     };
 };
-
-#endif

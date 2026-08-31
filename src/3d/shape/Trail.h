@@ -1,7 +1,6 @@
-#ifndef TRAIL_H
-#define TRAIL_H
+#pragma once
 
-#include "Shape3D.h"
+#include "3d/shape/Shape3D.h"
 
 // 3d trail that is represented by a flat strip shape that is able to turn and rotate and becomes thinner at the tail
 // the model position of the trail will be the position offset of the trail, and not necessarily be a position on the trail.
@@ -11,7 +10,7 @@ public:
      * @param positionOffset position offset of the trail, will not actually be a point on the trail
      * @param maxPoints maximum number of points that the trail will keep track of for its curve
      */
-    Trail(glm::vec3 positionOffset, int maxPoints, float headWidth = 0.1f);
+    Trail(glm::vec3 positionOffset, uint maxPoints, float headWidth = 0.1f);
 
     /** 
      * @brief adds a point to the head of the trail at given position.
@@ -26,8 +25,8 @@ public:
     /** @brief same as addPoint, but direction is specified and head will be perpendicular to direction */
     void addPointWithDir(glm::vec3 position, float angle, glm::vec3 direction);
 private:
-    int points = 0;
-    int maxPoints = 0;
+    uint points = 0;
+    uint maxPoints = 0;
     bool indicesMaxPoints = false;
     float headWidth = 0.1f;
 
@@ -39,5 +38,3 @@ private:
 
     void addPointInternal(glm::vec3 position, float angle, glm::vec3 direction = glm::vec3(0.0f));
 };
-
-#endif

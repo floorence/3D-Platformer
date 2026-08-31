@@ -1,9 +1,8 @@
-#ifndef MESH_CLASS_H
-#define MESH_CLASS_H
+#pragma once
 
-#include"VAO.h"
-#include"EBO.h"
-#include"camera/Camera.h"
+#include "mesh/VAO.h"
+#include "mesh/EBO.h"
+#include "camera/Camera.h"
 #include "camera/PointLightCamera.h"
 #include "shader/Shader.h"
 
@@ -40,5 +39,3 @@ private:
 
 	void prepareColorsAndTextures(Shader& shader);
 };
-
-#endif

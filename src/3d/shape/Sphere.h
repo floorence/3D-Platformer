@@ -1,7 +1,6 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#pragma once
 
-#include"Shape3D.h"
+#include "3d/shape/Shape3D.h"
 
 class Sphere: public Shape3D {
 public:
@@ -13,5 +12,3 @@ private:
     std::vector<Vertex> generateVertices() override;
     std::vector<GLuint> generateIndices() override;
 };
-
-#endif

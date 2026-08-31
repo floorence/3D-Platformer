@@ -1,7 +1,6 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
-#include "Mass.h"
+#include "mass/Mass.h"
 #include "window/WindowListener.h"
 #include "camera/Camera.h"
 #include "settings/SettingsListener.h"
@@ -61,5 +60,3 @@ private:
 	/** yawTurn and pitchTurn are 0, -1, or 1 depending on direction */
 	void syncCamerasAndBody(glm::vec3 movement, int yawTurn, int pitchTurn, float deltaTime);
 };
-
-#endif

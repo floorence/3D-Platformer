@@ -1,11 +1,11 @@
-#include <algorithm>
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include<fstream>
 #include "FontTexture.h"
+#include <algorithm>
+#include <fstream>
 #include "util/Log.h"
-#include<fmt/format.h>
-#include"stb/stb_image_write.h"
+#include <fmt/format.h>
+#include "stb/stb_image_write.h"
 
 FontTexture::FontTexture(const char* ttfFile, GLenum pixelType) {
 	uniform = "diffuse0";

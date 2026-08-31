@@ -1,8 +1,7 @@
-#ifndef OBJECT3D_H
-#define OBJECT3D_H
+#pragma once
 
 #include <glm/ext/matrix_float4x4.hpp>
-#include "Drawable3D.h"
+#include "3d/Drawable3D.h"
 
 class Object3D: public Drawable3D {
 public:
@@ -56,5 +55,3 @@ protected:
     virtual void invalidateModel();
     glm::mat4 rotate(glm::mat4 mat, float rotationX, float rotationY, float rotationZ);
 };
-
-#endif

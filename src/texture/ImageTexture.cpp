@@ -1,9 +1,9 @@
-#include<cmath>
-#include<stb/stb_image.h>
-#include"ImageTexture.h"
-#include"util/Log.h"
+#include <cmath>
+#include <stb/stb_image.h>
+#include "texture/ImageTexture.h"
+#include "util/Log.h"
 #include "util/Utils.h"
-#include<fmt/format.h>
+#include <fmt/format.h>
 
 ImageTexture::ImageTexture(const char* image, TextureType texType, GLenum pixelType, bool convertToSpecular) {
 	type = texType;

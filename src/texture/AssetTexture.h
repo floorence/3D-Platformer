@@ -1,7 +1,6 @@
-#ifndef TEXTURE_CLASS_H
-#define TEXTURE_CLASS_H
+#pragma once
 
-#include"Texture.h"
+#include "texture/Texture.h"
 
 enum class TextureType {
 	Diffuse, Specular
@@ -20,5 +19,3 @@ public:
 protected:
 	void setTextureData(unsigned char* bytes, GLenum format, GLenum pixelType, int width, int height);
 };
-
-#endif

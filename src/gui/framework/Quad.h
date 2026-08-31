@@ -1,7 +1,6 @@
-#ifndef QUAD_H
-#define QUAD_H
+#pragma once
 
-#include "Rect.h"
+#include "gui/framework/Rect.h"
 #include "mesh/Mesh.h"
 #include "texture/Texture.h"
 #include "shader/Shader.h"
@@ -28,5 +27,3 @@ private:
 
     void onBoundsChanged() override;
 };
-
-#endif

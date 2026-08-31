@@ -1,7 +1,7 @@
 #pragma once
 
 #include "window/WindowListener.h"
-#include "SettingsMenu.h"
+#include "gui/SettingsMenu.h"
 
 class Hud: public Clickable, public WindowListener {
 public:

@@ -1,7 +1,6 @@
-#ifndef TOGGLE_H
-#define TOGGLE_H
+#pragma once
 
-#include "IntGuiElement.h"
+#include "gui/element/IntGuiElement.h"
 #include "gui/framework/Quad.h"
 
 class Toggle: public IntGuiElement {
@@ -23,5 +22,3 @@ private:
     float getUnboundWidth(float h) override { return h * 2; };
     float getUnboundHeight(float w) override { return w / 2; };
 };
-
-#endif

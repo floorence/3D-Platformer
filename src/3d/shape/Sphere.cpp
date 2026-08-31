@@ -1,4 +1,4 @@
-#include"Sphere.h"
+#include "Sphere.h"
 #include <glm/gtc/constants.hpp>
 
 Sphere::Sphere(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, float radius, int stacks, int sectors, bool isLightSource) 

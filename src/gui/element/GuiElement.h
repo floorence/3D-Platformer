@@ -1,5 +1,4 @@
-#ifndef GUI_ELEMENT_H
-#define GUI_ELEMENT_H
+#pragma once
 
 #include "gui/framework/Clickable.h"
 #include "gui/framework/Rect.h"
@@ -21,5 +20,3 @@ private:
     std::function<void()> onClickCallback;
     bool previousFrameHover = false;
 };
-
-#endif

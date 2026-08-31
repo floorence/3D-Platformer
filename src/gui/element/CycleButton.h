@@ -1,8 +1,7 @@
-#ifndef CYCLE_BUTTON_H
-#define CYCLE_BUTTON_H
+#pragma once
 
-#include "Button.h"
-#include "IntGuiElement.h"
+#include "gui/element/Button.h"
+#include "gui/element/IntGuiElement.h"
 
 class CycleButton: public IntGuiElement {
 public:
@@ -24,5 +23,3 @@ private:
     float getUnboundWidth(float h) override;
     float getUnboundHeight(float w) override;
 };
-
-#endif

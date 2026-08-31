@@ -1,8 +1,7 @@
-#ifndef CLICK_CONTROLLER_H
-#define CLICK_CONTROLLER_H
+#pragma once
 
 #include "util/Observable.h"
-#include "Clickable.h"
+#include "gui/framework/Clickable.h"
 #include <string>
 
 class ClickController: public Observable<Clickable> {
@@ -14,5 +13,3 @@ public:
 private:
     const std::string TAG = "ClickController";
 };
-
-#endif

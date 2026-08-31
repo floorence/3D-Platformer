@@ -1,7 +1,6 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#pragma once
 
-#include "GuiElement.h"
+#include "gui/element/GuiElement.h"
 #include "gui/framework/Quad.h"
 #include "gui/framework/Text.h"
 
@@ -27,5 +26,3 @@ private:
     void onBoundsChanged() override;
     int deriveFontSize(float h);
 };
-
-#endif
