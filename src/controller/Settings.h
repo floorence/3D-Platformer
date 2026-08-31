@@ -46,29 +46,6 @@ struct GraphicsSettings: SettingsCategory {
     std::vector<Setting*> getChildren() override {
         return {&resolution, &fullscreen, &bloomAmount, &shadowQuality};
     }
-
-    void getResolution(int* width, int* height) const {
-        switch (resolution.value) {
-            case 0:
-                *width = 800; *height = 600;
-                break;
-            case 1:
-                *width = 1024; *height = 768;
-                break;
-            case 2:
-                *width = 1280; *height = 720;
-                break;
-            case 3:
-                *width = 1366; *height = 768;
-                break;
-            case 4:
-                *width = 1440; *height = 900;
-                break;
-            case 5:
-                *width = 1920; *height = 1080;
-                break;
-        }
-    }
 };
 
 struct ControlsSettings: SettingsCategory {

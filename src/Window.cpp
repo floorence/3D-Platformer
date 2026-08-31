@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "util/Log.h"
-#include <GLFW/glfw3.h>
+#include <fmt/format.h>
 
 Window::Window(GLFWwindow* window)
     : window(window) 
@@ -33,18 +33,6 @@ void Window::endFrame() {
     prevFrameStart = currentFrameStart;
 }
 
-void Window::onSettingsChanged(const Settings& settings) {
-    int width, height;
-    settings.graphics.getResolution(&width, &height);
-    if (width != windowWidth || height != windowHeight) {
-        Log::log(TAG, fmt::format("Changing window size: {}x{} -> {}x{}", windowWidth, windowHeight, width, height));
-
-        glfwSetWindowSize(window, width, height);
-        setSizeAndNotify(width, height);
-    }
-    setFullscreen(settings.graphics.fullscreen.value, width, height);
-}
-
 void Window::setSizeAndNotify(int newWidth, int newHeight) {
     windowWidth = newWidth;
     windowHeight = newHeight;
@@ -53,6 +41,26 @@ void Window::setSizeAndNotify(int newWidth, int newHeight) {
     }
 }
 
+void Window::onSettingsChanged(const Settings& settings) {
+    int width, height;
+    int option = settings.graphics.resolution.value;
+    getResolution(settings.graphics.resolution.options[option], &width, &height);
+    if (width != windowWidth || height != windowHeight) {
+        Log::log(TAG, fmt::format("Changing window size: {}x{} -> {}x{}", windowWidth, windowHeight, width, height));
+
+        glfwSetWindowSize(window, width, height);
+        // glfw trolls and doesn't call the window size callback in this case but luckily we know the window size here
+        setSizeAndNotify(width, height);
+    }
+    setFullscreen(settings.graphics.fullscreen.value, width, height);
+}
+
+void Window::getResolution(std::string res, int* width, int* height) {
+    int xi = res.find('x');
+    *width = std::stoi(res.substr(0, xi));
+    *height = std::stoi(res.substr(xi + 1, res.size() - 1 - xi));
+}
+    
 void Window::setFullscreen(bool fullscreen, int windowedWidth, int windowedHeight) {
     if (this->fullscreen == fullscreen) return;
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
@@ -60,7 +68,6 @@ void Window::setFullscreen(bool fullscreen, int windowedWidth, int windowedHeigh
 
     if (fullscreen) {
         glfwGetWindowPos(window, &savedX, &savedY);
-        // glfwGetWindowSize(window, &savedW, &savedH);
 
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
@@ -70,20 +77,17 @@ void Window::setFullscreen(bool fullscreen, int windowedWidth, int windowedHeigh
         glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
         glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-        // windowWidth = mode->width;
-        // windowHeight = mode->height;
-        // notifyListeners();
+        // only case where the glfw window size callback actually gets called. we can't setSizeAndNotify here because we only know the
+        // framebuffer size here, we rely on the window size callback to be called in main.
 
         Log::log(TAG, fmt::format("Switched to fullscreen: {}x{} @ {}Hz", mode->width, mode->height, mode->refreshRate));
     } else {
         glfwSetWindowMonitor(window, nullptr, savedX, savedY, windowedWidth, windowedHeight, 0);
+        // glfw trolls and doesn't call the window size callback in this case but luckily we know the window size here
         setSizeAndNotify(windowedWidth, windowedHeight);
         
         Log::log(TAG, fmt::format("Switched to windowed mode: {}x{}", windowedWidth, windowedHeight));
     }
-
-    // glfwGetWindowSize(window, &windowWidth, &windowHeight);
-    // Log::log(TAG, fmt::format("New window size: {}x{}", windowWidth, windowHeight));
 
     this->fullscreen = fullscreen;
 }

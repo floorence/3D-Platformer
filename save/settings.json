@@ -5,7 +5,7 @@
     "Graphics": {
         "Bloom Amount": 1,
         "Fullscreen": 0,
-        "Resolution": 0,
+        "Resolution": 1,
         "Shadow Quality": 2
     }
 }

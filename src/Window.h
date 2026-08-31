@@ -3,7 +3,7 @@
 #include "Observable.h"
 #include "WindowListener.h"
 #include "controller/SettingsListener.h"
-#include "gui/Text.h"
+#include <GLFW/glfw3.h>
 #include <utility>
 
 class Window: public SettingsListener, public Observable<WindowListener> {
@@ -35,6 +35,7 @@ private:
     int savedW, savedH, savedX, savedY;
     const std::string TAG = "Window";
 
+    void getResolution(std::string res, int* width, int* height);
     void setFullscreen(bool fullscreen, int windowedWidth, int windowedHeight);
     void formatPerformanceInfo(float frameTime, float realFrameTime);
 };
