@@ -32,7 +32,7 @@ private:
 
     bool fullscreen = false;
     int windowWidth, windowHeight;
-    int savedW, savedH, savedX, savedY;
+    int savedX, savedY;
     const std::string TAG = "Window";
 
     void getResolution(std::string res, int* width, int* height);

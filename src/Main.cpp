@@ -192,7 +192,6 @@ int main() {
 
 	Hud hud(width, height, &settingsMenu);
 
-	// the glfw window size callback is unreliable in my experience so gotta handle it myself
 	w.registerListeners({&hud, &player, &settingsMenu});
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	sc.load();
@@ -204,9 +203,6 @@ int main() {
 	cc.registerListener(&hud);
 	cc.registerListener(&settingsMenu);
 
-	// Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
-
-	// glViewport(0, 0, fbWidth, fbHeight);
 	glEnable(GL_CULL_FACE); // enable back face culling
 
 	Log::log(TAG, "everything is set up; starting main game loop");
