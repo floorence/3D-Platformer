@@ -1,0 +1,48 @@
+#include "Mass.h"
+#include <fmt/format.h>
+#include <glm/gtx/vector_angle.hpp>
+
+void Mass::applyForce(glm::vec3 f) {
+    acceleration += f / mass;
+}
+
+glm::vec3 Mass::updatePosition(float dt) {
+    glm::vec3 initialPos = position;
+
+    applyForce(getAirResistance());
+    velocity += acceleration * dt;
+    processVelocity();
+    position += velocity * dt;
+    prevAcceleration = acceleration;
+	acceleration = glm::vec3(0.0f);
+
+    return position - initialPos;
+}
+
+std::string Mass::getDebugString() {
+    return fmt::format("position: {:.3f}, {:.3f}, {:.3f}\nvelocity: {:.3f}, {:.3f}, {:.3f}\nspeed: {:.3f}\nacceleration: {:.3f}, {:.3f}, {:.3f}", 
+        position.x, position.y, position.z,
+        velocity.x, velocity.y, velocity.z,
+        glm::length(velocity),
+        prevAcceleration.x, prevAcceleration.y, prevAcceleration.z
+    );
+}
+
+glm::vec3 Mass::getAirResistance() {
+	return -velocity * AIR_RESISTANCE_COEFFICIENT;
+}
+
+void Mass::processVelocity() {
+    glm::vec3 a = glm::normalize(acceleration);
+    glm::vec3 v = glm::normalize(velocity);
+
+    float angleRadians = glm::angle(a, v); 
+    float angleDegrees = glm::degrees(angleRadians); 
+
+    // if acceleration has a component in the same direction as velocity, it is increasing the magnitude of velocity; don't stop
+    if (angleDegrees < 90.0f) return;
+
+	if (glm::length(velocity) < STOPPING_SPEED) {
+		velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	}
+}

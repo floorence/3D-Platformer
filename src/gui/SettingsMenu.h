@@ -1,14 +1,13 @@
 #ifndef SETTINGSMENU_H
 #define SETTINGSMENU_H
 
-#include "WindowListener.h"
-#include "controller/SettingsController.h"
-#include "controller/SettingsListener.h"
-#include "gui/Button.h"
-#include "gui/IntGuiElement.h"
-#include "gui/Quad.h"
+#include "window/WindowListener.h"
+#include "settings/SettingsController.h"
+#include "settings/SettingsListener.h"
+#include "element/Button.h"
+#include "element/IntGuiElement.h"
+#include "framework/Quad.h"
 #include <memory>
-#include "Text.h"
 
 struct SettingGui {
     std::unique_ptr<Text> description; // could store just Text. but unique_ptrs are nice and it would be consistent with guiElement.

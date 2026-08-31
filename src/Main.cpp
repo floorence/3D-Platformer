@@ -6,19 +6,18 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<fmt/format.h>
 
-#include "Hud.h"
-#include "Window.h"
-#include "controller/ClickController.h"
+#include "gui/Hud.h"
+#include "window/Window.h"
+#include "gui/framework/ClickController.h"
 #include "gui/SettingsMenu.h"
-#include"shape/Sphere.h"
-#include"shape/RectangularPrism.h"
-#include"controller/LightController.h"
-#include"texture/FontTexture.h"
-#include"texture/ImageTexture.h"
+#include "3d/shape/Sphere.h"
+#include "3d/shape/RectangularPrism.h"
+#include "lighting/LightController.h"
+#include "texture/FontTexture.h"
+#include "texture/ImageTexture.h"
 #include "util/Globals.h"
-#include"util/Log.h"
-#include"Player.h"
-#include "util/Utils.h"
+#include "util/Log.h"
+#include "mass/Player.h"
 
 const unsigned int width = 800;
 const unsigned int height = 600;
