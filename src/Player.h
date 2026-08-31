@@ -2,13 +2,14 @@
 #define PLAYER_H
 
 #include"Mass.h"
+#include "WindowListener.h"
 #include"camera/Camera.h"
 #include "controller/SettingsListener.h"
 #include "shape/Model.h"
 #include "shape/Line.h"
 #include "shape/Trail.h"
 
-class Player: public Mass, public SettingsListener, public Drawable3D {
+class Player: public Mass, public SettingsListener, public Drawable3D, public WindowListener {
 public:
     Player(glm::vec3 position, int windowWidth, int windowHeight);
 
@@ -22,6 +23,7 @@ public:
 	void handleMouseScroll(GLFWwindow* window, double xoffset, double yoffset);
 
     void onSettingsChanged(const Settings& settings) override;
+	void onWindowSizeChanged(int newWidth, int newHeight) override;
 
 	void draw(Camera& camera) override;
 	void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;

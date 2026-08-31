@@ -13,7 +13,7 @@ enum class ShadowQuality {
 
 class LightController: public SettingsListener {
 public:
-    LightController(int windowWidth, int windowHeight);
+    LightController(int fbWidth, int fbHeight);
 
     void registerShape(Shape3D* shape);
     void registerShapes(const std::vector<Shape3D*>& shapes);
@@ -24,9 +24,10 @@ public:
     void render(Camera& camera, float deltaTime);
 
     void onSettingsChanged(const Settings& settings) override;
+    void onFrameBufferSizeChanged(int newWidth, int newHeight);
     std::string getDebugString();
 private:
-    int windowWidth, windowHeight;
+    int fbWidth, fbHeight; // framebuffer width and height
     std::vector<Shape3D*> lights;
     std::vector<Drawable3D*> drawables;
 
@@ -45,6 +46,7 @@ private:
     FBO hdrBloomFbo;
     Texture hdrTexture;
     Texture bloomTexture;
+    GLuint rboID;
     Shader hdrBloomShader;
     Quad hdrBloomResult;
     // average colour buffer
@@ -61,6 +63,10 @@ private:
     Shader blurShader;
     Quad blurResult;
     int blurAmount = 10;
+
+    // window resizing
+    Texture* windowSizeTextures[4] = {&hdrTexture, &bloomTexture, &blurTextures[0], &blurTextures[1]};
+    FBO* windowSizeFbos[3] = {&hdrBloomFbo, &blurFbos[0], &blurFbos[1]};
 
     // debug vars
     float debugBrightness;

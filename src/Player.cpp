@@ -166,6 +166,11 @@ void Player::onSettingsChanged(const Settings& settings) {
 	sensitivity = settings.controls.sensitivity.value;
 }
 
+void Player::onWindowSizeChanged(int newWidth, int newHeight) {
+	camera.setViewSize(newWidth, newHeight);
+	thirdPersonCam.setViewSize(newWidth, newHeight);
+}
+
 void Player::draw(Camera& camera) {
 	if (thirdPerson) {
 		body.draw(camera);

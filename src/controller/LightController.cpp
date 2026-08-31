@@ -6,8 +6,8 @@
 #include "util/Utils.h"
 #include <cmath>
 
-LightController::LightController(int windowWidth, int windowHeight) 
-    : windowWidth(windowWidth), windowHeight(windowHeight),
+LightController::LightController(int fbWidth, int fbHeight) 
+    : fbWidth(fbWidth), fbHeight(fbHeight),
       depthMapTexture(DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
       depthShader("shader/depth.vert", "shader/depth.geom", "shader/depth.frag"),
       pointLightCam(glm::vec3(0.0f), DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT),
@@ -86,7 +86,7 @@ void LightController::renderForShadows() {
     Globals::DefaultShader->setCubeMapTexture(depthMapTexture, "depthMap", 5);
     Globals::DefaultShader->setFarPlane(pointLightCam.farPlane);
 
-    glViewport(0, 0, windowWidth, windowHeight);
+    glViewport(0, 0, fbWidth, fbHeight);
 }
 
 void LightController::renderForHDRAndBloom(Camera& camera) {
@@ -115,7 +115,7 @@ void LightController::adjustBrightness(float deltaTime) {
     hdrTexture.bind();
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    int highestMipLevel = floor(log2(std::max(windowWidth, windowHeight)));
+    int highestMipLevel = floor(log2(std::max(fbWidth, fbHeight)));
 
     int nextIndex = pboIndex;
     int currentIndex = (pboIndex + 1) % 2; 
@@ -183,6 +183,27 @@ void LightController::renderForReal() {
     hdrBloomResult.draw(hdrBloomShader);
 }
 
+void LightController::onFrameBufferSizeChanged(int newWidth, int newHeight) {
+    fbWidth = newWidth;
+    fbHeight = newHeight;
+    // view port is updated in renderForShadows
+
+    for (int i = 0; i < 4; i++) {
+        windowSizeTextures[i]->bind();
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, NULL
+        );
+    }
+    glBindRenderbuffer(GL_RENDERBUFFER, rboID);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fbWidth, fbHeight);
+
+    for (int i = 0; i < 3; i++) {
+        windowSizeFbos[i]->bind();
+        windowSizeFbos[i]->checkStatus();
+    }
+    Utils::unbindFbo();
+}
+
 void LightController::onSettingsChanged(const Settings& settings) {
     blurAmount = settings.graphics.bloomAmount.value * 10;
     hdrBloomShader.setBloomEnabled(blurAmount);
@@ -213,10 +234,9 @@ void LightController::prepareHdrAndBloom() {
     prepareFPTexture(bloomTexture);
     hdrTexture.bind();
     // create depth buffer (renderbuffer) THIS IS NEEDED TO RESOLVE DEPTHS!!! (texture only does colours)
-    GLuint rboID;
     glGenRenderbuffers(1, &rboID);
     glBindRenderbuffer(GL_RENDERBUFFER, rboID);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fbWidth, fbHeight);
     // attach textures and buffer
     hdrBloomFbo.bind();
     hdrBloomFbo.attachTexture2D(hdrTexture.ID, 0);
@@ -256,7 +276,7 @@ void LightController::prepareGaussianBlur() {
 void LightController::prepareFPTexture(Texture& texture) {
     texture.bind();
     glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGBA16F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL
+        GL_TEXTURE_2D, 0, GL_RGBA16F, fbWidth, fbHeight, 0, GL_RGBA, GL_FLOAT, NULL
     );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

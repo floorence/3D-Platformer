@@ -3,14 +3,6 @@
 #include <fstream>
 using json = nlohmann::json;
 
-void SettingsController::registerListener(SettingsListener* listener) {
-    listeners.push_back(listener);
-}
-
-void SettingsController::registerListeners(std::vector<SettingsListener*> listeners) {
-    this->listeners.insert(this->listeners.end(), listeners.begin(), listeners.end());
-}
-
 void SettingsController::save(const Settings& settings) {
     json j;
 

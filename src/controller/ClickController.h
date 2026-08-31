@@ -1,19 +1,17 @@
 #ifndef CLICK_CONTROLLER_H
 #define CLICK_CONTROLLER_H
 
+#include "Observable.h"
 #include "gui/Clickable.h"
 #include <string>
-#include <vector>
 
-class ClickController {
+class ClickController: public Observable<Clickable> {
 public:
-    void registerClickable(Clickable* clickable);
-    void registerClickables(const std::vector<Clickable*>& clickables);
+    ClickController() = default;
+
     void handleMouseButton(float x, float y, int action);
     void handleMousePos(float x, float y);
 private:
-    std::vector<Clickable*> clickables;
-
     const std::string TAG = "ClickController";
 };
 

@@ -6,15 +6,13 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<fmt/format.h>
 
+#include "Hud.h"
+#include "Window.h"
 #include "controller/ClickController.h"
-#include "gui/Button.h"
 #include "gui/SettingsMenu.h"
-#include "shape/Model.h"
-#include "shape/DebugPyramid.h"
 #include"shape/Sphere.h"
 #include"shape/RectangularPrism.h"
 #include"controller/LightController.h"
-#include "shape/Trail.h"
 #include"texture/FontTexture.h"
 #include"texture/ImageTexture.h"
 #include "util/Globals.h"
@@ -23,11 +21,13 @@
 #include "util/Utils.h"
 
 const unsigned int width = 800;
-const unsigned int height = 800;
+const unsigned int height = 600;
 const std::string TAG = "Main";
 
 Player* player_ptr;
 ClickController* clickController_ptr;
+LightController* lightController_ptr;
+Window* window_ptr;
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 	player_ptr->handleMousePos(window, xpos, ypos);
@@ -50,11 +50,14 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int) {
     }
 }
 
-std::string formatPerformanceInfo(float frameTime, float realFrameTime) {
-	int fps = 1 / frameTime;
-	int realFps = 1 / realFrameTime;
+void windowSizeCallback(GLFWwindow*, int width, int height) {
+    Log::log(TAG, fmt::format("Window size changed: {}x{}", width, height));
+	window_ptr->setSizeAndNotify(width, height);
+}
 
-	return fmt::format("FPS: {}  |  {}\nframe time: {:.3f}  |  {:.3f}", fps, realFps, frameTime * 1000, realFrameTime * 1000);
+void frameBufferSizeCallback(GLFWwindow*, int width, int height) {
+    Log::log(TAG, fmt::format("Framebuffer size changed: {}x{}", width, height));
+	lightController_ptr->onFrameBufferSizeChanged(width, height);
 }
 
 int main() {
@@ -75,6 +78,14 @@ int main() {
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);  // enable VSync
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
+	glfwSetKeyCallback(window, keyCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetWindowSizeCallback(window, windowSizeCallback);
+	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
 	gladLoadGL();
 
@@ -90,7 +101,7 @@ int main() {
 	Shader flatShader("shader/default.vert", "shader/gui.frag");
 	Shader guiShader("shader/gui.vert", "shader/gui.frag");
 	Shader fontShader("shader/gui.vert", "shader/font.frag");
-	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)width, 0.0f, -1.0f, 1.0f);	
+	glm::mat4 guiProjection = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);	
 	guiShader.setProjection(guiProjection);
 	fontShader.setProjection(guiProjection);
 
@@ -159,6 +170,7 @@ int main() {
 	player_ptr = &player;
 
 	LightController lc(fbWidth, fbHeight);
+	lightController_ptr = &lc;
 	lc.registerShapes(objects);
 	lc.registerDrawable(&player);
 	lc.processLighting();
@@ -171,93 +183,49 @@ int main() {
 	playerDebugText.setFontSize(20);
 	playerDebugText.setCenterText(false);
 
-	Text performanceText;
-	performanceText.setBounds(width - 200, 10, 200, 100);
-	performanceText.setFontSize(16);
-	performanceText.setCenterText(false);
+	Window w(window);
+	window_ptr = &w;
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
 	settingsMenu.setCorners(100, 100, width - 100, height - 100);
-	sc.registerListeners({&settingsMenu, &lc, &player});
+
+	Hud hud(width, height, &settingsMenu);
+
+	w.registerListeners({&hud, &player, &settingsMenu});
+	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	sc.load();
 
 	Log::log(TAG, "settings loaded from save");
 
-	Button button;
-	button.setCorners(width - 80, height - 40, width - 10, height - 10);
-	button.setText("settings");
-	button.setBackgroundColor(glm::vec3(1.0f, 0.71f, 0.957f));
-	button.setOnClick([&settingsMenu]() {
-		settingsMenu.isOpen = !settingsMenu.isOpen;
-	});
-
 	ClickController cc;
 	clickController_ptr = &cc;
-	cc.registerClickable(&button);
-	cc.registerClickable(&settingsMenu);
-	
-	float deltaTime = 0.0f;
-	float lastFrame = 0.0f;
-	float lastUpdatedInfoText = 0.0f;
+	cc.registerListener(&hud);
+	cc.registerListener(&settingsMenu);
 
-	// first: total frame time, second: number of frames. real frame time is the frame time if vsync wasn't on.
-	std::pair<float, int> totalFrameTime(0.0f, 0);
-	std::pair<float, int> totalRealFrameTime(0.0f, 0);
-
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouseCallback);
-	glfwSetScrollCallback(window, scrollCallback);
-	glfwSetKeyCallback(window, keyCallback);
-	glfwSetMouseButtonCallback(window, mouseButtonCallback);
-
-	Log::log(TAG, fmt::format("configuring viewport: 0, 0, {}, {}", fbWidth, fbHeight));
-
-	glViewport(0, 0, fbWidth, fbHeight);
-	glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 	glEnable(GL_CULL_FACE); // enable back face culling
 
 	Log::log(TAG, "everything is set up; starting main game loop");
 
 	while (!glfwWindowShouldClose(window)) {
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		w.startFrame();
 
-		player.handleKeyInputs(window, deltaTime);
-		lc.render(*player.getActiveCamera(), deltaTime);
+		player.handleKeyInputs(window, w.deltaTime);
 
-		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
+		lc.render(*player.getActiveCamera(), w.deltaTime);
+		glDisable(GL_DEPTH_TEST); // disable for gui drawing
+
 		playerDebugText.setText(player.getDebugString());
 		playerDebugText.draw();
-		// tr.drawText(lc.getDebugString(), fontShader, 10, 100, 400, 20, glm::vec3(1.0f, 0.0f, 0.0f));
-		button.draw();
+		hud.setPerformanceText(w.performanceInfo);
+		hud.draw();
 
 		if (settingsMenu.isOpen) settingsMenu.draw();
 
 		glfwPollEvents();
-
-		// doing this here since glfwSwapBuffers() is what actually suspends when using vsync
-
-		float realCurrentFrame = glfwGetTime();
-		totalFrameTime.first += deltaTime;
-		totalFrameTime.second++;
-		totalRealFrameTime.first += realCurrentFrame - currentFrame;
-		totalRealFrameTime.second++;
-
-		if (realCurrentFrame - lastUpdatedInfoText >= 1.0f) {
-			lastUpdatedInfoText = realCurrentFrame;
-			float avgFrameTime = totalFrameTime.first / totalFrameTime.second;
-			float avgRealFrameTime = totalRealFrameTime.first / totalRealFrameTime.second;
-			
-			performanceText.setText(formatPerformanceInfo(avgFrameTime, avgRealFrameTime)); 
-			totalFrameTime = std::pair(0.0f, 0);
-			totalRealFrameTime = std::pair(0.0f, 0);
-		}
-
-		performanceText.draw();
-		glEnable(GL_DEPTH_TEST);
-
+		// end frame here since glfwSwapBuffers() suspends when using vsync
+		w.endFrame();
 		glfwSwapBuffers(window);
 	}
 

@@ -1,6 +1,7 @@
 #ifndef SETTINGSMENU_H
 #define SETTINGSMENU_H
 
+#include "WindowListener.h"
 #include "controller/SettingsController.h"
 #include "controller/SettingsListener.h"
 #include "gui/Button.h"
@@ -14,7 +15,7 @@ struct SettingGui {
     std::unique_ptr<IntGuiElement> guiElement; // pointer because IntGuiElement is abstract
 };
 
-class SettingsMenu: public Rect, public SettingsListener, public Clickable {
+class SettingsMenu: public Rect, public SettingsListener, public Clickable, public WindowListener {
 public:
     bool isOpen = false;
 
@@ -23,6 +24,7 @@ public:
     void draw();
     bool dispatchMouseEvent(float x, float y, MouseEvent event) override;
     void onSettingsChanged(const Settings& settings) override;
+    void onWindowSizeChanged(int newWidth, int newHeight) override;
 private:
     Text settingsTitle = Text("Settings");
     Quad background;
