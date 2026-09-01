@@ -74,6 +74,10 @@ int main() {
 		return -1;
 	}
 
+	// on some displays, framebuffer size and window size are not always the same
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);  // enable VSync
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -86,15 +90,10 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
 	Window w(window);
-	windowPtr = &w;
 
 	gladLoadGL();
 
 	Log::log(TAG, "Window and OpenGL initialized");
-
-	// on some displays, framebuffer size and window size are not always the same
-	int fbWidth, fbHeight;
-	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
 
 	// create shaders, textures, and populate globals
 	Shader shader("shader/default.vert", "shader/default.frag");
@@ -120,19 +119,10 @@ int main() {
 	Globals::FontShader = &fontShader;
 
 	TestRoom testRoom;
+	Log::log(TAG, "Test room initialized");
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	playerPtr = &player;
 
-	LightController lc(fbWidth, fbHeight);
-	lightControllerPtr = &lc;
-	lc.registerShapes(testRoom.objects);
-	lc.registerDrawable(&player);
-	lc.processLighting();
-
-	Log::log(TAG, "initial lighting processing completed");
-
-	// make text
 	Text playerDebugText;
 	playerDebugText.setBounds(10, 10, 400, 200);
 	playerDebugText.setFontSize(20);
@@ -144,15 +134,27 @@ int main() {
 
 	Hud hud(width, height, &settingsMenu);
 
-	w.registerListeners({&hud, &player, &settingsMenu});
-	sc.registerListeners({&settingsMenu, &lc, &player, &w});
-	sc.load();
-
-	Log::log(TAG, "settings loaded from save");
-
+	LightController lc(fbWidth, fbHeight);
 	ClickController cc;
+
+	// set pointers used in glfw callbacks
+	windowPtr = &w;
+	playerPtr = &player;
+	lightControllerPtr = &lc;
 	clickControllerPtr = &cc;
+
+	// register listeners, shapes, and drawables
+	w.registerListeners({&hud, &player, &settingsMenu});
+	lc.registerShapes(testRoom.objects);
+	lc.registerDrawable(&player);
+	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	cc.registerListeners({&hud, &settingsMenu});
+	
+	lc.processLighting();
+	Log::log(TAG, "initial lighting processing completed");
+
+	sc.load();
+	Log::log(TAG, "settings loaded from save");
 
 	glEnable(GL_CULL_FACE); // enable back face culling
 
