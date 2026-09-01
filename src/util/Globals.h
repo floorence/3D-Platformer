@@ -1,5 +1,4 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#pragma once
 
 class FontTexture;
 class Shader;
@@ -12,5 +11,3 @@ namespace Globals {
     inline Shader* LightShader;
     inline Shader* FlatShader;
 }
-
-#endif

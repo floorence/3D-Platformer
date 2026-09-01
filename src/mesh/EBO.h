@@ -1,8 +1,7 @@
-#ifndef EBO_CLASS_H
-#define EBO_CLASS_H
+#pragma once
 
-#include<glad/glad.h>
-#include<vector>
+#include <glad/glad.h>
+#include <vector>
 
 class EBO {
 public:
@@ -21,5 +20,3 @@ public:
 	void linkIndices(const std::vector<GLuint>& indices);
 	void bind();
 };
-
-#endif

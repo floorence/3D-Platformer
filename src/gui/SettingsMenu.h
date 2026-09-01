@@ -1,14 +1,12 @@
-#ifndef SETTINGSMENU_H
-#define SETTINGSMENU_H
+#pragma once
 
-#include "WindowListener.h"
-#include "controller/SettingsController.h"
-#include "controller/SettingsListener.h"
-#include "gui/Button.h"
-#include "gui/IntGuiElement.h"
-#include "gui/Quad.h"
+#include "window/WindowListener.h"
+#include "settings/SettingsController.h"
+#include "settings/SettingsListener.h"
+#include "gui/element/Button.h"
+#include "gui/element/IntGuiElement.h"
+#include "gui/framework/Quad.h"
 #include <memory>
-#include "Text.h"
 
 struct SettingGui {
     std::unique_ptr<Text> description; // could store just Text. but unique_ptrs are nice and it would be consistent with guiElement.
@@ -59,5 +57,3 @@ private:
     void onBoundsChanged() override;
     Settings readSettings();
 };
-
-#endif

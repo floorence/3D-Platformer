@@ -1,7 +1,6 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
-#include"glad/glad.h"
+#include "glad/glad.h"
 #include <string>
 
 // 2D texture
@@ -23,5 +22,3 @@ public:
     Texture(Texture&& other) noexcept;
     Texture& operator=(Texture&& other) noexcept;
 };
-
-#endif

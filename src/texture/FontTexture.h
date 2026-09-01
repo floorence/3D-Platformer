@@ -1,8 +1,7 @@
-#ifndef FONT_TEXTURE_CLASS_H
-#define FONT_TEXTURE_CLASS_H
+#pragma once
 
-#include"stb/stb_truetype.h"
-#include "AssetTexture.h"
+#include "stb/stb_truetype.h"
+#include "texture/AssetTexture.h"
 #include "mesh/VBO.h"
 
 // coordinates of quad within texture atlas as if texture atlas width and height was 1
@@ -58,5 +57,3 @@ private:
 	/** slightly scuffed workaround to have generateVertices and getSize be able to use the same function */
 	void processTextRequest(const std::string& text, float x, float y, float lineHeight, float maxWidth, bool center, std::vector<Vertex>* vertexData, std::pair<float, float>* sizeData);
 };
-
-#endif

@@ -1,7 +1,6 @@
-#ifndef POINT_LIGHT_CAMERA_H
-#define POINT_LIGHT_CAMERA_H
+#pragma once
 
-#include"Camera.h"
+#include "camera/Camera.h"
 #include <vector>
 
 class PointLightCamera: public Camera {
@@ -12,5 +11,3 @@ public:
 
     void generateTransforms();
 };
-
-#endif

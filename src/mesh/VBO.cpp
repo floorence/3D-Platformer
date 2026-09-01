@@ -1,4 +1,4 @@
-#include"VBO.h"
+#include "VBO.h"
 
 VBO::VBO() {
 	glGenBuffers(1, &ID);

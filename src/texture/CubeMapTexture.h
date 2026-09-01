@@ -1,8 +1,7 @@
-#ifndef CUBE_MAP_TEXTURE_H
-#define CUBE_MAP_TEXTURE_H
+#pragma once
 
-#include<glad/glad.h>
-#include<sys/types.h>
+#include <glad/glad.h>
+#include <sys/types.h>
 
 class CubeMapTexture {
 public:
@@ -11,5 +10,3 @@ public:
     CubeMapTexture(uint width, uint height);
     void bind(GLuint unit);
 };
-
-#endif

@@ -1,7 +1,6 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
-#include"glm/glm.hpp"
+#include "glm/glm.hpp"
 #include <random>
 
 namespace Utils {
@@ -31,5 +30,3 @@ namespace Utils {
     float randomFloat(float from, float to); // [from, to]
 	float approach(float from, float to, float amount); // approach from -> to by amount
 };
-
-#endif

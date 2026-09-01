@@ -1,9 +1,9 @@
-#include"SettingsMenu.h"
-#include "controller/Settings.h"
-#include "gui/CycleButton.h"
-#include "gui/IntGuiElement.h"
-#include "gui/Stepper.h"
-#include "gui/Toggle.h"
+#include "SettingsMenu.h"
+#include "settings/Settings.h"
+#include "gui/element/CycleButton.h"
+#include "gui/element/IntGuiElement.h"
+#include "gui/element/Stepper.h"
+#include "gui/element/Toggle.h"
 #include "util/Log.h"
 #include <fmt/format.h>
 #include <memory>

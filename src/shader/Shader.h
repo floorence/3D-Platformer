@@ -1,12 +1,11 @@
-#ifndef SHADER_CLASS_H
-#define SHADER_CLASS_H
+#pragma once
 
 #include "camera/Camera.h"
 #include "camera/PointLightCamera.h"
 #include "texture/CubeMapTexture.h"
 #include "texture/Texture.h"
-#include<glm/glm.hpp>
-#include<string>
+#include <glm/glm.hpp>
+#include <string>
 
 enum class ShaderType {
 	Vertex, Geometry, Fragment, Program
@@ -58,5 +57,3 @@ private:
 	std::string typeToString(ShaderType type);
 	std::string getFileContents(const char* filename);
 };
-
-#endif
