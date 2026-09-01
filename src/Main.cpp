@@ -6,57 +6,56 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fmt/format.h>
 
+#include "TestRoom.h"
 #include "gui/Hud.h"
 #include "window/Window.h"
 #include "gui/framework/ClickController.h"
 #include "gui/SettingsMenu.h"
-#include "3d/shape/Sphere.h"
-#include "3d/shape/RectangularPrism.h"
 #include "lighting/LightController.h"
 #include "texture/FontTexture.h"
-#include "texture/ImageTexture.h"
 #include "util/Globals.h"
 #include "util/Log.h"
 #include "mass/Player.h"
 
+// initial window dimensions, which might not match what will be loaded from save
 const unsigned int width = 800;
 const unsigned int height = 600;
 const std::string TAG = "Main";
 
-Player* player_ptr;
-ClickController* clickController_ptr;
-LightController* lightController_ptr;
-Window* window_ptr;
+Player* playerPtr;
+ClickController* clickControllerPtr;
+LightController* lightControllerPtr;
+Window* windowPtr;
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-	player_ptr->handleMousePos(window, xpos, ypos);
-	clickController_ptr->handleMousePos(xpos, ypos);
+	playerPtr->handleMousePos(window, xpos, ypos);
+	clickControllerPtr->handleMousePos(xpos, ypos);
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-	player_ptr->handleMouseScroll(window, xoffset, yoffset);
+	playerPtr->handleMouseScroll(window, xoffset, yoffset);
 }
 
 void keyCallback(GLFWwindow* window, int key, int, int action, int) {
-	player_ptr->handleKeyInputs(window, key, action);
+	playerPtr->handleKeyInputs(window, key, action);
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int) {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-		clickController_ptr->handleMouseButton(xpos, ypos, action);
+		clickControllerPtr->handleMouseButton(xpos, ypos, action);
     }
 }
 
 void windowSizeCallback(GLFWwindow*, int width, int height) {
     Log::log(TAG, fmt::format("Window size changed: {}x{}", width, height));
-	window_ptr->setSizeAndNotify(width, height);
+	windowPtr->setSizeAndNotify(width, height);
 }
 
 void frameBufferSizeCallback(GLFWwindow*, int width, int height) {
     Log::log(TAG, fmt::format("Framebuffer size changed: {}x{}", width, height));
-	lightController_ptr->onFrameBufferSizeChanged(width, height);
+	lightControllerPtr->onFrameBufferSizeChanged(width, height);
 }
 
 int main() {
@@ -67,10 +66,10 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	GLFWwindow* window = glfwCreateWindow(width, height, "window", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "window", nullptr, nullptr);
 
-	if (window == NULL) {
-		Log::log(TAG, "Failed to create GLFW window");
+	if (window == nullptr) {
+		Log::err(TAG, "Failed to create GLFW window");
 		glfwTerminate();
 		return -1;
 	}
@@ -86,9 +85,12 @@ int main() {
 	glfwSetWindowSizeCallback(window, windowSizeCallback);
 	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
+	Window w(window);
+	windowPtr = &w;
+
 	gladLoadGL();
 
-	Log::log(TAG, "opengl initialized");
+	Log::log(TAG, "Window and OpenGL initialized");
 
 	// on some displays, framebuffer size and window size are not always the same
 	int fbWidth, fbHeight;
@@ -106,12 +108,6 @@ int main() {
 
 	Log::log(TAG, "shaders initialized");
 
-	AssetTexture planksDiffuse = ImageTexture("assets/planks.png", TextureType::Diffuse);
-	AssetTexture planksSpecular = ImageTexture("assets/planks.png", TextureType::Specular, GL_UNSIGNED_BYTE, true);
-	AssetTexture metalDiffuse = ImageTexture("assets/metal.jpg", TextureType::Diffuse);
-	AssetTexture metalSpecular = ImageTexture("assets/metal.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
-	AssetTexture stoneDiffuse = ImageTexture("assets/stone.jpg", TextureType::Diffuse);
-	AssetTexture stoneSpecular = ImageTexture("assets/stone.jpg", TextureType::Specular, GL_UNSIGNED_BYTE, true);
 	FontTexture fontTex("assets/pixel_operator_short_dollar.ttf");
 
 	Log::log(TAG, "textures initialized");
@@ -123,54 +119,14 @@ int main() {
 	Globals::GuiShader = &guiShader;
 	Globals::FontShader = &fontShader;
 
-	// start making 3d objects
-	std::vector<Shape3D*> objects;
-
-	// make debug pyramid
-	// DebugPyramid pyramid(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, 0.0f, 0.0f));
-	// objects.push_back(&pyramid);
-
-	// make sphere
-	Sphere sphere(&planksDiffuse, &planksSpecular, glm::vec3(2.0f, 0.0f, 0.0f), 0.2f);
-	objects.push_back(&sphere);
-
-	// make rectangular prism
-	RectangularPrism rect(&metalDiffuse, &metalSpecular, glm::vec3(-2.0f, 0.0f, 0.0f), 0.5f, 1.0f, 0.75f);
-	rect.setRotation(0, 0, glm::radians(180.0f));
-	objects.push_back(&rect);
-
-	// make floor
-	RectangularPrism floor(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, -1.2f, 0.0f), 5.0f, 0.1f, 5.0f);
-	objects.push_back(&floor);
-
-	RectangularPrism rightWall(&stoneDiffuse, &stoneSpecular, glm::vec3(2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
-	RectangularPrism leftWall(&stoneDiffuse, &stoneSpecular, glm::vec3(-2.5f, 1.3f, 0.0f), 0.1f, 5.0f, 5.0f);
-	// RectangularPrism backWall(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, 1.3f, 2.5f), 5.0f, 5.0f, 0.1f);
-	// RectangularPrism frontWall(&stoneDiffuse, &stoneSpecular, glm::vec3(0.0f, 1.3f, -2.5f), 5.0f, 5.0f, 0.1f);
-
-	objects.push_back(&rightWall);
-	objects.push_back(&leftWall);
-	// objects.push_back(&backWall);
-	// objects.push_back(&frontWall);
-
-	RectangularPrism floorCube(&planksDiffuse, &planksSpecular, glm::vec3(-1.0f, -0.95f, -1.0f), 0.4f, 0.4f, 0.4f);
-	objects.push_back(&floorCube);
-
-	RectangularPrism floorLight(&planksDiffuse, &planksSpecular, glm::vec3(0.0f, -0.8f, 0.0f), 0.2f, 0.2f, 0.2f, true);
-	floorLight.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
-	objects.push_back(&floorLight);
-
-	// make light cube
-	// RectangularPrism light(nullptr, nullptr, glm::vec3(0.5f, 0.5f, 0.5f), 0.2f, 0.2f, 0.2f, true);
-	// light.setColor(glm::vec3(1.0f, 1.0f, 1.0f), 7.0f);
-	// objects.push_back(&light);
+	TestRoom testRoom;
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	player_ptr = &player;
+	playerPtr = &player;
 
 	LightController lc(fbWidth, fbHeight);
-	lightController_ptr = &lc;
-	lc.registerShapes(objects);
+	lightControllerPtr = &lc;
+	lc.registerShapes(testRoom.objects);
 	lc.registerDrawable(&player);
 	lc.processLighting();
 
@@ -181,9 +137,6 @@ int main() {
 	playerDebugText.setBounds(10, 10, 400, 200);
 	playerDebugText.setFontSize(20);
 	playerDebugText.setCenterText(false);
-
-	Window w(window);
-	window_ptr = &w;
 
 	SettingsController sc;
 	SettingsMenu settingsMenu(&sc);
@@ -198,9 +151,8 @@ int main() {
 	Log::log(TAG, "settings loaded from save");
 
 	ClickController cc;
-	clickController_ptr = &cc;
-	cc.registerListener(&hud);
-	cc.registerListener(&settingsMenu);
+	clickControllerPtr = &cc;
+	cc.registerListeners({&hud, &settingsMenu});
 
 	glEnable(GL_CULL_FACE); // enable back face culling
 
