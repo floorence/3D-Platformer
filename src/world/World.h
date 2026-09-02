@@ -7,8 +7,8 @@
 #include <vector>
 
 /**
- * * split the world into 100x100x100 regions
- * * regions will be tracked by the coordinate of the corner that is in the negative x, y, and z direction relative to the rest of the region, divided by 100.
+ * * split the world into cubic regions with side length REGION_SIZE
+ * * regions will be tracked by the coordinate of the corner that is in the negative x, y, and z direction relative to the rest of the region, divided by REGION_SIZE.
  * * a region can have 1 star system or have nothing in it
  * * star systems can't be in regions right next to each other or diagonal to each other
  * * in valid regions, a star system can spawn 50% of the time
@@ -21,6 +21,8 @@
  */
 class World {
 public:
+    static const int REGION_SIZE = 64;
+
     World(uint seed, Player* player);
 
 private:
@@ -33,10 +35,10 @@ private:
     void loadStartingRegions();
     void loadIfNotLoaded(Region region);
 
-    int getRegionRandom(Region region, int min, int max);
     bool potentiallyHasStarSystem(Region region);
     double getPriority(Region region);
     bool actuallyHasStarSystem(Region region);
+    uint getRegionSeed(Region region);
 
     uint64_t splitmix64(uint64_t x);
     uint64_t hashRegion(Region region, uint64_t salt);

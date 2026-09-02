@@ -4,6 +4,7 @@
 
 class Sphere: public Shape3D {
 public:
+    Sphere(glm::vec3 position, float radius, int stacks = 16, int sectors = 32, bool isLightSource = false);
     Sphere(AssetTexture* diffuse, AssetTexture* specular, glm::vec3 position, float radius, int stacks = 16, int sectors = 32, bool isLightSource = false);
 private:
     float radius;

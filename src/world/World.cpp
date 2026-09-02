@@ -14,7 +14,7 @@ void World::loadStartingRegions() {
         static_cast<int>(player->position.y / 100), 
         static_cast<int>(player->position.z / 100), 
     };
-    int r = 5;
+    int r = 2;
     for (int x = playerCube.x - r; x <= playerCube.x + r; x++) {
         for (int y = playerCube.y - r; y <= playerCube.y + r; y++) {
             for (int z = playerCube.z - r; z <= playerCube.z + r; z++) {
@@ -31,13 +31,9 @@ void World::loadIfNotLoaded(Region region) {
     if (actuallyHasStarSystem(region)) {
         Log::log("World", fmt::format("star system at region {}, {}, {}", region.x, region.y, region.z));
     }
-}
 
-int World::getRegionRandom(Region region, int min, int max) {
-    uint localSeed = seed ^ (region.x * 37) ^ (region.y * 67) ^ (region.z * 73); // prime numbers
-    std::mt19937 localGen(localSeed);
-    std::uniform_int_distribution<int> dist(min, max);
-    return dist(localGen);
+    auto it = std::lower_bound(loaded.begin(), loaded.end(), region);
+    loaded.insert(it, region);
 }
 
 uint64_t World::splitmix64(uint64_t x) {
