@@ -23,11 +23,13 @@ class World {
 public:
     static const int REGION_SIZE = 64;
 
-    World(uint seed, Player* player);
+    World(uint seed);
 
+    void onPlayerPosition(glm::vec3 pos);
+    void update(float deltaTime);
 private:
+    glm::vec3 playerPos = glm::vec3(0.0f);
     uint seed;
-    Player* player;
 
     std::vector<StarSystem> starSystems;
     std::vector<Region> loaded;

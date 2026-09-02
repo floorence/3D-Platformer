@@ -123,7 +123,7 @@ int main() {
 	Log::log(TAG, "Test room initialized");
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	World world(67, &player);
+	World world(67);
 
 	Text playerDebugText;
 	playerDebugText.setBounds(10, 10, 400, 200);
@@ -166,6 +166,8 @@ int main() {
 		w.startFrame();
 
 		player.handleKeyInputs(window, w.deltaTime);
+		world.onPlayerPosition(player.position);
+		world.update(w.deltaTime);
 
 		glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 		lc.render(*player.getActiveCamera(), w.deltaTime);

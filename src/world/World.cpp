@@ -2,22 +2,27 @@
 #include "util/Log.h"
 #include <random>
 
-World::World(uint seed, Player* player) 
-    : seed(seed), player(player) 
-{
+World::World(uint seed): seed(seed) {
     loadStartingRegions();
 }
 
+void World::onPlayerPosition(glm::vec3 pos) {
+    // TODO load regions based on player position
+}
+
+void World::update(float deltaTime) {
+    // TODO only update ones close to player
+    for (auto& starSystem: starSystems) {
+        starSystem.update(deltaTime);
+    }
+}
+
 void World::loadStartingRegions() {
-    Region playerCube = {
-        static_cast<int>(player->position.x / 100), 
-        static_cast<int>(player->position.y / 100), 
-        static_cast<int>(player->position.z / 100), 
-    };
+    Region startingCube = {0, 0, 0};
     int r = 2;
-    for (int x = playerCube.x - r; x <= playerCube.x + r; x++) {
-        for (int y = playerCube.y - r; y <= playerCube.y + r; y++) {
-            for (int z = playerCube.z - r; z <= playerCube.z + r; z++) {
+    for (int x = startingCube.x - r; x <= startingCube.x + r; x++) {
+        for (int y = startingCube.y - r; y <= startingCube.y + r; y++) {
+            for (int z = startingCube.z - r; z <= startingCube.z + r; z++) {
                 loadIfNotLoaded({x, y, z});
             }
         }
@@ -30,37 +35,12 @@ void World::loadIfNotLoaded(Region region) {
     
     if (actuallyHasStarSystem(region)) {
         Log::log("World", fmt::format("star system at region {}, {}, {}", region.x, region.y, region.z));
+        StarSystem starSystem(getRegionSeed(region), region);
+        starSystems.push_back(std::move(starSystem));
     }
 
     auto it = std::lower_bound(loaded.begin(), loaded.end(), region);
     loaded.insert(it, region);
-}
-
-uint64_t World::splitmix64(uint64_t x) {
-    x += 0x9e3779b97f4a7c15ULL;
-
-    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
-    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
-    x = x ^ (x >> 31);
-
-    return x;
-}
-
-uint64_t World::hashRegion(Region region, uint64_t salt) {
-    uint64_t h = seed;
-
-    h = splitmix64(h ^ static_cast<uint64_t>(region.x));
-    h = splitmix64(h ^ static_cast<uint64_t>(region.y));
-    h = splitmix64(h ^ static_cast<uint64_t>(region.z));
-    h = splitmix64(h ^ salt);
-
-    return h;
-}
-
-double World::hash01(Region region, uint64_t salt) {
-    uint64_t h = hashRegion(region, salt);
-
-    return static_cast<double>(h) / static_cast<double>(UINT64_MAX);
 }
 
 bool World::potentiallyHasStarSystem(Region region) {
@@ -92,4 +72,35 @@ bool World::actuallyHasStarSystem(Region region) {
     }
     
     return true;
+}
+
+uint64_t World::splitmix64(uint64_t x) {
+    x += 0x9e3779b97f4a7c15ULL;
+
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+    x = x ^ (x >> 31);
+
+    return x;
+}
+
+uint64_t World::hashRegion(Region region, uint64_t salt) {
+    uint64_t h = seed;
+
+    h = splitmix64(h ^ static_cast<uint64_t>(region.x));
+    h = splitmix64(h ^ static_cast<uint64_t>(region.y));
+    h = splitmix64(h ^ static_cast<uint64_t>(region.z));
+    h = splitmix64(h ^ salt);
+
+    return h;
+}
+
+double World::hash01(Region region, uint64_t salt) {
+    uint64_t h = hashRegion(region, salt);
+
+    return static_cast<double>(h) / static_cast<double>(UINT64_MAX);
+}
+
+uint World::getRegionSeed(Region region) {
+    return seed ^ (region.x * 37) ^ (region.y * 67) ^ (region.z * 73); // prime numbers
 }
