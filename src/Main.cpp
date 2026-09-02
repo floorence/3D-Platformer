@@ -16,6 +16,7 @@
 #include "util/Globals.h"
 #include "util/Log.h"
 #include "mass/Player.h"
+#include "world/World.h"
 
 // initial window dimensions, which might not match what will be loaded from save
 const unsigned int width = 800;
@@ -122,6 +123,7 @@ int main() {
 	Log::log(TAG, "Test room initialized");
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
+	World world(67, &player);
 
 	Text playerDebugText;
 	playerDebugText.setBounds(10, 10, 400, 200);
