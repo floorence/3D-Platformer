@@ -1,17 +1,23 @@
 #pragma once
 
+#include "3d/Drawable3D.h"
+#include "lighting/Light.h"
 #include "world/Planet.h"
 #include "world/Region.h"
 #include "world/Star.h"
 #include <glm/ext/vector_float3.hpp>
 #include <random>
 
-class StarSystem {
+class StarSystem: public Drawable3D {
 public:
+    Light starLightData;
+
     StarSystem(uint localSeed, Region region);
 
     void update(float deltaTime);
-    std::vector<Shape3D*> getShapes();
+
+    void draw(Camera& camera) override;
+    void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
     std::mt19937 localGen;
 

@@ -1,18 +1,19 @@
 #include "World.h"
+#include "lighting/Light.h"
 #include "util/Log.h"
 #include <algorithm>
 #include <memory>
 
-World::World(uint seed): seed(seed) {
+World::World(uint seed, LightController* lc): seed(seed), lc(lc) {
     playerRegion = {0, 0, 0};
     loadPlayerRegions();
 }
 
 void World::onPlayerPosition(glm::vec3 pos) {
     Region newRegion = {
-        static_cast<int>(pos.x / REGION_SIZE),
-        static_cast<int>(pos.y / REGION_SIZE), 
-        static_cast<int>(pos.z / REGION_SIZE)
+        static_cast<int>(std::floor(pos.x / REGION_SIZE)),
+        static_cast<int>(std::floor(pos.y / REGION_SIZE)), 
+        static_cast<int>(std::floor(pos.z / REGION_SIZE))
     };
 
     if (newRegion == playerRegion) return;
@@ -51,11 +52,16 @@ void World::onPlayerPosition(glm::vec3 pos) {
     }
 
     playerRegion = newRegion;
+    playerPos = pos;
 }
 
 void World::update(float deltaTime) {
     int r = simulationRadius;
     cachedCloseStarSystems.clear();
+    std::vector<Light> closeStarsLightData;
+
+    float closestStarDist2 = INT_MAX;
+    int closestStarIndex = -1;
     
     for (int x = playerRegion.x - r; x <= playerRegion.x + r; x++) {
         for (int y = playerRegion.y - r; y <= playerRegion.y + r; y++) {
@@ -65,23 +71,51 @@ void World::update(float deltaTime) {
 
                 if (it != loaded.end() && *it == r) {
                     int i = it - loaded.begin();
-                    if (loaded[i].starSystem != nullptr) loaded[i].starSystem->update(deltaTime);
-                    cachedCloseStarSystems.push_back(loaded[i].starSystem);
+                    if (loaded[i].starSystem != nullptr) {
+                        loaded[i].starSystem->update(deltaTime);
+                        cachedCloseStarSystems.push_back(loaded[i].starSystem);
+
+                        Light light = loaded[i].starSystem->starLightData;
+                        closeStarsLightData.push_back(light);
+
+                        float starDist2 = glm::length2(light.position - playerPos);
+                        if (starDist2 < closestStarDist2) {
+                            closestStarDist2 = starDist2;
+                            closestStarIndex = closeStarsLightData.size() - 1;
+                        }
+                    } else {
+                        // Log::warn("World", fmt::format("no star system at {} {} {}", r.x, r.y, r.z));
+                    }
                 } else {
                     Log::warn("World", fmt::format("tried to update a region {} {} {} that wasn't loaded!", r.x, r.y, r.z));
                 }
             }
         }
     }
+
+    if (closestStarIndex != -1) {
+        lc->setLights(closeStarsLightData, closestStarIndex);
+    } else {
+    }
 }
 
-std::vector<Shape3D*> World::getShapes() {
-    std::vector<Shape3D*> shapes;
+std::string World::getDebugString() {
+	return fmt::format("position: {:.3f}, {:.3f}, {:.3f}\nregion: {}, {}, {}",
+        playerPos.x, playerPos.y, playerPos.z,
+		playerRegion.x, playerRegion.y, playerRegion.z
+	);
+}
+
+void World::draw(Camera& camera) {
     for (auto& starSystem: cachedCloseStarSystems) {
-        std::vector<Shape3D*> starSystemShapes = starSystem->getShapes();
-        shapes.insert(shapes.end(), starSystemShapes.begin(), starSystemShapes.end());
+        starSystem->draw(camera);
     }
-    return shapes;
+}
+
+void World::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
+    for (auto& starSystem: cachedCloseStarSystems) {
+        starSystem->drawToDepthMap(camera, depthShader);
+    }
 }
 
 void World::loadPlayerRegions() {
@@ -102,10 +136,11 @@ void World::loadIfNotLoaded(Region region) {
     Log::log("World", fmt::format("loading..."));
     
     if (actuallyHasStarSystem(region)) {
-        Log::log("World", fmt::format("star system at region {}, {}, {}", region.x, region.y, region.z));
         auto starSystem = std::make_unique<StarSystem>(getRegionSeed(region), region);
-        starSystems.push_back(std::move(starSystem));
         region.starSystem = starSystem.get();
+        Log::log("World", fmt::format("star system at region {}, {}, {}, star pos: {}, {}, {}", region.x, region.y, region.z,
+            starSystem->starLightData.position.x, starSystem->starLightData.position.y, starSystem->starLightData.position.z));
+        starSystems.push_back(std::move(starSystem));
     }
 
     auto it = std::lower_bound(loaded.begin(), loaded.end(), region);

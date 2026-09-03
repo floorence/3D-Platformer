@@ -11,7 +11,6 @@ public:
     // if !isLightSource, will be the tint colour of the shape. else, will not be used
     // higher alpha value will lead to stronger tint
     glm::vec4 tintColor = glm::vec4(0.0f);  
-    glm::vec3 direction = glm::vec3(0.0f); // 0 for point light, not 0 for spot light
 
     Shape3D() = default;
     Shape3D(glm::vec3 position, bool isLightSource);

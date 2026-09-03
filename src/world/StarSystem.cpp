@@ -10,6 +10,8 @@ StarSystem::StarSystem(uint localSeed, Region region)
     // TODO: star mass, colour, luminosity
     star.setColor(glm::vec3(100.0f, 100.0f, 100.0f));
     star.setNorth(generateStarNorth());
+    starLightData = Light(32, star.getPosition(), star.getColor());
+
     generatePlanets();
 }
 
@@ -17,13 +19,18 @@ void StarSystem::update(float deltaTime) {
     // TODO update each planet
 }
 
-std::vector<Shape3D*> StarSystem::getShapes() {
-    std::vector<Shape3D*> shapes;
-    shapes.push_back(&star);
+void StarSystem::draw(Camera& camera) {
+    star.draw(camera);
     for (auto& planet: planets) {
-        shapes.push_back(&planet);
+        planet.draw(camera);
     }
-    return shapes;
+}
+
+void StarSystem::drawToDepthMap(PointLightCamera& camera, Shader& depthShader) {
+    // star is the light source
+    for (auto& planet: planets) {
+        planet.drawToDepthMap(camera, depthShader);
+    }
 }
 
 glm::vec3 StarSystem::generateStarPosition(Region region) {

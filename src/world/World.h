@@ -1,6 +1,7 @@
 #pragma once
 
 #include "3d/Drawable3D.h"
+#include "lighting/LightController.h"
 #include "world/Region.h"
 #include "world/StarSystem.h"
 #include <glm/ext/vector_float3.hpp>
@@ -20,20 +21,23 @@
  * * also only star systems within the loading distance of the player would simulate gravity and stuff.
  * * once a region has decided that it'll have a star system, the StarSystem class does the work of generating its planets and stuff
  */
-class World {
+class World: public Drawable3D {
 public:
     static const int REGION_SIZE = 64;
 
-    World(uint seed);
+    World(uint seed, LightController* lc);
 
     void onPlayerPosition(glm::vec3 pos);
     void update(float deltaTime);
+    std::string getDebugString();
 
-    std::vector<Shape3D*> getShapes();
+    void draw(Camera& camera) override;
+    void drawToDepthMap(PointLightCamera& camera, Shader& depthShader) override;
 private:
+    uint seed;
+    LightController* lc;
     glm::vec3 playerPos = glm::vec3(0.0f);
     Region playerRegion;
-    uint seed;
 
     std::vector<std::unique_ptr<StarSystem>> starSystems; // unique_ptr since Region stores pointer to corresponding StarSystem
     std::vector<Region> loaded;

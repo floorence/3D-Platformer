@@ -123,7 +123,6 @@ int main() {
 	Log::log(TAG, "Test room initialized");
 
 	Player player(glm::vec3(0.0f, 0.0f, 2.0f), width, height);
-	World world(67);
 
 	Text playerDebugText;
 	playerDebugText.setBounds(10, 10, 400, 200);
@@ -139,6 +138,8 @@ int main() {
 	LightController lc(fbWidth, fbHeight);
 	ClickController cc;
 
+	World world(67, &lc);
+
 	// set pointers used in glfw callbacks
 	windowPtr = &w;
 	playerPtr = &player;
@@ -147,9 +148,12 @@ int main() {
 
 	// register listeners, shapes, and drawables
 	w.registerListeners({&hud, &player, &settingsMenu});
-	lc.registerShapes(testRoom.objects);
+
+	lc.registerDrawables(testRoom.objects);
+	lc.registerLight(testRoom.lightData);
 	lc.registerDrawable(&player);
-	lc.registerShapes(world.getShapes());
+	lc.registerDrawable(&world);
+
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	cc.registerListeners({&hud, &settingsMenu});
 	
