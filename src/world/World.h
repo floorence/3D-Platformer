@@ -1,9 +1,10 @@
 #pragma once
 
-#include "mass/Player.h"
+#include "3d/Drawable3D.h"
 #include "world/Region.h"
 #include "world/StarSystem.h"
 #include <glm/ext/vector_float3.hpp>
+#include <memory>
 #include <vector>
 
 /**
@@ -27,14 +28,21 @@ public:
 
     void onPlayerPosition(glm::vec3 pos);
     void update(float deltaTime);
+
+    std::vector<Shape3D*> getShapes();
 private:
     glm::vec3 playerPos = glm::vec3(0.0f);
+    Region playerRegion;
     uint seed;
 
-    std::vector<StarSystem> starSystems;
+    std::vector<std::unique_ptr<StarSystem>> starSystems; // unique_ptr since Region stores pointer to corresponding StarSystem
     std::vector<Region> loaded;
+    std::vector<StarSystem*> cachedCloseStarSystems;
 
-    void loadStartingRegions();
+    // radius of regions around player's current region
+    const int simulationRadius = 2;
+
+    void loadPlayerRegions();
     void loadIfNotLoaded(Region region);
 
     bool potentiallyHasStarSystem(Region region);

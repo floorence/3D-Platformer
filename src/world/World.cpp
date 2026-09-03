@@ -1,28 +1,94 @@
 #include "World.h"
 #include "util/Log.h"
-#include <random>
+#include <algorithm>
+#include <memory>
 
 World::World(uint seed): seed(seed) {
-    loadStartingRegions();
+    playerRegion = {0, 0, 0};
+    loadPlayerRegions();
 }
 
 void World::onPlayerPosition(glm::vec3 pos) {
-    // TODO load regions based on player position
+    Region newRegion = {
+        static_cast<int>(pos.x / REGION_SIZE),
+        static_cast<int>(pos.y / REGION_SIZE), 
+        static_cast<int>(pos.z / REGION_SIZE)
+    };
+
+    if (newRegion == playerRegion) return;
+    Log::log("World", fmt::format("player moved regions: {}, {}, {} -> {}, {}, {}", 
+       playerRegion.x, playerRegion.y, playerRegion.z,
+       newRegion.x, newRegion.y, newRegion.z));
+
+    // only attempt loading the ones that could have not been loaded, so only check the ones that wouldn't have been
+    // checked when player entered the previous region
+    int dx = newRegion.x - playerRegion.x;
+    int dy = newRegion.y - playerRegion.y;
+    int dz = newRegion.z - playerRegion.z;
+
+    if (dx > 1 || dy > 1 || dz > 1) {
+        // player must have teleported, ensure all regions around them are loaded
+        loadPlayerRegions();
+        return;
+    }
+
+    int loadX = newRegion.x + simulationRadius * dx;
+    int loadY = newRegion.y + simulationRadius * dy;
+    int loadZ = newRegion.z + simulationRadius * dz;
+    for (int a = -simulationRadius; a <= simulationRadius; a++) {
+        for (int b = -simulationRadius; b <= simulationRadius; b++) {
+            // player could possibly have moved diagonals if they crossed the borders in less than frame time
+            if (dx != 0) {
+                loadIfNotLoaded({loadX, newRegion.y + a, newRegion.z + b});
+            }
+            if (dy != 0) {
+                loadIfNotLoaded({newRegion.x + a, loadY, newRegion.z + b});
+            }
+            if (dz != 0) {
+                loadIfNotLoaded({newRegion.x + a, newRegion.y + b, loadZ});
+            }
+        }
+    }
+
+    playerRegion = newRegion;
 }
 
 void World::update(float deltaTime) {
-    // TODO only update ones close to player
-    for (auto& starSystem: starSystems) {
-        starSystem.update(deltaTime);
+    int r = simulationRadius;
+    cachedCloseStarSystems.clear();
+    
+    for (int x = playerRegion.x - r; x <= playerRegion.x + r; x++) {
+        for (int y = playerRegion.y - r; y <= playerRegion.y + r; y++) {
+            for (int z = playerRegion.z - r; z <= playerRegion.z + r; z++) {
+                Region r = {x, y, z};
+                auto it = std::lower_bound(loaded.begin(), loaded.end(), r);
+
+                if (it != loaded.end() && *it == r) {
+                    int i = it - loaded.begin();
+                    if (loaded[i].starSystem != nullptr) loaded[i].starSystem->update(deltaTime);
+                    cachedCloseStarSystems.push_back(loaded[i].starSystem);
+                } else {
+                    Log::warn("World", fmt::format("tried to update a region {} {} {} that wasn't loaded!", r.x, r.y, r.z));
+                }
+            }
+        }
     }
 }
 
-void World::loadStartingRegions() {
-    Region startingCube = {0, 0, 0};
-    int r = 2;
-    for (int x = startingCube.x - r; x <= startingCube.x + r; x++) {
-        for (int y = startingCube.y - r; y <= startingCube.y + r; y++) {
-            for (int z = startingCube.z - r; z <= startingCube.z + r; z++) {
+std::vector<Shape3D*> World::getShapes() {
+    std::vector<Shape3D*> shapes;
+    for (auto& starSystem: cachedCloseStarSystems) {
+        std::vector<Shape3D*> starSystemShapes = starSystem->getShapes();
+        shapes.insert(shapes.end(), starSystemShapes.begin(), starSystemShapes.end());
+    }
+    return shapes;
+}
+
+void World::loadPlayerRegions() {
+    int r = simulationRadius;
+    for (int x = playerRegion.x - r; x <= playerRegion.x + r; x++) {
+        for (int y = playerRegion.y - r; y <= playerRegion.y + r; y++) {
+            for (int z = playerRegion.z - r; z <= playerRegion.z + r; z++) {
                 loadIfNotLoaded({x, y, z});
             }
         }
@@ -30,13 +96,16 @@ void World::loadStartingRegions() {
 }
 
 void World::loadIfNotLoaded(Region region) {
+    Log::log("World", fmt::format("loadIfNotLoaded ({}, {}, {}), checking...", region.x, region.y, region.z));
     bool hasLoaded = std::binary_search(loaded.begin(), loaded.end(), region);
     if (hasLoaded) return;
+    Log::log("World", fmt::format("loading..."));
     
     if (actuallyHasStarSystem(region)) {
         Log::log("World", fmt::format("star system at region {}, {}, {}", region.x, region.y, region.z));
-        StarSystem starSystem(getRegionSeed(region), region);
+        auto starSystem = std::make_unique<StarSystem>(getRegionSeed(region), region);
         starSystems.push_back(std::move(starSystem));
+        region.starSystem = starSystem.get();
     }
 
     auto it = std::lower_bound(loaded.begin(), loaded.end(), region);

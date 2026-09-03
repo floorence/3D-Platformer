@@ -149,6 +149,7 @@ int main() {
 	w.registerListeners({&hud, &player, &settingsMenu});
 	lc.registerShapes(testRoom.objects);
 	lc.registerDrawable(&player);
+	lc.registerShapes(world.getShapes());
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	cc.registerListeners({&hud, &settingsMenu});
 	

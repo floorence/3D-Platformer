@@ -17,6 +17,15 @@ void StarSystem::update(float deltaTime) {
     // TODO update each planet
 }
 
+std::vector<Shape3D*> StarSystem::getShapes() {
+    std::vector<Shape3D*> shapes;
+    shapes.push_back(&star);
+    for (auto& planet: planets) {
+        shapes.push_back(&planet);
+    }
+    return shapes;
+}
+
 glm::vec3 StarSystem::generateStarPosition(Region region) {
     int startX = region.x * World::REGION_SIZE;
     int startY = region.y * World::REGION_SIZE;
@@ -60,7 +69,7 @@ void StarSystem::generatePlanets() {
         int radius = random(World::REGION_SIZE / 64, World::REGION_SIZE / 32);
         // rotate each planet by another random amount around star
         int rotation = random(1, 360);
-        glm::vec3 starToPlanet = glm::rotate(basePlanetVec, glm::radians((float) rotation), star.getNorth());
+        glm::vec3 starToPlanet = glm::rotate(basePlanetVec, glm::radians(static_cast<float>(rotation)), star.getNorth());
         starToPlanet = Utils::setVectorLength(starToPlanet, currDist);
 
         Planet planet(star.Mass::position + starToPlanet, radius);

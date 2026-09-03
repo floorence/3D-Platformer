@@ -11,6 +11,7 @@ public:
     StarSystem(uint localSeed, Region region);
 
     void update(float deltaTime);
+    std::vector<Shape3D*> getShapes();
 private:
     std::mt19937 localGen;
 
