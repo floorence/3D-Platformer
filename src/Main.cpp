@@ -16,6 +16,7 @@
 #include "util/Globals.h"
 #include "util/Log.h"
 #include "mass/Player.h"
+#include "world/World.h"
 
 // initial window dimensions, which might not match what will be loaded from save
 const unsigned int width = 800;
@@ -137,6 +138,8 @@ int main() {
 	LightController lc(fbWidth, fbHeight);
 	ClickController cc;
 
+	World world(67, &lc);
+
 	// set pointers used in glfw callbacks
 	windowPtr = &w;
 	playerPtr = &player;
@@ -145,8 +148,12 @@ int main() {
 
 	// register listeners, shapes, and drawables
 	w.registerListeners({&hud, &player, &settingsMenu});
-	lc.registerShapes(testRoom.objects);
+
+	lc.registerDrawables(testRoom.objects);
+	lc.registerLight(testRoom.lightData);
 	lc.registerDrawable(&player);
+	lc.registerDrawable(&world);
+
 	sc.registerListeners({&settingsMenu, &lc, &player, &w});
 	cc.registerListeners({&hud, &settingsMenu});
 	
@@ -164,6 +171,8 @@ int main() {
 		w.startFrame();
 
 		player.handleKeyInputs(window, w.deltaTime);
+		world.onPlayerPosition(player.position);
+		world.update(w.deltaTime);
 
 		glEnable(GL_DEPTH_TEST); // enable depth buffer so that stuff in front blocks stuff behind it
 		lc.render(*player.getActiveCamera(), w.deltaTime);

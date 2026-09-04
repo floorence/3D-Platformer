@@ -23,17 +23,14 @@ LightController::LightController(int fbWidth, int fbHeight)
     prepareGaussianBlur();
 }
 
-void LightController::registerShape(Shape3D* shape) {
-    if (shape->isLightSource)
-        lights.push_back(shape);
-    else
-        drawables.push_back(shape);
+uint LightController::registerLight(Light light) {
+    lights.push_back(light);
+    return lights.size() - 1;
 }
 
-void LightController::registerShapes(const std::vector<Shape3D*>& shapes) {
-    for (const auto& shape :shapes) {
-        registerShape(shape);
-    }
+void LightController::setLights(std::vector<Light> lights, int primary) {
+    this->lights = lights;
+    primaryLightSourceIndex = primary;
 }
 
 void LightController::registerDrawable(Drawable3D* drawable) {
@@ -48,14 +45,11 @@ void LightController::processLighting() {
     int numPointLights = 0;
 
     for (const auto& light: lights) {
-        float linear, quadratic;
-        float intensity = Utils::getBrightness(light->getColor()) / 10;
-        calculateAttenuationCoefficients(intensity, &linear, &quadratic);
         Globals::DefaultShader->registerLightSource(
             numPointLights,
-            light->getColor(),
-            light->getPosition(),
-            linear, quadratic
+            light.color,
+            light.position,
+            light.linear, light.quadratic
         );
         numPointLights++;
     }
@@ -64,6 +58,7 @@ void LightController::processLighting() {
 }
 
 void LightController::render(Camera& camera, float deltaTime) {
+    processLighting();
     if (shadowsEnabled) renderForShadows();
     renderForHDRAndBloom(camera);
     adjustBrightness(deltaTime);
@@ -75,7 +70,7 @@ void LightController::renderForShadows() {
     depthMapFbo.bindAndClear();
     glViewport(0, 0, DEPTH_MAP_WIDTH, DEPTH_MAP_HEIGHT);
 
-    pointLightCam.position = lights[primaryLightSourceIndex]->getPosition();
+    pointLightCam.position = lights[primaryLightSourceIndex].position;
     pointLightCam.generateTransforms();
     for (const auto& drawable : drawables) {
         drawable->drawToDepthMap(pointLightCam, depthShader);
@@ -102,10 +97,6 @@ void LightController::renderForHDRAndBloom(Camera& camera) {
 
     for (const auto& drawable: drawables) {
         drawable->draw(camera);
-    }
-
-    for (const auto& light: lights) {
-        light->draw(camera);
     }
 
     Utils::unbindFboAndClear();
@@ -284,15 +275,10 @@ void LightController::prepareFPTexture(Texture& texture) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void LightController::calculateAttenuationCoefficients(float range, float* linear, float* quadratic) {
-    *linear = LINEAR_COEFFICIENT * pow(range, LINEAR_POWER);
-    *quadratic = QUADRATIC_COEFFICIENT * pow(range, QUADRATIC_POWER);
-}
-
 glm::vec3 LightController::getSkyColor(Camera& camera) {
-    Shape3D* light = lights[primaryLightSourceIndex];
-    float dist = glm::length(camera.position - light->getPosition());
-    glm::vec3 c = light->getColor();
+    Light light = lights[primaryLightSourceIndex];
+    float dist = glm::length(camera.position - light.position);
+    glm::vec3 c = light.position;
     glm::vec3 mappedLightColor = c / std::max(std::max(c.r, c.g), c.b);
     return mappedLightColor / std::max((dist * dist), 2.0f);
 }

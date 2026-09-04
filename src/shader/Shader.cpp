@@ -139,7 +139,6 @@ void Shader::setRotation(glm::mat4 rotation) {
 }
 
 void Shader::registerLightSource(int num, glm::vec3 lightColor, glm::vec3 lightPos, float linear, float quadratic) {
-    Log::log(TAG, fmt::format("registerLightSource() num = {} linear = {}, quadratic = {}", num, linear, quadratic));
     activate();
 
     std::string pointLightUniform = "pointLights[0]";
